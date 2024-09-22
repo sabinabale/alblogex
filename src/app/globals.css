@@ -34,12 +34,11 @@ input {
 input[type="text"],
 input[type="email"],
 input[type="password"] {
-  border: 1px solid rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(0, 0, 0, 0.2);
   border-radius: 6px;
   padding: 8px;
   width: 100%;
   transition: border-color 0.3s ease;
-  margin-bottom: 16px;
 }
 
 input[type="text"]:hover,
@@ -66,9 +65,9 @@ button {
 }
 
 label {
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 400;
-  margin-bottom: 2px;
+  margin-bottom: 4px;
   margin-left: 4px;
   display: block;
   color: rgba(0, 0, 0, 0.6);
