@@ -1,15 +1,38 @@
+"use client";
 import Link from "next/link";
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useRouter, usePathname } from "next/navigation";
 
 export default function TheNavbar() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const router = useRouter();
+  const pathname = usePathname();
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    setIsLoggedIn(!!token);
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    setIsLoggedIn(false);
+    router.push("/");
+  };
+
+  const getLinkClassName = (href: string) => {
+    const baseClasses =
+      "px-4 py-2 font-medium rounded-lg transition-colors duration-200 ease-in-out";
+    const activeClasses = "bg-gray-200";
+    const hoverClasses = "hover:bg-gray-200";
+
+    return `${baseClasses} ${pathname === href ? activeClasses : hoverClasses}`;
+  };
+
   return (
     <div className="border-b border-gray-300 bg-white font-medium">
-      <nav className="flex max-w-6xl mx-auto justify-between items-center py-2 text-sm">
-        <div>
-          <Link
-            className="flex items-center space-x-2 px-4 h-[33px] hover:bg-gray-200 rounded-lg transition-colors duration-200 ease-in-out"
-            href="/"
-          >
+      <nav className="flex max-w-6xl mx-auto justify-between items-center py-2 text-sm text-gray-700">
+        <div className="flex items-center space-x-2">
+          <Link href="/">
             <svg
               width="24"
               height="24"
@@ -36,22 +59,51 @@ export default function TheNavbar() {
                 fill="currentColor"
               />
             </svg>
-            <span>Recent articles</span>
+          </Link>
+          <Link
+            className={`flex items-center space-x-2 px-4 h-[33px] rounded-lg transition-colors duration-200 ease-in-out ${
+              pathname === "/" ? "bg-gray-200" : "hover:bg-gray-200"
+            }`}
+            href="/"
+          >
+            Recent articles
           </Link>
         </div>
         <div className="space-x-2">
-          <Link
-            className="px-4 py-2 font-medium hover:bg-gray-200 rounded-lg transition-colors duration-200 ease-in-out"
-            href="/signin"
-          >
-            Sign in
-          </Link>
-          <Link
-            className="px-4 py-2 bg-black font-semibold text-white rounded-lg hover:bg-[#333333] transition-colors duration-200 ease-in-out"
-            href="/signup"
-          >
-            Sign up
-          </Link>
+          {isLoggedIn ? (
+            <>
+              <Link
+                className={getLinkClassName("/dashboard")}
+                href="/dashboard"
+              >
+                My articles
+              </Link>
+              <Link
+                className={getLinkClassName("/create-article")}
+                href="/create-article"
+              >
+                Create article
+              </Link>
+              <button
+                onClick={handleLogout}
+                className="px-4 w-auto h-[33px] bg-black font-semibold text-white rounded-lg hover:bg-[#333333] transition-colors duration-200 ease-in-out"
+              >
+                Log out
+              </button>
+            </>
+          ) : (
+            <>
+              <Link className={getLinkClassName("/signin")} href="/signin">
+                Sign in
+              </Link>
+              <Link
+                className="px-4 py-2 bg-black font-semibold text-white rounded-lg hover:bg-[#333333] transition-colors duration-200 ease-in-out"
+                href="/signup"
+              >
+                Sign up
+              </Link>
+            </>
+          )}
         </div>
       </nav>
     </div>
