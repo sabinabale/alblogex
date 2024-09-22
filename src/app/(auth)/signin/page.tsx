@@ -1,16 +1,28 @@
-import Link from "next/link";
-import React from "react";
+"use client";
 
-export default function Page() {
+import React from "react";
+import { useRouter } from "next/navigation";
+import TheLoginForm from "../../../components/TheLoginForm";
+import Link from "next/link";
+
+export default function SigninPage() {
+  const router = useRouter();
+
+  const handleSuccessfulLogin = () => {
+    router.push("/dashboard");
+  };
+
   return (
     <div className="flex flex-col items-center justify-center h-screen">
+      <h1 className="text-2xl font-bold mb-8">Sign in</h1>
+      <TheLoginForm onSuccessfulLogin={handleSuccessfulLogin} />
       <small className="mt-8">
         Don&apos;t have an account yet?{" "}
         <Link
-          href="/register"
-          className="text-cyan-500 font-semibold hover:text-cyan-700 transition-colors duration-200 ease-in-out"
+          href="/signup"
+          className="text-cyan-600 font-semibold underline underline-offset-1 hover:text-cyan-800 transition-colors duration-200 ease-in-out"
         >
-          Register
+          Sign up here
         </Link>
       </small>
     </div>
