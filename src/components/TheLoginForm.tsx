@@ -113,15 +113,15 @@ export default function TheLoginForm({ onSuccessfulLogin }: LoginFormProps) {
             <>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                width="20"
-                height="20"
+                width={20}
+                height={20}
                 viewBox="0 0 24 24"
                 className="inline-block mr-2 animate-spin"
               >
                 <path
                   fill="currentColor"
-                  d="M12,1A11,11,0,1,0,23,12,11,11,0,0,0,12,1Zm0,19a8,8,0,1,1,8-8A8,8,0,0,1,12,20Z"
-                  opacity="0.25"
+                  d="M12,1A11,11,0,1,0,23,12,11,11,0,0,0,12,1Zm0,19a8,8,1,1,1,8-8A8,8,0,0,1,12,20Z"
+                  opacity={0.25}
                 />
                 <path
                   fill="currentColor"
