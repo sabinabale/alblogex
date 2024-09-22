@@ -58,7 +58,6 @@ export default function TheLoginForm({ onSuccessfulLogin }: LoginFormProps) {
       const data = await res.json();
       localStorage.setItem("token", data.token);
 
-      // Call the callback function for successful login
       onSuccessfulLogin();
     } catch (err: unknown) {
       setErrors({

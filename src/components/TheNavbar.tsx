@@ -86,7 +86,7 @@ export default function TheNavbar() {
               </Link>
               <button
                 onClick={handleLogout}
-                className="px-4 w-auto h-[33px] bg-black font-semibold text-white rounded-lg hover:bg-[#333333] transition-colors duration-200 ease-in-out"
+                className="px-4 w-auto h-[33px] font-semibold text-red-600 rounded-lg hover:text-red-400 transition-colors duration-200 ease-in-out"
               >
                 Log out
               </button>
