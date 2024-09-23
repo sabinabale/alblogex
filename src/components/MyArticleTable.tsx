@@ -1,5 +1,12 @@
 import React, { useState, useMemo } from "react";
+import CustomCheckbox from "@/components/CustomCheckbox";
+import AscendingIcon from "@/assets/icons/chevronup.svg";
+import DescendingIcon from "@/assets/icons/chevrondown.svg";
+import ChevronsIcon from "@/assets/icons/chevrons.svg";
+import EditIcon from "@/assets/icons/edit.svg";
+import DeleteIcon from "@/assets/icons/delete.svg";
 
+import Image from "next/image";
 interface Article {
   id: number;
   title: string;
@@ -11,37 +18,42 @@ interface Article {
 const initialArticles: Article[] = [
   {
     id: 1,
-    title: "Article 1",
-    perex: "Perex 1",
-    author: "Author 1",
+    title: "Why do cats have whiskers?",
+    perex:
+      "Cats have whiskers to help them navigate in the dark and avoid obstacles.",
+    author: "Tommy Hilfiger",
     comments: 5,
   },
   {
     id: 2,
-    title: "Article 2",
-    perex: "Perex 2",
-    author: "Author 2",
+    title: "Most common cat breeds",
+    perex:
+      "The most common cat breeds are the Siamese, Persian, and Maine Coon.",
+    author: "Karl Weirdhairdo",
     comments: 3,
   },
   {
     id: 3,
-    title: "Article 3",
-    perex: "Perex 3",
-    author: "Author 3",
+    title: "The history of cats",
+    perex:
+      "Cats have been around for centuries, and their history is intertwined with human history.",
+    author: "Hummus Mammus",
     comments: 1,
   },
   {
     id: 4,
-    title: "Article 4",
-    perex: "Perex 4",
-    author: "Author 4",
+    title: "Most frequent cat illnesses",
+    perex:
+      "The most common cat illnesses are the Siamese, Persian, and Maine Coon.",
+    author: "Hypocratus Aurelius",
     comments: 2,
   },
   {
     id: 5,
-    title: "Article 5",
-    perex: "Perex 5",
-    author: "Author 5",
+    title: "Why do cats like to dance?",
+    perex:
+      "Cats like to dance because they are playful and enjoy moving around.",
+    author: "Wolgang Amadeus Mozart",
     comments: 4,
   },
 ];
@@ -90,11 +102,11 @@ export default function MyArticleTable() {
     );
   };
 
-  const handleSelectAll = () => {
-    if (selectedArticles.length === articles.length) {
-      setSelectedArticles([]);
-    } else {
+  const handleSelectAll = (isChecked: boolean) => {
+    if (isChecked) {
       setSelectedArticles(articles.map((article) => article.id));
+    } else {
+      setSelectedArticles([]);
     }
   };
 
@@ -109,20 +121,30 @@ export default function MyArticleTable() {
     <div className="border border-gray-300 rounded-md">
       <div className="grid grid-cols-[auto,290px,290px,200px,1fr,1fr] gap-4 items-center border-b border-gray-300 px-4 py-4">
         <div className="font-bold flex items-center">
-          <input
-            type="checkbox"
-            checked={selectedArticles.length === articles.length}
+          <CustomCheckbox
             onChange={handleSelectAll}
+            checked={selectedArticles.length === articles.length}
           />
         </div>
         {(["title", "perex", "author", "comments"] as const).map((key) => (
-          <div
+          <button
             key={key}
-            className="font-bold cursor-pointer"
+            className="font-bold text-left hover:bg-gray-100 flex items-center"
             onClick={() => handleSort(key)}
           >
             {key.charAt(0).toUpperCase() + key.slice(1)}
-          </div>
+            <span className="ml-1 flex items-center">
+              {sortConfig?.key === key ? (
+                sortConfig.direction === "ascending" ? (
+                  <Image src={AscendingIcon} alt="ascending icon" />
+                ) : (
+                  <Image src={DescendingIcon} alt="descending icon" />
+                )
+              ) : (
+                <Image src={ChevronsIcon} alt="chevrons icon" />
+              )}
+            </span>
+          </button>
         ))}
         <div className="font-bold">Actions</div>
       </div>
@@ -131,31 +153,34 @@ export default function MyArticleTable() {
         {sortedArticles.map((article) => (
           <React.Fragment key={article.id}>
             <div className="flex items-center">
-              <input
-                type="checkbox"
-                checked={selectedArticles.includes(article.id)}
+              <CustomCheckbox
                 onChange={() => handleSelectArticle(article.id)}
+                checked={selectedArticles.includes(article.id)}
               />
             </div>
-            <div className="py-2 ">{article.title}</div>
-            <div className="py-2">{article.perex}</div>
-            <div className="py-2">{article.author}</div>
+            <div className="py-2 truncate">{article.title}</div>
+            <div className="py-2 truncate">{article.perex}</div>
+            <div className="py-2 truncate">{article.author}</div>
             <div>{article.comments}</div>
-            <div className="flex space-x-2">
-              <button>Edit</button>
-              <button>Delete</button>
+            <div className="flex space-x-4">
+              <button className="w-fit">
+                <Image src={EditIcon} alt="edit icon" />
+              </button>
+              <button className="w-fit">
+                <Image src={DeleteIcon} alt="delete icon" />
+              </button>
             </div>
           </React.Fragment>
         ))}
       </div>
 
-      <div className="py-2 px-4 flex gap-4 border-t border-gray-300 items-center">
-        <div>
+      <div className="py-2 px-4 flex gap-4 border-t text-sm border-gray-300 items-center">
+        <div className="w-[120px]">
           {selectedArticles.length} item
           {selectedArticles.length !== 1 ? "s" : ""} selected
         </div>
         <button
-          className="w-fit disabled:bg-gray-300 bg-red-700 text-white px-2 py-1 rounded-md"
+          className="w-fit disabled:bg-gray-300 transition-all duration-300 ease-out bg-red-700 text-white px-2 py-1 rounded-md"
           onClick={handleDeleteSelected}
           disabled={selectedArticles.length === 0}
         >

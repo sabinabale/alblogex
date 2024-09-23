@@ -77,11 +77,11 @@ export default function Dashboard() {
 
   return (
     <div className="flex flex-col gap-8">
-      <div className="flex gap-8 items-center">
+      <div className="flex gap-4 items-center">
         <h1 className="text-2xl font-semibold">
           {user?.name ? `${user.name}'s` : "My"} articles
         </h1>
-        <button className="w-fit py-2 px-4 bg-black text-white rounded-lg">
+        <button className="w-fit py-1.5 px-3 text-sm bg-black text-white rounded-lg">
           Create article
         </button>
       </div>
