@@ -7,6 +7,7 @@ import EditIcon from "@/assets/icons/edit.svg";
 import DeleteIcon from "@/assets/icons/delete.svg";
 
 import Image from "next/image";
+import Link from "next/link";
 interface Article {
   id: number;
   title: string;
@@ -181,9 +182,12 @@ export default function MyArticleTable() {
             <div className="py-2 truncate">{article.author}</div>
             <div className="text-center">{article.comments}</div>
             <div className="flex space-x-4">
-              <button className="w-fit hover:opacity-40">
+              <Link
+                href={`/edit-article/${article.id}`}
+                className="w-fit hover:opacity-40"
+              >
                 <Image src={EditIcon} alt="edit icon" />
-              </button>
+              </Link>
               <button
                 className="w-fit hover:opacity-40"
                 onClick={() => handleDeleteArticle(article.id)}

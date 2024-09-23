@@ -30,15 +30,15 @@ model User {
 }
 
 model Post {
-  id        Int       @id @default(autoincrement())
+  id        Int         @id @default(autoincrement())
   title     String
-  perex     String
   content   String
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  author    User      @relation(fields: [authorId], references: [id])
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  author    User        @relation(fields: [authorId], references: [id])
   authorId  Int
   Comment   Comment[]
+  PostImage PostImage[]
 }
 
 model Comment {
@@ -48,4 +48,15 @@ model Comment {
   postId   Int
   author   User   @relation(fields: [authorId], references: [id])
   authorId Int
+}
+
+model PostImage {
+  id        Int      @id @default(autoincrement())
+  url       String
+  fileName  String
+  altText   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  post      Post     @relation(fields: [postId], references: [id])
+  postId    Int
 }
