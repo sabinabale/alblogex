@@ -1,4 +1,5 @@
 "use client";
+import { useAuth } from "@/utils/hooks/authContext";
 import React, { useState } from "react";
 
 interface LoginFormProps {
@@ -6,6 +7,7 @@ interface LoginFormProps {
 }
 
 export default function TheLoginForm({ onSuccessfulLogin }: LoginFormProps) {
+  const { login } = useAuth();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -69,7 +71,7 @@ export default function TheLoginForm({ onSuccessfulLogin }: LoginFormProps) {
       }
 
       const data = await res.json();
-      localStorage.setItem("token", data.token);
+      login(data.token); // Use the login function from the auth context
 
       onSuccessfulLogin();
     } catch (err: unknown) {
