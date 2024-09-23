@@ -1,12 +1,15 @@
 import Image from "next/image";
 import Link from "next/link";
 import catblackwhite from "@/assets/images/catblackwhite.png";
+import { Suspense } from "react";
 
 export default function Home() {
   return (
     <div className="min-h-screen">
       <h1 className="text-3xl font-bold mb-8">Recent articles</h1>
-      <ArticleCard />
+      <Suspense fallback={<ArticleCardSkeleton />}>
+        <ArticleCard />
+      </Suspense>
     </div>
   );
 }
@@ -41,6 +44,24 @@ const ArticleCard = () => {
             Read whole article
           </Link>
           <div>4 comments</div>
+        </div>
+      </div>
+    </article>
+  );
+};
+
+export const ArticleCardSkeleton = () => {
+  return (
+    <article className="flex animate-pulse">
+      <div className="w-[272px] h-[244px] bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 rounded-md mr-8"></div>
+
+      <div className="flex flex-col gap-4 w-full max-w-[560px]">
+        <div className="h-[32px] bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 rounded-md"></div>
+        <div className="h-[20px] bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 rounded-md"></div>
+        <div className="h-[100px] bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 rounded-md"></div>
+        <div className="flex gap-4 text-sm">
+          <div className="h-[20px] w-[130px] bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 rounded-md"></div>
+          <div className="h-[20px] w-[130px] bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 rounded-md"></div>
         </div>
       </div>
     </article>
