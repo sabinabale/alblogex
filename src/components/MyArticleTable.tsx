@@ -117,10 +117,16 @@ export default function MyArticleTable() {
     setSelectedArticles([]);
   };
 
+  const handleDeleteArticle = (id: number) => {
+    setArticles((prevArticles) =>
+      prevArticles.filter((article) => article.id !== id)
+    );
+  };
+
   return (
-    <div className="border border-gray-300 rounded-md">
+    <div className="border border-gray-300 rounded-md bg-white">
       <div className="grid grid-cols-[auto,290px,290px,200px,1fr,1fr] gap-4 items-center border-b border-gray-300 px-4 py-4">
-        <div className="font-bold flex items-center">
+        <div className="font-bold flex items-center ">
           <CustomCheckbox
             onChange={handleSelectAll}
             checked={selectedArticles.length === articles.length}
@@ -129,30 +135,42 @@ export default function MyArticleTable() {
         {(["title", "perex", "author", "comments"] as const).map((key) => (
           <button
             key={key}
-            className="font-bold text-left hover:bg-gray-100 flex items-center"
+            className="font-bold text-left flex items-center group text-black/70 hover:text-black "
             onClick={() => handleSort(key)}
           >
             {key.charAt(0).toUpperCase() + key.slice(1)}
-            <span className="ml-1 flex items-center">
+            <span className="ml-1 flex items-center ">
               {sortConfig?.key === key ? (
                 sortConfig.direction === "ascending" ? (
-                  <Image src={AscendingIcon} alt="ascending icon" />
+                  <Image
+                    src={AscendingIcon}
+                    alt="ascending icon"
+                    className="group-hover:scale-110 transition-all duration-300 ease-out"
+                  />
                 ) : (
-                  <Image src={DescendingIcon} alt="descending icon" />
+                  <Image
+                    src={DescendingIcon}
+                    alt="descending icon"
+                    className="group-hover:scale-110 transition-all duration-300 ease-out"
+                  />
                 )
               ) : (
-                <Image src={ChevronsIcon} alt="chevrons icon" />
+                <Image
+                  src={ChevronsIcon}
+                  alt="chevrons icon"
+                  className="group-hover:scale-110 transition-all duration-300 ease-out"
+                />
               )}
             </span>
           </button>
         ))}
-        <div className="font-bold">Actions</div>
+        <div className="font-bold text-black/70">Actions</div>
       </div>
 
-      <div className="grid grid-cols-[auto,290px,290px,200px,1fr,1fr] gap-4 items-center px-4 py-2">
+      <div className="grid grid-cols-[auto,290px,290px,200px,1fr,1fr] gap-4 items-center px-4 py-2 ">
         {sortedArticles.map((article) => (
           <React.Fragment key={article.id}>
-            <div className="flex items-center">
+            <div className="flex items-center ">
               <CustomCheckbox
                 onChange={() => handleSelectArticle(article.id)}
                 checked={selectedArticles.includes(article.id)}
@@ -161,12 +179,15 @@ export default function MyArticleTable() {
             <div className="py-2 truncate">{article.title}</div>
             <div className="py-2 truncate">{article.perex}</div>
             <div className="py-2 truncate">{article.author}</div>
-            <div>{article.comments}</div>
+            <div className="text-center">{article.comments}</div>
             <div className="flex space-x-4">
-              <button className="w-fit">
+              <button className="w-fit hover:opacity-40">
                 <Image src={EditIcon} alt="edit icon" />
               </button>
-              <button className="w-fit">
+              <button
+                className="w-fit hover:opacity-40"
+                onClick={() => handleDeleteArticle(article.id)}
+              >
                 <Image src={DeleteIcon} alt="delete icon" />
               </button>
             </div>
@@ -180,7 +201,7 @@ export default function MyArticleTable() {
           {selectedArticles.length !== 1 ? "s" : ""} selected
         </div>
         <button
-          className="w-fit disabled:bg-gray-300 transition-all duration-300 ease-out bg-red-700 text-white px-2 py-1 rounded-md"
+          className="w-fit disabled:bg-gray-300 transition-all duration-300 ease-out bg-red-700 text-white px-2 py-1 rounded-md hover:bg-red-800"
           onClick={handleDeleteSelected}
           disabled={selectedArticles.length === 0}
         >
