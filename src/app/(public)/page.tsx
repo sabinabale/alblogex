@@ -50,7 +50,7 @@ const ArticleCard = () => {
   );
 };
 
-export const ArticleCardSkeleton = () => {
+const ArticleCardSkeleton = () => {
   return (
     <article className="flex animate-pulse">
       <div className="w-[272px] h-[244px] bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 rounded-md mr-8"></div>
