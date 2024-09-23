@@ -8,13 +8,14 @@ import crossicon from "@/assets/icons/cross.svg";
 import remarkGfm from "remark-gfm";
 
 export default function Page() {
-  const [markdownContent, setMarkdownContent] = useState(() => {
-    return localStorage.getItem("markdownContent") || "";
-  });
-  const [articleTitle, setArticleTitle] = useState(() => {
-    return localStorage.getItem("articleTitle") || "";
-  });
+  const [markdownContent, setMarkdownContent] = useState("");
+  const [articleTitle, setArticleTitle] = useState("");
   const [uploadedImage, setUploadedImage] = useState<File | null>(null);
+
+  useEffect(() => {
+    setMarkdownContent(localStorage.getItem("markdownContent") || "");
+    setArticleTitle(localStorage.getItem("articleTitle") || "");
+  }, []);
 
   useEffect(() => {
     localStorage.setItem("markdownContent", markdownContent);
