@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import MyArticleTable from "../../../components/MyArticleTable";
+import Link from "next/link";
 
 interface User {
   id: string;
@@ -81,9 +82,12 @@ export default function Dashboard() {
         <h1 className="text-2xl font-semibold">
           {user?.name ? `${user.name}'s` : "My"} articles
         </h1>
-        <button className="w-fit py-1.5 px-3 text-sm bg-black text-white rounded-lg">
+        <Link
+          href="/create-article"
+          className="w-fit py-1.5 px-3 text-sm bg-black text-white rounded-lg"
+        >
           Create article
-        </button>
+        </Link>
       </div>
       <MyArticleTable />
     </div>

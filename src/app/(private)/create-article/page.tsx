@@ -4,6 +4,7 @@ import Image from "next/image";
 import React, { useState, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
 import bulbicon from "@/assets/icons/bulb.svg";
+import crossicon from "@/assets/icons/cross.svg";
 import remarkGfm from "remark-gfm";
 
 export default function Page() {
@@ -13,6 +14,7 @@ export default function Page() {
   const [articleTitle, setArticleTitle] = useState(() => {
     return localStorage.getItem("articleTitle") || "";
   });
+  const [uploadedImage, setUploadedImage] = useState<File | null>(null);
 
   useEffect(() => {
     localStorage.setItem("markdownContent", markdownContent);
@@ -21,6 +23,23 @@ export default function Page() {
   useEffect(() => {
     localStorage.setItem("articleTitle", articleTitle);
   }, [articleTitle]);
+
+  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setUploadedImage(file);
+    }
+  };
+
+  const handleRemoveImage = () => {
+    setUploadedImage(null);
+    const fileInput = document.getElementById(
+      "imageUpload"
+    ) as HTMLInputElement;
+    if (fileInput) {
+      fileInput.value = "";
+    }
+  };
 
   return (
     <div className="space-y-8 text-base">
@@ -42,34 +61,26 @@ export default function Page() {
       </div>
       <div className="flex flex-col gap-1 w-1/2">
         <div className="font-medium pl-1">Featured image</div>
-        <input
-          type="file"
-          accept="image/*"
-          id="imageUpload"
-          className="hidden"
-        />
-        <label
-          htmlFor="imageUpload"
-          className="bg-gray-500 hover:bg-gray-600 font-medium text-white text-sm px-3 py-1.5 rounded-md w-fit cursor-pointer"
-        >
-          Upload image
-        </label>
+        <div className="flex items-center gap-4">
+          <ImageUpload
+            uploadedImage={uploadedImage}
+            handleImageUpload={handleImageUpload}
+            handleRemoveImage={handleRemoveImage}
+          />
+        </div>
       </div>
       <div className="flex gap-6">
         <div className="flex flex-col gap-1 w-1/2">
-          <div className="font-medium pl-1">Article content</div>
-          <textarea
-            placeholder="Article content"
-            className="p-2 h-80 border border-gray-300 resize-none"
-            value={markdownContent}
-            onChange={(e) => setMarkdownContent(e.target.value)}
+          <TextEditor
+            markdownContent={markdownContent}
+            setMarkdownContent={setMarkdownContent}
           />
         </div>
         <MarkdownQuickRef />
       </div>
       <div className="w-1/2">
         <div className="font-medium pl-1 mb-1">Preview</div>
-        <div className="px-3 py-1.5 border border-gray-300 rounded-md prose bg-white h-40">
+        <div className="px-3 py-1.5 border border-gray-300 rounded-md prose bg-white h-80 overflow-auto">
           <ReactMarkdown
             remarkPlugins={[remarkGfm]}
             components={{
@@ -125,5 +136,69 @@ const MarkdownQuickRef = () => {
         </li>
       </ul>
     </div>
+  );
+};
+
+const ImageUpload = ({
+  uploadedImage,
+  handleImageUpload,
+  handleRemoveImage,
+}: {
+  uploadedImage: File | null;
+  handleImageUpload: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  handleRemoveImage: () => void;
+}) => {
+  return (
+    <>
+      <input
+        type="file"
+        accept="image/*"
+        id="imageUpload"
+        className="hidden"
+        onChange={handleImageUpload}
+      />
+      <label
+        htmlFor="imageUpload"
+        className="bg-gray-500 hover:bg-gray-600 font-medium text-white text-sm px-3 py-1.5 rounded-md w-fit cursor-pointer"
+      >
+        Upload image
+      </label>
+      {uploadedImage && (
+        <div className="flex items-center gap-2">
+          <span className="text-sm text-gray-600">{uploadedImage.name}</span>
+          <button
+            onClick={handleRemoveImage}
+            className="w-fit"
+            aria-label="Remove uploaded image"
+          >
+            <Image
+              src={crossicon}
+              alt="cross icon"
+              className="opacity-60 hover:opacity-100 "
+            />
+          </button>
+        </div>
+      )}
+    </>
+  );
+};
+
+const TextEditor = ({
+  markdownContent,
+  setMarkdownContent,
+}: {
+  markdownContent: string;
+  setMarkdownContent: React.Dispatch<React.SetStateAction<string>>;
+}) => {
+  return (
+    <>
+      <div className="font-medium pl-1">Article content</div>
+      <textarea
+        placeholder="Article content"
+        className="p-2 h-80 border border-gray-300 resize-none overflow-auto"
+        value={markdownContent}
+        onChange={(e) => setMarkdownContent(e.target.value)}
+      />
+    </>
   );
 };
