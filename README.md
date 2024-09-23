@@ -19,3 +19,5 @@ Todo:
 - [ ] Edit article (UI)
 - [ ] Toast messages
 - [ ] Private routes protection
+- [ ] UI optimization
+- [ ] Code optimization
