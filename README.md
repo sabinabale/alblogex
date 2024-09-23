@@ -18,4 +18,4 @@ Todo:
 - [ ] Create article (UI, markdown, API)
 - [ ] Edit article (UI)
 - [ ] Toast messages
-- [ ] Signed in route protection
+- [ ] Private routes protection
