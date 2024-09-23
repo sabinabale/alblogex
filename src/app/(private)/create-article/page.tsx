@@ -69,7 +69,7 @@ export default function Page() {
       </div>
       <div className="w-1/2">
         <div className="font-medium pl-1 mb-1">Preview</div>
-        <div className="p-4 border border-gray-300 rounded-md prose bg-white h-40">
+        <div className="px-3 py-1.5 border border-gray-300 rounded-md prose bg-white h-40">
           <ReactMarkdown
             remarkPlugins={[remarkGfm]}
             components={{
