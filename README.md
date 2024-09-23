@@ -12,6 +12,8 @@ Todo:
 - [x] Auth (JWT, bcrypt)
 - [x] Sign up
 - [x] Sign in
+- [x] Basic form validation (script injection, disposable domains, empty, input maxlength)
 - [ ] Dynamic routes for articles
-- [ ] Create article
-- [ ] Edit article
+- [ ] Create article (UI, markdown, API)
+- [ ] Edit article (UI)
+- [ ] Toast messages
