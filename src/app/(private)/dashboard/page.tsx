@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import MyArticleTable from "../../../components/MyArticleTable";
 
 interface User {
   id: string;
@@ -75,12 +76,16 @@ export default function Dashboard() {
   }
 
   return (
-    <div>
-      <p>Hi {user?.name || "there"}!</p>
-      <h1 className="text-2xl font-semibold">My articles</h1>
-      <button className="w-fit py-2 px-4 bg-black text-white rounded-lg">
-        Create article
-      </button>
+    <div className="flex flex-col gap-8">
+      <div className="flex gap-8 items-center">
+        <h1 className="text-2xl font-semibold">
+          {user?.name ? `${user.name}'s` : "My"} articles
+        </h1>
+        <button className="w-fit py-2 px-4 bg-black text-white rounded-lg">
+          Create article
+        </button>
+      </div>
+      <MyArticleTable />
     </div>
   );
 }
