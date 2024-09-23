@@ -8,7 +8,7 @@ password: Aki123
 Stack: NextJS, Prisma, PostgreSQL, Supabase
 
 Todo:
-
+- [x] Prisma, PostgreSQL, Supabase set up
 - [x] Auth (JWT, bcrypt)
 - [x] Sign up
 - [x] Sign in
