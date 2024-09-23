@@ -43,23 +43,30 @@ input[type="password"] {
 
 input[type="text"]:hover,
 input[type="email"]:hover,
-input[type="password"]:hover {
+input[type="password"]:hover,
+textarea:hover {
   border-color: rgb(0, 0, 0);
 }
 
 input[type="text"]:focus,
 input[type="email"]:focus,
-input[type="password"]:focus {
+input[type="password"]:focus,
+textarea:focus {
   border-color: #000;
   outline: 2px solid #000;
   outline-offset: 2px;
   transition: outline 0.1s linear;
 }
 
-button {
+button,
+textarea {
   border-radius: 6px;
   width: 100%;
   transition: border-color 0.3s ease;
+}
+
+:placeholder-shown {
+  font-size: 14px;
 }
 
 label {

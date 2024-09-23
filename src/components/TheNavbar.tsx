@@ -16,7 +16,7 @@ export default function TheNavbar() {
 
   const getLinkClassName = (href: string) => {
     const baseClasses =
-      "px-4 py-2 font-medium rounded-lg transition-colors duration-200 ease-in-out";
+      "px-3 py-1.5 font-medium rounded-lg transition-colors duration-200 ease-in-out";
     const activeClasses = "bg-gray-200";
     const hoverClasses = "hover:bg-gray-200";
 
@@ -56,7 +56,7 @@ export default function TheNavbar() {
             </svg>
           </Link>
           <Link
-            className={`flex items-center space-x-2 px-4 h-[33px] rounded-lg transition-colors duration-200 ease-in-out ${
+            className={`flex items-center space-x-2 px-3 h-[33px] rounded-lg transition-colors duration-200 ease-in-out ${
               pathname === "/" ? "bg-gray-200" : "hover:bg-gray-200"
             }`}
             href="/"
@@ -81,7 +81,7 @@ export default function TheNavbar() {
               </Link>
               <button
                 onClick={handleLogout}
-                className="px-4 w-auto h-[33px] font-semibold text-red-600 rounded-lg hover:text-red-400 transition-colors duration-200 ease-in-out"
+                className="px-3 w-auto h-[33px] font-semibold text-red-600 rounded-lg hover:text-red-400 transition-colors duration-200 ease-in-out"
               >
                 Log out
               </button>
@@ -92,7 +92,7 @@ export default function TheNavbar() {
                 Sign in
               </Link>
               <Link
-                className="px-4 py-2 bg-black font-semibold text-white rounded-lg hover:bg-[#333333] transition-colors duration-200 ease-in-out"
+                className="px-3 py-1.5 bg-black font-semibold text-white rounded-lg hover:bg-[#333333] transition-colors duration-200 ease-in-out"
                 href="/signup"
               >
                 Sign up
