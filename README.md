@@ -1,4 +1,4 @@
-Link: alblogex.vercel.app
+[Project link](alblogex.vercel.app)
 
 Sign up or use these credentials:
 
