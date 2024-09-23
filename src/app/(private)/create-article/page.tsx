@@ -1,13 +1,26 @@
 "use client";
 
 import Image from "next/image";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
 import bulbicon from "@/assets/icons/bulb.svg";
 import remarkGfm from "remark-gfm";
 
 export default function Page() {
-  const [markdownContent, setMarkdownContent] = useState("");
+  const [markdownContent, setMarkdownContent] = useState(() => {
+    return localStorage.getItem("markdownContent") || "";
+  });
+  const [articleTitle, setArticleTitle] = useState(() => {
+    return localStorage.getItem("articleTitle") || "";
+  });
+
+  useEffect(() => {
+    localStorage.setItem("markdownContent", markdownContent);
+  }, [markdownContent]);
+
+  useEffect(() => {
+    localStorage.setItem("articleTitle", articleTitle);
+  }, [articleTitle]);
 
   return (
     <div className="space-y-8 text-base">
@@ -19,7 +32,13 @@ export default function Page() {
       </div>
       <div className="flex flex-col gap-1 w-1/2">
         <div className="font-medium pl-1">Article title</div>
-        <input type="text" placeholder="Article title" className="bg-white" />
+        <input
+          type="text"
+          placeholder="Article title"
+          className="bg-white"
+          value={articleTitle}
+          onChange={(e) => setArticleTitle(e.target.value)}
+        />
       </div>
       <div className="flex flex-col gap-1 w-1/2">
         <div className="font-medium pl-1">Featured image</div>
