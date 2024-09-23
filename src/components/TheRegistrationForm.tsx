@@ -1,8 +1,10 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 export default function TheRegistrationForm() {
+  const router = useRouter();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -17,19 +19,61 @@ export default function TheRegistrationForm() {
     form?: string;
   }>({});
 
+  const [blocklist, setBlocklist] = useState<string[]>([]);
+
+  useEffect(() => {
+    async function loadBlocklist() {
+      try {
+        const response = await fetch("/api/disposable-email-blocklist");
+        if (!response.ok) {
+          throw new Error("Failed to load blocklist");
+        }
+        const content = await response.text();
+        setBlocklist(content.split("\r\n").slice(0, -1));
+      } catch (error) {
+        console.error("Error loading blocklist:", error);
+      }
+    }
+
+    loadBlocklist();
+  }, []);
+
+  const isDisposable = (email: string) => {
+    return blocklist.includes(email.split("@")[1]);
+  };
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-    setErrors((prev) => ({ ...prev, [e.target.name]: undefined }));
+    const { name, value } = e.target;
+    if (value.includes("<") || value.includes(">")) {
+      setErrors((prev) => ({
+        ...prev,
+        [name]: "<> characters are not allowed",
+      }));
+    } else {
+      setFormData({
+        ...formData,
+        [name]: value,
+      });
+      setErrors((prev) => ({ ...prev, [name]: undefined }));
+    }
   };
 
   const validateForm = () => {
     const newErrors: typeof errors = {};
     if (!formData.name.trim()) newErrors.name = "Name is required";
     if (!formData.email.trim()) newErrors.email = "Email is required";
+    else if (isDisposable(formData.email))
+      newErrors.email = "Disposable emails are not allowed";
     if (!formData.password.trim()) newErrors.password = "Password is required";
+
+    // Check for <> characters
+    if (formData.name.includes("<") || formData.name.includes(">"))
+      newErrors.name = "<> characters are not allowed";
+    if (formData.email.includes("<") || formData.email.includes(">"))
+      newErrors.email = "<> characters are not allowed";
+    if (formData.password.includes("<") || formData.password.includes(">"))
+      newErrors.password = "<> characters are not allowed";
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -56,7 +100,7 @@ export default function TheRegistrationForm() {
       }
 
       setFormData({ name: "", email: "", password: "" });
-      // You might want to add a success message or redirect here
+      router.push("/signin");
     } catch (err: unknown) {
       setErrors({
         form: err instanceof Error ? err.message : "Something went wrong",
