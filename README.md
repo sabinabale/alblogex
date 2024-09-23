@@ -5,7 +5,9 @@ Sign up or use these credentials:
 email: aki@email.com
 password: Aki123
 
+Stack: NextJS, Prisma, PostgreSQL, Supabase
 
+-------------------------------------------
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
