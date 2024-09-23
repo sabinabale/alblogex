@@ -74,7 +74,7 @@ export default function TheNavbar() {
                 My articles
               </Link>
               <Link
-                className={getLinkClassName("/create-article")}
+                className="bg-black text-white hover:bg-[#333333] rounded-lg px-4 py-2"
                 href="/create-article"
               >
                 Create article

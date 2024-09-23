@@ -1,6 +1,6 @@
 "use client";
-import { useAuth } from "@/utils/hooks/authContext";
 import React, { useState } from "react";
+import { useAuth } from "@/utils/hooks/authContext";
 
 interface LoginFormProps {
   onSuccessfulLogin: () => void;
@@ -31,7 +31,7 @@ export default function TheLoginForm({ onSuccessfulLogin }: LoginFormProps) {
     } else {
       setFormData({
         ...formData,
-        [name]: value,
+        [name]: name === "email" ? value.toLowerCase() : value,
       });
       setErrors((prev) => ({ ...prev, [name]: undefined }));
     }
@@ -62,7 +62,10 @@ export default function TheLoginForm({ onSuccessfulLogin }: LoginFormProps) {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          ...formData,
+          email: formData.email.toLowerCase(),
+        }),
       });
 
       if (!res.ok) {
@@ -71,7 +74,7 @@ export default function TheLoginForm({ onSuccessfulLogin }: LoginFormProps) {
       }
 
       const data = await res.json();
-      login(data.token); // Use the login function from the auth context
+      login(data.token);
 
       onSuccessfulLogin();
     } catch (err: unknown) {
@@ -143,8 +146,8 @@ export default function TheLoginForm({ onSuccessfulLogin }: LoginFormProps) {
                 <path
                   d="M3.99995 12.9381C8.64509 17.8771 15.3548 17.8771 20 12.9381M3.99995 7.70431C6.32254 5.23479 9.16127 4.00002 12 4C14.8387 3.99998 17.6774 5.23469 20 7.70413M12 16.75V20M8.5 16.25L7 18.732M15.5 16.25L17 18.732"
                   stroke="black"
-                  stroke-width="2"
-                  stroke-linecap="square"
+                  strokeWidth="2"
+                  strokeLinecap="square"
                 />
               </svg>
             )}

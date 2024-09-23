@@ -39,7 +39,7 @@ export default function TheRegistrationForm() {
   }, []);
 
   const isDisposable = (email: string) => {
-    return blocklist.includes(email.split("@")[1]);
+    return blocklist.includes(email.split("@")[1].toLowerCase());
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -52,7 +52,7 @@ export default function TheRegistrationForm() {
     } else {
       setFormData({
         ...formData,
-        [name]: value,
+        [name]: name === "email" ? value.toLowerCase() : value,
       });
       setErrors((prev) => ({ ...prev, [name]: undefined }));
     }
@@ -91,7 +91,10 @@ export default function TheRegistrationForm() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          ...formData,
+          email: formData.email.toLowerCase(),
+        }),
       });
 
       if (!res.ok) {
