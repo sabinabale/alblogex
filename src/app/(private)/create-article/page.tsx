@@ -6,11 +6,30 @@ import ReactMarkdown from "react-markdown";
 import bulbicon from "@/assets/icons/bulb.svg";
 import crossicon from "@/assets/icons/cross.svg";
 import remarkGfm from "remark-gfm";
+import { useRouter } from "next/navigation";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 
 export default function Page() {
   const [markdownContent, setMarkdownContent] = useState("");
   const [articleTitle, setArticleTitle] = useState("");
   const [uploadedImage, setUploadedImage] = useState<File | null>(null);
+  const [errors, setErrors] = useState<{ title?: string; content?: string }>(
+    {}
+  );
+  const router = useRouter();
+  const supabase = createClientComponentClient();
+
+  useEffect(() => {
+    const checkSession = async () => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      if (!session) {
+        router.push("/signin");
+      }
+    };
+    checkSession();
+  }, [supabase, router]);
 
   useEffect(() => {
     setMarkdownContent(localStorage.getItem("markdownContent") || "");
@@ -42,43 +61,119 @@ export default function Page() {
     }
   };
 
+  const validateForm = () => {
+    const newErrors: { title?: string; content?: string } = {};
+
+    if (!articleTitle.trim()) {
+      newErrors.title = "Article title is required";
+    }
+
+    if (!markdownContent.trim()) {
+      newErrors.content = "Article content is required";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    if (!validateForm()) {
+      return;
+    }
+
+    try {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      if (!session) {
+        alert("Your session has expired. Please log in again.");
+        router.push("/signin");
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("title", articleTitle);
+      formData.append("content", markdownContent);
+      if (uploadedImage) {
+        formData.append("image", uploadedImage);
+      }
+
+      const response = await fetch("/api/create-article", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to create article");
+      }
+
+      alert("Article created successfully!");
+      setArticleTitle("");
+      setMarkdownContent("");
+      setUploadedImage(null);
+      localStorage.removeItem("articleTitle");
+      localStorage.removeItem("markdownContent");
+
+      router.push(`/dashboard`);
+    } catch (error) {
+      console.error("Error creating article:", error);
+      alert("Failed to create article. Please try again.");
+    }
+  };
+
   return (
-    <div className="space-y-8 text-base">
+    <div className="space-y-8 text-base mb-8">
       <div className="flex gap-4 items-center">
         <h1 className="text-2xl font-bold">Create a new article</h1>
-        <button className="bg-black/90 font-medium text-white text-sm px-3 py-1.5 rounded-md w-fit">
+        <button
+          type="submit"
+          form="articleForm"
+          className="bg-black/90 font-medium text-white text-sm px-3 py-1.5 rounded-md w-fit"
+        >
           Publish article
         </button>
       </div>
-      <div className="flex flex-col gap-1 w-1/2">
-        <div className="font-medium pl-1">Article title</div>
-        <input
-          type="text"
-          placeholder="Article title"
-          className="bg-white"
-          value={articleTitle}
-          onChange={(e) => setArticleTitle(e.target.value)}
-        />
-      </div>
-      <div className="flex flex-col gap-1 w-1/2">
-        <div className="font-medium pl-1">Featured image</div>
-        <div className="flex items-center gap-4">
-          <ImageUpload
-            uploadedImage={uploadedImage}
-            handleImageUpload={handleImageUpload}
-            handleRemoveImage={handleRemoveImage}
-          />
-        </div>
-      </div>
-      <div className="flex gap-6">
+      <form id="articleForm" onSubmit={handleSubmit} className="space-y-8">
         <div className="flex flex-col gap-1 w-1/2">
-          <TextEditor
-            markdownContent={markdownContent}
-            setMarkdownContent={setMarkdownContent}
+          <label htmlFor="articleTitle" className="font-medium pl-1">
+            Article title
+          </label>
+          <input
+            id="articleTitle"
+            type="text"
+            placeholder="Article title"
+            className="bg-white"
+            value={articleTitle}
+            onChange={(e) => setArticleTitle(e.target.value)}
           />
+          {errors.title && (
+            <div className="text-red-500 text-sm mt-1">{errors.title}</div>
+          )}
         </div>
-        <MarkdownQuickRef />
-      </div>
+        <div className="flex flex-col gap-1 w-1/2">
+          <div className="font-medium pl-1">Featured image</div>
+          <div className="flex items-center gap-4">
+            <ImageUpload
+              uploadedImage={uploadedImage}
+              handleImageUpload={handleImageUpload}
+              handleRemoveImage={handleRemoveImage}
+            />
+          </div>
+        </div>
+        <div className="flex gap-6">
+          <div className="flex flex-col gap-1 w-1/2">
+            <TextEditor
+              markdownContent={markdownContent}
+              setMarkdownContent={setMarkdownContent}
+              error={errors.content}
+            />
+          </div>
+          <MarkdownQuickRef />
+        </div>
+      </form>
       <div className="w-1/2">
         <div className="font-medium pl-1 mb-1">Preview</div>
         <div className="px-3 py-1.5 border border-gray-300 rounded-md prose bg-white h-80 overflow-auto">
@@ -175,7 +270,7 @@ const ImageUpload = ({
             <Image
               src={crossicon}
               alt="cross icon"
-              className="opacity-60 hover:opacity-100 "
+              className="opacity-60 hover:opacity-100"
             />
           </button>
         </div>
@@ -187,19 +282,25 @@ const ImageUpload = ({
 const TextEditor = ({
   markdownContent,
   setMarkdownContent,
+  error,
 }: {
   markdownContent: string;
   setMarkdownContent: React.Dispatch<React.SetStateAction<string>>;
+  error?: string;
 }) => {
   return (
     <>
-      <div className="font-medium pl-1">Article content</div>
+      <label htmlFor="articleContent" className="font-medium pl-1">
+        Article content
+      </label>
       <textarea
+        id="articleContent"
         placeholder="Article content"
         className="p-2 h-80 border border-gray-300 resize-none overflow-auto"
         value={markdownContent}
         onChange={(e) => setMarkdownContent(e.target.value)}
       />
+      {error && <div className="text-red-500 text-sm mt-1">{error}</div>}
     </>
   );
 };

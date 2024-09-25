@@ -4,7 +4,6 @@ import "./globals.css";
 import TheNavbar from "@/components/TheNavbar";
 import TheContainer from "@/components/TheContainer";
 import Footer from "@/components/Footer";
-import { AuthProvider } from "@/utils/hooks/authContext";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -23,10 +22,9 @@ export default function RootLayout({
       <body
         className={`${inter.className} antialiased bg-gray-100 text-[#212529] flex flex-col min-h-screen w-full`}
       >
-        <AuthProvider>
-          <TheNavbar />
-          <TheContainer>{children}</TheContainer>
-        </AuthProvider>
+        <TheNavbar />
+        <TheContainer>{children}</TheContainer>
+
         <Footer />
       </body>
     </html>

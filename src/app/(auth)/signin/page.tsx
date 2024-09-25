@@ -2,7 +2,7 @@
 
 import React from "react";
 import { useRouter } from "next/navigation";
-import TheLoginForm from "../../../components/TheLoginForm";
+import TheSigninForm from "../../../components/TheSigninForm";
 import Link from "next/link";
 
 export default function SigninPage() {
@@ -15,7 +15,7 @@ export default function SigninPage() {
   return (
     <div className="flex flex-col items-center mt-40 h-screen">
       <h1 className="text-2xl font-bold mb-8">Sign in</h1>
-      <TheLoginForm onSuccessfulLogin={handleSuccessfulLogin} />
+      <TheSigninForm onSuccessfulLogin={handleSuccessfulLogin} />
       <small className="mt-8">
         Don&apos;t have an account yet?{" "}
         <Link

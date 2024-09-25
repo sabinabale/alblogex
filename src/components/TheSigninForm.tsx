@@ -1,18 +1,18 @@
 "use client";
-import React, { useState } from "react";
-import { useAuth } from "@/utils/hooks/authContext";
 
-interface LoginFormProps {
+import React, { useState } from "react";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { useRouter } from "next/navigation";
+
+interface SigninFormProps {
   onSuccessfulLogin: () => void;
 }
 
-export default function TheLoginForm({ onSuccessfulLogin }: LoginFormProps) {
-  const { login } = useAuth();
+export default function TheSigninForm({ onSuccessfulLogin }: SigninFormProps) {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
-
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState<{
@@ -21,30 +21,19 @@ export default function TheLoginForm({ onSuccessfulLogin }: LoginFormProps) {
     form?: string;
   }>({});
 
+  const router = useRouter();
+  const supabase = createClientComponentClient();
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    if (value.includes("<") || value.includes(">")) {
-      setErrors((prev) => ({
-        ...prev,
-        [name]: "<> characters are not allowed",
-      }));
-    } else {
-      setFormData({
-        ...formData,
-        [name]: name === "email" ? value.toLowerCase() : value,
-      });
-      setErrors((prev) => ({ ...prev, [name]: undefined }));
-    }
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    setErrors((prev) => ({ ...prev, [name]: undefined }));
   };
 
   const validateForm = () => {
     const newErrors: typeof errors = {};
     if (!formData.email.trim()) newErrors.email = "Email is required";
     if (!formData.password.trim()) newErrors.password = "Password is required";
-    if (formData.email.includes("<") || formData.email.includes(">"))
-      newErrors.email = "<> characters are not allowed";
-    if (formData.password.includes("<") || formData.password.includes(">"))
-      newErrors.password = "<> characters are not allowed";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -57,29 +46,18 @@ export default function TheLoginForm({ onSuccessfulLogin }: LoginFormProps) {
     setErrors({});
 
     try {
-      const res = await fetch("/api/signin", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          ...formData,
-          email: formData.email.toLowerCase(),
-        }),
+      const { error } = await supabase.auth.signInWithPassword({
+        email: formData.email,
+        password: formData.password,
       });
 
-      if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(errorData.message || "Signin failed");
-      }
-
-      const data = await res.json();
-      login(data.token);
+      if (error) throw error;
 
       onSuccessfulLogin();
-    } catch (err: unknown) {
+      router.push("/dashboard");
+    } catch (error) {
       setErrors({
-        form: err instanceof Error ? err.message : "Something went wrong",
+        form: error instanceof Error ? error.message : "Something went wrong",
       });
     } finally {
       setLoading(false);

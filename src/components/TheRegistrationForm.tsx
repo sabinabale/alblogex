@@ -2,9 +2,12 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 
 export default function TheRegistrationForm() {
   const router = useRouter();
+  const supabase = createClientComponentClient();
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -86,27 +89,48 @@ export default function TheRegistrationForm() {
     setErrors({});
 
     try {
-      const res = await fetch("/api/signup", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      // Step 1: Sign up with Supabase
+      const { data: authData, error: authError } = await supabase.auth.signUp({
+        email: formData.email,
+        password: formData.password,
+        options: {
+          data: {
+            name: formData.name,
+          },
         },
-        body: JSON.stringify({
-          ...formData,
-          email: formData.email.toLowerCase(),
-        }),
       });
 
-      if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(errorData.message || "Signup failed");
+      if (authError) throw authError;
+
+      if (authData.user) {
+        const res = await fetch("/api/create-user", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            id: authData.user.id,
+            name: formData.name,
+            email: formData.email,
+          }),
+        });
+
+        if (!res.ok) {
+          const errorData = await res.json();
+          throw new Error(
+            errorData.message || "Failed to create user in database"
+          );
+        }
       }
 
       setFormData({ name: "", email: "", password: "" });
       router.push("/signin");
     } catch (err: unknown) {
       setErrors({
-        form: err instanceof Error ? err.message : "Something went wrong",
+        form:
+          err instanceof Error
+            ? err.message
+            : "Something went wrong during registration",
       });
     } finally {
       setLoading(false);

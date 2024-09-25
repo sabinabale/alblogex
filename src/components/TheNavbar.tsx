@@ -1,24 +1,44 @@
 "use client";
 import Link from "next/link";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
-import { useAuth } from "@/utils/hooks/authContext";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 
 export default function TheNavbar() {
-  const { isLoggedIn, logout } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
+  const [isSignedIn, setIsSignedIn] = useState(false);
+  const supabase = createClientComponentClient();
 
-  const handleLogout = () => {
-    logout();
+  useEffect(() => {
+    const checkAuthStatus = async () => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      setIsSignedIn(!!session);
+    };
+
+    checkAuthStatus();
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setIsSignedIn(!!session);
+    });
+
+    return () => subscription.unsubscribe();
+  }, [supabase]);
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
     router.push("/");
   };
 
   const getLinkClassName = (href: string) => {
     const baseClasses =
       "px-3 py-1.5 font-medium rounded-lg transition-colors duration-200 ease-in-out";
-    const activeClasses = "bg-gray-200";
-    const hoverClasses = "hover:bg-gray-200";
+    const activeClasses = "text-black font-semibold";
+    const hoverClasses = "hover:text-black hover:font-semibold";
 
     return `${baseClasses} ${pathname === href ? activeClasses : hoverClasses}`;
   };
@@ -57,7 +77,9 @@ export default function TheNavbar() {
           </Link>
           <Link
             className={`flex items-center space-x-2 px-3 h-[32px] rounded-lg transition-colors duration-200 ease-in-out ${
-              pathname === "/" ? "bg-gray-200" : "hover:bg-gray-200"
+              pathname === "/"
+                ? "text-black font-semibold"
+                : "text-gray-600 hover:text-black hover:font-semibold"
             }`}
             href="/"
           >
@@ -65,7 +87,7 @@ export default function TheNavbar() {
           </Link>
         </div>
         <div className="space-x-2">
-          {isLoggedIn ? (
+          {isSignedIn ? (
             <>
               <Link
                 className={getLinkClassName("/dashboard")}
@@ -92,7 +114,7 @@ export default function TheNavbar() {
                 Sign in
               </Link>
               <Link
-                className="px-3 h-[32px] bg-black font-semibold text-white rounded-lg hover:bg-[#333333] transition-colors duration-200 ease-in-out"
+                className="px-3 py-1.5 h-[32px] bg-black font-semibold text-white rounded-lg hover:bg-[#333333] transition-colors duration-200 ease-in-out"
                 href="/signup"
               >
                 Sign up
