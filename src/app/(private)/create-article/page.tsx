@@ -106,8 +106,11 @@ export default function Page() {
         body: formData,
       });
 
+      const result = await response.json();
+
       if (!response.ok) {
-        throw new Error("Failed to create article");
+        console.error("Server error:", result);
+        throw new Error(result.error || "Failed to create article");
       }
 
       alert("Article created successfully!");
@@ -120,7 +123,9 @@ export default function Page() {
       router.push(`/dashboard`);
     } catch (error) {
       console.error("Error creating article:", error);
-      alert("Failed to create article. Please try again.");
+      alert(
+        "Failed to create article. Please check the console for more details."
+      );
     }
   };
 
