@@ -19,7 +19,7 @@ interface PostData {
   id: number;
   title: string;
   content: string;
-  author: { name: string } | null;
+  author: { name: string };
   Comment: { count: number }[];
 }
 
@@ -49,17 +49,15 @@ export default function Dashboard() {
 
         if (error) throw error;
 
-        console.log("Raw data from Supabase:", JSON.stringify(data, null, 2));
-
-        const formattedArticles: Article[] = (data as PostData[]).map(
-          (article) => ({
-            id: article.id,
-            title: article.title,
-            perex: article.content.substring(0, 100),
-            author: article.author?.name || "Unknown",
-            comments: article.Comment[0]?.count || 0,
-          })
-        );
+        const formattedArticles: Article[] = (
+          data as unknown as PostData[]
+        ).map((article) => ({
+          id: article.id,
+          title: article.title,
+          perex: article.content.substring(0, 100),
+          author: article.author?.name || "Unknown",
+          comments: article.Comment[0]?.count || 0,
+        }));
 
         setArticles(formattedArticles);
       } catch (err) {
@@ -126,7 +124,7 @@ export default function Dashboard() {
     <div className="flex flex-col gap-8">
       <div className="flex gap-4 items-center">
         <h1 className="text-2xl font-semibold">
-          {user.user_metadata?.name ? `${user.user_metadata.name}'s` : "My"}{" "}
+          {user?.user_metadata?.name ? `${user.user_metadata.name}'s` : "My"}{" "}
           articles
         </h1>
         <Link
