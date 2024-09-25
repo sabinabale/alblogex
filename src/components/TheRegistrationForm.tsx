@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 
@@ -22,29 +22,6 @@ export default function TheRegistrationForm() {
     form?: string;
   }>({});
 
-  const [blocklist, setBlocklist] = useState<string[]>([]);
-
-  useEffect(() => {
-    async function loadBlocklist() {
-      try {
-        const response = await fetch("/api/disposable-email-blocklist");
-        if (!response.ok) {
-          throw new Error("Failed to load blocklist");
-        }
-        const content = await response.text();
-        setBlocklist(content.split("\r\n").slice(0, -1));
-      } catch (error) {
-        console.error("Error loading blocklist:", error);
-      }
-    }
-
-    loadBlocklist();
-  }, []);
-
-  const isDisposable = (email: string) => {
-    return blocklist.includes(email.split("@")[1].toLowerCase());
-  };
-
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     if (value.includes("<") || value.includes(">")) {
@@ -65,8 +42,6 @@ export default function TheRegistrationForm() {
     const newErrors: typeof errors = {};
     if (!formData.name.trim()) newErrors.name = "Name is required";
     if (!formData.email.trim()) newErrors.email = "Email is required";
-    else if (isDisposable(formData.email))
-      newErrors.email = "Disposable emails are not allowed";
     if (!formData.password.trim()) newErrors.password = "Password is required";
 
     // Check for <> characters
