@@ -6,24 +6,84 @@ import ReactMarkdown from "react-markdown";
 import bulbicon from "@/assets/icons/bulb.svg";
 import crossicon from "@/assets/icons/cross.svg";
 import remarkGfm from "remark-gfm";
+import { useRouter } from "next/navigation";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 
-export default function Page() {
+export default function EditArticlePage({
+  params,
+}: {
+  params: { id: string };
+}) {
+  const router = useRouter();
   const [markdownContent, setMarkdownContent] = useState("");
   const [articleTitle, setArticleTitle] = useState("");
   const [uploadedImage, setUploadedImage] = useState<File | null>(null);
+  const [currentImageUrl, setCurrentImageUrl] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const supabase = createClientComponentClient();
 
   useEffect(() => {
-    setMarkdownContent(localStorage.getItem("markdownContent") || "");
-    setArticleTitle(localStorage.getItem("articleTitle") || "");
-  }, []);
+    const fetchArticle = async () => {
+      try {
+        const { data, error } = await supabase
+          .from("Post")
+          .select("*")
+          .eq("id", params.id)
+          .single();
 
-  useEffect(() => {
-    localStorage.setItem("markdownContent", markdownContent);
-  }, [markdownContent]);
+        if (error) throw error;
 
-  useEffect(() => {
-    localStorage.setItem("articleTitle", articleTitle);
-  }, [articleTitle]);
+        setArticleTitle(data.title);
+        setMarkdownContent(data.content);
+        setCurrentImageUrl(data.imageUrl);
+        setLoading(false);
+      } catch (err) {
+        console.error("Error fetching article:", err);
+        setError(
+          err instanceof Error ? err.message : "Failed to fetch article"
+        );
+        setLoading(false);
+      }
+    };
+
+    fetchArticle();
+  }, [params.id, supabase]);
+
+  const handlePublish = async () => {
+    try {
+      let imageUrl = currentImageUrl;
+
+      if (uploadedImage) {
+        const fileExt = uploadedImage.name.split(".").pop();
+        const fileName = `${Math.random()}.${fileExt}`;
+        const { error: uploadError } = await supabase.storage
+          .from("images")
+          .upload(fileName, uploadedImage);
+
+        if (uploadError) throw uploadError;
+
+        const { data } = supabase.storage.from("images").getPublicUrl(fileName);
+        imageUrl = data.publicUrl;
+      }
+
+      const { error } = await supabase
+        .from("Post")
+        .update({
+          title: articleTitle,
+          content: markdownContent,
+          imageUrl: imageUrl,
+        })
+        .eq("id", params.id);
+
+      if (error) throw error;
+
+      router.push("/dashboard");
+    } catch (err) {
+      console.error("Error updating article:", err);
+      setError(err instanceof Error ? err.message : "Failed to update article");
+    }
+  };
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -34,6 +94,7 @@ export default function Page() {
 
   const handleRemoveImage = () => {
     setUploadedImage(null);
+    setCurrentImageUrl(null);
     const fileInput = document.getElementById(
       "imageUpload"
     ) as HTMLInputElement;
@@ -42,11 +103,17 @@ export default function Page() {
     }
   };
 
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error}</div>;
+
   return (
     <div className="space-y-8 text-base">
       <div className="flex gap-4 items-center">
         <h1 className="text-2xl font-bold">Edit article</h1>
-        <button className="bg-black/90 font-medium text-white text-sm px-3 py-1.5 rounded-md w-fit">
+        <button
+          className="bg-black/90 font-medium text-white text-sm px-3 py-1.5 rounded-md w-fit"
+          onClick={handlePublish}
+        >
           Publish article
         </button>
       </div>
@@ -65,6 +132,7 @@ export default function Page() {
         <div className="flex items-center gap-4">
           <ImageUpload
             uploadedImage={uploadedImage}
+            currentImageUrl={currentImageUrl}
             handleImageUpload={handleImageUpload}
             handleRemoveImage={handleRemoveImage}
           />
@@ -142,10 +210,12 @@ const MarkdownQuickRef = () => {
 
 const ImageUpload = ({
   uploadedImage,
+  currentImageUrl,
   handleImageUpload,
   handleRemoveImage,
 }: {
   uploadedImage: File | null;
+  currentImageUrl: string | null;
   handleImageUpload: (event: React.ChangeEvent<HTMLInputElement>) => void;
   handleRemoveImage: () => void;
 }) => {
@@ -164,9 +234,11 @@ const ImageUpload = ({
       >
         Upload image
       </label>
-      {uploadedImage && (
+      {(uploadedImage || currentImageUrl) && (
         <div className="flex items-center gap-2">
-          <span className="text-sm text-gray-600">{uploadedImage.name}</span>
+          <span className="text-sm text-gray-600">
+            {uploadedImage ? uploadedImage.name : "Current image"}
+          </span>
           <button
             onClick={handleRemoveImage}
             className="w-fit"
@@ -179,6 +251,14 @@ const ImageUpload = ({
             />
           </button>
         </div>
+      )}
+      {currentImageUrl && !uploadedImage && (
+        <Image
+          src={currentImageUrl}
+          alt="Current featured image"
+          width={100}
+          height={100}
+        />
       )}
     </>
   );
