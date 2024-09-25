@@ -5,9 +5,10 @@ import DescendingIcon from "@/assets/icons/chevrondown.svg";
 import ChevronsIcon from "@/assets/icons/chevrons.svg";
 import EditIcon from "@/assets/icons/edit.svg";
 import DeleteIcon from "@/assets/icons/delete.svg";
-
 import Image from "next/image";
 import Link from "next/link";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+
 interface Article {
   id: number;
   title: string;
@@ -16,56 +17,22 @@ interface Article {
   comments: number;
 }
 
-const initialArticles: Article[] = [
-  {
-    id: 1,
-    title: "Why do cats have whiskers?",
-    perex:
-      "Cats have whiskers to help them navigate in the dark and avoid obstacles.",
-    author: "Tommy Hilfiger",
-    comments: 5,
-  },
-  {
-    id: 2,
-    title: "Most common cat breeds",
-    perex:
-      "The most common cat breeds are the Siamese, Persian, and Maine Coon.",
-    author: "Karl Weirdhairdo",
-    comments: 3,
-  },
-  {
-    id: 3,
-    title: "The history of cats",
-    perex:
-      "Cats have been around for centuries, and their history is intertwined with human history.",
-    author: "Hummus Mammus",
-    comments: 1,
-  },
-  {
-    id: 4,
-    title: "Most frequent cat illnesses",
-    perex:
-      "The most common cat illnesses are the Siamese, Persian, and Maine Coon.",
-    author: "Hypocratus Aurelius",
-    comments: 2,
-  },
-  {
-    id: 5,
-    title: "Why do cats like to dance?",
-    perex:
-      "Cats like to dance because they are playful and enjoy moving around.",
-    author: "Wolgang Amadeus Mozart",
-    comments: 4,
-  },
-];
+interface MyArticleTableProps {
+  articles: Article[];
+  setArticles: React.Dispatch<React.SetStateAction<Article[]>>;
+}
 
-export default function MyArticleTable() {
-  const [articles, setArticles] = useState<Article[]>(initialArticles);
+export default function MyArticleTable({
+  articles,
+  setArticles,
+}: MyArticleTableProps) {
   const [selectedArticles, setSelectedArticles] = useState<number[]>([]);
   const [sortConfig, setSortConfig] = useState<{
     key: keyof Article;
     direction: "ascending" | "descending";
   } | null>(null);
+
+  const supabase = createClientComponentClient();
 
   const handleSort = (key: keyof Article) => {
     let direction: "ascending" | "descending" = "ascending";
@@ -111,17 +78,48 @@ export default function MyArticleTable() {
     }
   };
 
-  const handleDeleteSelected = () => {
-    setArticles((prevArticles) =>
-      prevArticles.filter((article) => !selectedArticles.includes(article.id))
-    );
-    setSelectedArticles([]);
+  const handleDeleteArticle = async (id: number) => {
+    try {
+      const { error: imageError } = await supabase
+        .from("PostImage")
+        .delete()
+        .eq("postId", id);
+
+      if (imageError) throw imageError;
+
+      const { error: postError } = await supabase
+        .from("Post")
+        .delete()
+        .eq("id", id);
+
+      if (postError) throw postError;
+
+      setArticles((prevArticles) =>
+        prevArticles.filter((article) => article.id !== id)
+      );
+    } catch (err) {
+      console.error("Error deleting article:", err);
+      alert("Failed to delete article. Please try again.");
+    }
   };
 
-  const handleDeleteArticle = (id: number) => {
-    setArticles((prevArticles) =>
-      prevArticles.filter((article) => article.id !== id)
-    );
+  const handleDeleteSelected = async () => {
+    try {
+      const { error } = await supabase
+        .from("Post")
+        .delete()
+        .in("id", selectedArticles);
+
+      if (error) throw error;
+
+      setArticles((prevArticles) =>
+        prevArticles.filter((article) => !selectedArticles.includes(article.id))
+      );
+      setSelectedArticles([]);
+    } catch (err) {
+      console.error("Error deleting selected articles:", err);
+      alert("Failed to delete selected articles. Please try again.");
+    }
   };
 
   return (
