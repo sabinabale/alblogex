@@ -43,7 +43,7 @@ export async function POST(request: Request) {
     }
 
     console.log("Creating post in database");
-    const post = await prisma.post.create({
+    let post = await prisma.post.create({
       data: {
         title,
         content,
@@ -88,13 +88,23 @@ export async function POST(request: Request) {
               postId: post.id,
             },
           });
+
+          // Update the post with the image URL
+          post = await prisma.post.update({
+            where: { id: post.id },
+            data: { imageUrl: imageUrl },
+          });
         }
       } catch (imageError) {
         console.error("Error handling image:", imageError);
       }
     }
 
-    return NextResponse.json({ success: true, id: post.id });
+    return NextResponse.json({
+      success: true,
+      id: post.id,
+      imageUrl: post.imageUrl,
+    });
   } catch (error) {
     console.error("Error in create-article route:", error);
     return NextResponse.json(
