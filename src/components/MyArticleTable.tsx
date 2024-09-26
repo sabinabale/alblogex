@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from "react";
-import CustomCheckbox from "@/components/CustomCheckbox";
+import CustomCheckbox from "./CustomCheckbox";
 import AscendingIcon from "@/assets/icons/chevronup.svg";
 import DescendingIcon from "@/assets/icons/chevrondown.svg";
 import ChevronsIcon from "@/assets/icons/chevrons.svg";
@@ -83,15 +83,26 @@ export default function MyArticleTable({
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || "Failed to delete article");
+        console.error("Server response:", errorData);
+        throw new Error(
+          errorData.error ||
+            `Failed to delete article. Status: ${response.status}`
+        );
       }
+
+      const responseData = await response.json();
+      console.log("Delete response:", responseData);
 
       setArticles((prevArticles) =>
         prevArticles.filter((article) => article.id !== id)
       );
-    } catch (err) {
-      console.error("Error deleting article:", err);
-      alert("Failed to delete article. Please try again.");
+    } catch (error: unknown) {
+      console.error("Error deleting article:", error);
+      if (error instanceof Error) {
+        alert(`Failed to delete article. Error: ${error.message}`);
+      } else {
+        alert("An unknown error occurred while deleting the article.");
+      }
     }
   };
 
@@ -101,11 +112,15 @@ export default function MyArticleTable({
         await handleDeleteArticle(id);
       }
       setSelectedArticles([]);
-    } catch (err) {
-      console.error("Error deleting selected articles:", err);
-      alert(
-        "Failed to delete some or all selected articles. Please try again."
-      );
+    } catch (error: unknown) {
+      console.error("Error deleting selected articles:", error);
+      if (error instanceof Error) {
+        alert(
+          `Failed to delete some or all selected articles. Error: ${error.message}`
+        );
+      } else {
+        alert("An unknown error occurred while deleting selected articles.");
+      }
     }
   };
 
@@ -168,7 +183,7 @@ export default function MyArticleTable({
             <div className="text-center">{article.comments}</div>
             <div className="flex space-x-4">
               <Link
-                href={`/edit-article/${article.id}`}
+                href={`/app/edit-article/${article.id}`}
                 className="w-fit hover:opacity-40"
               >
                 <Image src={EditIcon} alt="edit icon" />

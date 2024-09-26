@@ -46,7 +46,7 @@ export function TableSkeleton() {
 export function TableRowSkeleton() {
   return (
     <div className="flex items-center justify-center truncate rounded-xl gap-4 px-4 py-4">
-      <div className={`h-6 w-8 rounded-md bg-gray-100 ${shimmer}`} />
+      <div className={`h-6 w-9 rounded-md bg-gray-100 ${shimmer}`} />
       <div className={`h-6 w-2/5 rounded-md bg-gray-100 ${shimmer}`} />
       <div className={`h-6 w-2/5 rounded-md bg-gray-100 ${shimmer}`} />
       <div className={`h-6 w-1/4 rounded-md bg-gray-100 ${shimmer}`} />

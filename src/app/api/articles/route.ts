@@ -5,22 +5,7 @@ import { cookies } from "next/headers";
 
 const prisma = new PrismaClient();
 
-export async function POST(request: Request) {
-  return handleArticle(request, "create");
-}
-
-export async function PUT(request: Request) {
-  return handleArticle(request, "update");
-}
-
-export async function DELETE(request: Request) {
-  return handleArticle(request, "delete");
-}
-
-async function handleArticle(
-  request: Request,
-  action: "create" | "update" | "delete"
-) {
+export async function GET(request: Request) {
   const supabase = createRouteHandlerClient({ cookies });
 
   try {
@@ -31,35 +16,130 @@ async function handleArticle(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    if (action === "delete") {
-      const { searchParams } = new URL(request.url);
-      const postId = searchParams.get("postId");
+    const posts = await prisma.post.findMany({
+      where: { authorId: session.user.id },
+      include: { images: true },
+    });
 
-      if (!postId) {
-        return NextResponse.json(
-          { success: false, error: "Missing postId for delete" },
-          { status: 400 }
-        );
-      }
+    return NextResponse.json({ success: true, posts });
+  } catch (error) {
+    console.error("Error in GET article route:", error);
+    return NextResponse.json(
+      {
+        success: false,
+        error: "Failed to fetch articles",
+        details: error instanceof Error ? error.message : String(error),
+      },
+      { status: 500 }
+    );
+  } finally {
+    await prisma.$disconnect();
+  }
+}
 
-      const post = await prisma.post.findUnique({
+export async function POST(request: Request) {
+  return handleArticle(request, "create");
+}
+
+export async function PUT(request: Request) {
+  return handleArticle(request, "update");
+}
+
+export async function DELETE(request: Request) {
+  const supabase = createRouteHandlerClient({ cookies });
+
+  try {
+    console.log("DELETE request received");
+
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+    if (!session) {
+      console.log("Unauthorized: No valid session");
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const { searchParams } = new URL(request.url);
+    const postId = searchParams.get("postId");
+
+    console.log("Attempting to delete post:", postId);
+
+    if (!postId) {
+      console.log("Missing postId for delete");
+      return NextResponse.json(
+        { success: false, error: "Missing postId for delete" },
+        { status: 400 }
+      );
+    }
+
+    // Start a transaction to ensure all operations succeed or fail together
+    await prisma.$transaction(async (tx) => {
+      // Delete related PostImage records first
+      await tx.postImage.deleteMany({
+        where: { postId: Number(postId) },
+      });
+
+      console.log("Related PostImage records deleted");
+
+      // Fetch the post to get the image URL
+      const post = await tx.post.findUnique({
         where: { id: Number(postId) },
       });
 
+      console.log("Found post:", post);
+
       if (post?.imageUrl) {
+        console.log("Attempting to delete image from storage:", post.imageUrl);
         const imagePath = post.imageUrl.split("/").pop();
         if (imagePath) {
-          await supabase.storage
+          const { error: deleteImageError } = await supabase.storage
             .from("alblogex-postimages")
             .remove([`${session.user.id}/${imagePath}`]);
+
+          if (deleteImageError) {
+            console.error(
+              "Error deleting image from storage:",
+              deleteImageError
+            );
+          } else {
+            console.log("Image deleted successfully from storage");
+          }
         }
       }
 
-      await prisma.post.delete({
+      // Delete the post
+      await tx.post.delete({
         where: { id: Number(postId) },
       });
 
-      return NextResponse.json({ success: true });
+      console.log("Post deleted successfully");
+    });
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error("Detailed error in DELETE article route:", error);
+    return NextResponse.json(
+      {
+        success: false,
+        error: "Failed to handle article deletion",
+        details: error instanceof Error ? error.message : String(error),
+      },
+      { status: 500 }
+    );
+  } finally {
+    await prisma.$disconnect();
+  }
+}
+
+async function handleArticle(request: Request, action: "create" | "update") {
+  const supabase = createRouteHandlerClient({ cookies });
+
+  try {
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+    if (!session) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const formData = await request.formData();
@@ -110,6 +190,7 @@ async function handleArticle(
 
     let post;
     if (action === "update") {
+      // Update existing post
       post = await prisma.post.update({
         where: { id: postId! },
         data: {
@@ -119,6 +200,7 @@ async function handleArticle(
         },
       });
     } else {
+      // Create new post
       post = await prisma.post.create({
         data: {
           title,

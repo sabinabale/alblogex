@@ -91,13 +91,13 @@ export default function TheNavbar() {
             <>
               <Link
                 className={getLinkClassName("/dashboard")}
-                href="/dashboard"
+                href="/app/dashboard"
               >
                 My articles
               </Link>
               <Link
                 className="bg-black text-white hover:bg-[#333333] rounded-lg px-4 py-1.5 h-8"
-                href="/create-article"
+                href="/app/create-article"
               >
                 Create article
               </Link>
