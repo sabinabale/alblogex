@@ -1,56 +1,57 @@
 import React from "react";
 
-const ShimmerEffect = () => (
-  <div className="animate-pulse bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 h-full w-full rounded"></div>
-);
+const shimmer =
+  "relative overflow-hidden before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_2s_infinite] before:bg-gradient-to-r before:from-transparent before:via-white/60 before:to-transparent";
 
 export function MyArticleTableSkeleton() {
   return (
-    <div className="border border-gray-300 rounded-md bg-white">
-      {/* Header */}
-      <div className="grid grid-cols-[auto,290px,290px,200px,1fr,1fr] gap-4 items-center border-b border-gray-300 px-4 py-4">
-        <div className="w-6 h-6">
-          <ShimmerEffect />
-        </div>
-        {[...Array(5)].map((_, index) => (
-          <div key={index} className="h-6">
-            <ShimmerEffect />
-          </div>
-        ))}
-      </div>
+    <div>
+      <HeadingSkeleton />
+      <TableSkeleton />
+    </div>
+  );
+}
 
-      {[...Array(5)].map((_, rowIndex) => (
-        <div
-          key={rowIndex}
-          className="grid grid-cols-[auto,290px,290px,200px,1fr,1fr] gap-4 items-center px-4 py-2 border-b border-gray-200"
-        >
-          <div className="w-6 h-6">
-            <ShimmerEffect />
-          </div>
-          {[...Array(4)].map((_, colIndex) => (
-            <div key={colIndex} className="h-6">
-              <ShimmerEffect />
-            </div>
-          ))}
-          <div className="flex space-x-4">
-            <div className="w-6 h-6">
-              <ShimmerEffect />
-            </div>
-            <div className="w-6 h-6">
-              <ShimmerEffect />
-            </div>
-          </div>
-        </div>
-      ))}
+export function HeadingSkeleton() {
+  return (
+    <div className="flex mb-8">
+      <div className={`h-8 w-52 rounded-md bg-gray-200 ${shimmer}`} />
+      <div
+        className={`ml-4 h-8 w-32 rounded-md bg-gray-200 text-sm font-medium ${shimmer}`}
+      />
+    </div>
+  );
+}
 
-      <div className="py-2 px-4 flex gap-4 border-t text-sm border-gray-300 items-center">
-        <div className="w-[120px] h-6">
-          <ShimmerEffect />
-        </div>
-        <div className="w-24 h-8">
-          <ShimmerEffect />
-        </div>
+export function TableSkeleton() {
+  return (
+    <div className="relative rounded-md shadow-sm bg-white">
+      <div className="border-b border-gray-100">
+        <TableRowSkeleton />
       </div>
+      <div className="border-b border-gray-100">
+        <TableRowSkeleton />
+        <TableRowSkeleton />
+        <TableRowSkeleton />
+        <TableRowSkeleton />
+      </div>
+      <div className="flex items-center truncate rounded-xl gap-4 px-4 py-3">
+        <div className={`h-6 w-[120px] rounded-md bg-gray-100 ${shimmer}`} />
+        <div className={`h-7 w-[90px] rounded-md bg-gray-100 ${shimmer}`} />
+      </div>
+    </div>
+  );
+}
+
+export function TableRowSkeleton() {
+  return (
+    <div className="flex items-center justify-center truncate rounded-xl gap-4 px-4 py-4">
+      <div className={`h-6 w-8 rounded-md bg-gray-100 ${shimmer}`} />
+      <div className={`h-6 w-2/5 rounded-md bg-gray-100 ${shimmer}`} />
+      <div className={`h-6 w-2/5 rounded-md bg-gray-100 ${shimmer}`} />
+      <div className={`h-6 w-1/4 rounded-md bg-gray-100 ${shimmer}`} />
+      <div className={`h-6 w-1/6 rounded-md bg-gray-100 ${shimmer}`} />
+      <div className={`h-6 w-1/6 rounded-md bg-gray-100 ${shimmer}`} />
     </div>
   );
 }

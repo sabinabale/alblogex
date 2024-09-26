@@ -13,7 +13,14 @@ export async function PUT(request: Request) {
   return handleArticle(request, "update");
 }
 
-async function handleArticle(request: Request, action: "create" | "update") {
+export async function DELETE(request: Request) {
+  return handleArticle(request, "delete");
+}
+
+async function handleArticle(
+  request: Request,
+  action: "create" | "update" | "delete"
+) {
   const supabase = createRouteHandlerClient({ cookies });
 
   try {
@@ -22,6 +29,37 @@ async function handleArticle(request: Request, action: "create" | "update") {
     } = await supabase.auth.getSession();
     if (!session) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    if (action === "delete") {
+      const { searchParams } = new URL(request.url);
+      const postId = searchParams.get("postId");
+
+      if (!postId) {
+        return NextResponse.json(
+          { success: false, error: "Missing postId for delete" },
+          { status: 400 }
+        );
+      }
+
+      const post = await prisma.post.findUnique({
+        where: { id: Number(postId) },
+      });
+
+      if (post?.imageUrl) {
+        const imagePath = post.imageUrl.split("/").pop();
+        if (imagePath) {
+          await supabase.storage
+            .from("alblogex-postimages")
+            .remove([`${session.user.id}/${imagePath}`]);
+        }
+      }
+
+      await prisma.post.delete({
+        where: { id: Number(postId) },
+      });
+
+      return NextResponse.json({ success: true });
     }
 
     const formData = await request.formData();
@@ -72,7 +110,6 @@ async function handleArticle(request: Request, action: "create" | "update") {
 
     let post;
     if (action === "update") {
-      // Update existing post
       post = await prisma.post.update({
         where: { id: postId! },
         data: {
@@ -82,7 +119,6 @@ async function handleArticle(request: Request, action: "create" | "update") {
         },
       });
     } else {
-      // Create new post
       post = await prisma.post.create({
         data: {
           title,

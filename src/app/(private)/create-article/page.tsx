@@ -101,7 +101,7 @@ export default function Page() {
         formData.append("image", uploadedImage);
       }
 
-      const response = await fetch("/api/create-article", {
+      const response = await fetch("/api/crud-article", {
         method: "POST",
         body: formData,
       });

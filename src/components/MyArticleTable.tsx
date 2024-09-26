@@ -7,7 +7,6 @@ import EditIcon from "@/assets/icons/edit.svg";
 import DeleteIcon from "@/assets/icons/delete.svg";
 import Image from "next/image";
 import Link from "next/link";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 
 interface Article {
   id: number;
@@ -31,8 +30,6 @@ export default function MyArticleTable({
     key: keyof Article;
     direction: "ascending" | "descending";
   } | null>(null);
-
-  const supabase = createClientComponentClient();
 
   const handleSort = (key: keyof Article) => {
     let direction: "ascending" | "descending" = "ascending";
@@ -80,19 +77,14 @@ export default function MyArticleTable({
 
   const handleDeleteArticle = async (id: number) => {
     try {
-      const { error: imageError } = await supabase
-        .from("PostImage")
-        .delete()
-        .eq("postId", id);
+      const response = await fetch(`/api/articles?postId=${id}`, {
+        method: "DELETE",
+      });
 
-      if (imageError) throw imageError;
-
-      const { error: postError } = await supabase
-        .from("Post")
-        .delete()
-        .eq("id", id);
-
-      if (postError) throw postError;
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to delete article");
+      }
 
       setArticles((prevArticles) =>
         prevArticles.filter((article) => article.id !== id)
@@ -105,20 +97,15 @@ export default function MyArticleTable({
 
   const handleDeleteSelected = async () => {
     try {
-      const { error } = await supabase
-        .from("Post")
-        .delete()
-        .in("id", selectedArticles);
-
-      if (error) throw error;
-
-      setArticles((prevArticles) =>
-        prevArticles.filter((article) => !selectedArticles.includes(article.id))
-      );
+      for (const id of selectedArticles) {
+        await handleDeleteArticle(id);
+      }
       setSelectedArticles([]);
     } catch (err) {
       console.error("Error deleting selected articles:", err);
-      alert("Failed to delete selected articles. Please try again.");
+      alert(
+        "Failed to delete some or all selected articles. Please try again."
+      );
     }
   };
 

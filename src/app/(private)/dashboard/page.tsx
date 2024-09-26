@@ -97,24 +97,30 @@ export default function Dashboard() {
   if (!user) return null;
 
   return (
-    <div className="flex flex-col gap-8">
-      <div className="flex gap-4 items-center">
-        <h1 className="text-2xl font-semibold">
-          {user.user_metadata?.name ? `${user.user_metadata.name}'s` : "My"}{" "}
-          articles
-        </h1>
-        <Link
-          href="/create-article"
-          className="w-fit py-1.5 px-3 text-sm bg-black text-white rounded-lg"
-        >
-          Create article
-        </Link>
-      </div>
+    <>
       {isLoading ? (
         <MyArticleTableSkeleton />
       ) : (
-        <MyArticleTable articles={articles} setArticles={setArticles} />
+        <>
+          <div className="flex flex-col gap-8">
+            <div className="flex gap-4 items-center">
+              <h1 className="text-2xl font-semibold">
+                {user.user_metadata?.name
+                  ? `${user.user_metadata.name}'s`
+                  : "My"}{" "}
+                articles
+              </h1>
+              <Link
+                href="/create-article"
+                className="w-fit py-1.5 px-3 text-sm bg-black text-white rounded-lg"
+              >
+                Create article
+              </Link>
+            </div>
+            <MyArticleTable articles={articles} setArticles={setArticles} />
+          </div>
+        </>
       )}
-    </div>
+    </>
   );
 }
