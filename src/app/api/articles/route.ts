@@ -5,7 +5,7 @@ import { cookies } from "next/headers";
 
 const prisma = new PrismaClient();
 
-export async function GET(request: Request) {
+export async function GET() {
   const supabase = createRouteHandlerClient({ cookies });
 
   try {
@@ -18,7 +18,7 @@ export async function GET(request: Request) {
 
     const posts = await prisma.post.findMany({
       where: { authorId: session.user.id },
-      include: { images: true },
+      include: { PostImage: true },
     });
 
     return NextResponse.json({ success: true, posts });
@@ -72,16 +72,13 @@ export async function DELETE(request: Request) {
       );
     }
 
-    // Start a transaction to ensure all operations succeed or fail together
     await prisma.$transaction(async (tx) => {
-      // Delete related PostImage records first
       await tx.postImage.deleteMany({
         where: { postId: Number(postId) },
       });
 
       console.log("Related PostImage records deleted");
 
-      // Fetch the post to get the image URL
       const post = await tx.post.findUnique({
         where: { id: Number(postId) },
       });
@@ -107,7 +104,6 @@ export async function DELETE(request: Request) {
         }
       }
 
-      // Delete the post
       await tx.post.delete({
         where: { id: Number(postId) },
       });
@@ -190,7 +186,6 @@ async function handleArticle(request: Request, action: "create" | "update") {
 
     let post;
     if (action === "update") {
-      // Update existing post
       post = await prisma.post.update({
         where: { id: postId! },
         data: {
@@ -200,7 +195,6 @@ async function handleArticle(request: Request, action: "create" | "update") {
         },
       });
     } else {
-      // Create new post
       post = await prisma.post.create({
         data: {
           title,

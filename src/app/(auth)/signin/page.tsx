@@ -2,14 +2,14 @@
 
 import React from "react";
 import { useRouter } from "next/navigation";
-import TheSigninForm from "../../../components/TheSigninForm";
+import TheSigninForm from "@/components/TheSigninForm";
 import Link from "next/link";
 
 export default function SigninPage() {
   const router = useRouter();
 
   const handleSuccessfulLogin = () => {
-    router.push("/dashboard");
+    router.push("/app/dashboard");
   };
 
   return (

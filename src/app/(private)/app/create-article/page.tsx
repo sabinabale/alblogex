@@ -120,7 +120,7 @@ export default function Page() {
       localStorage.removeItem("articleTitle");
       localStorage.removeItem("markdownContent");
 
-      router.push(`/dashboard`);
+      router.push(`/app/dashboard`);
     } catch (error) {
       console.error("Error creating article:", error);
       alert(

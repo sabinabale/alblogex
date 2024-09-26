@@ -8,16 +8,19 @@ password: Fuminka123
 Stack: NextJS, Prisma, PostgreSQL, Supabase
 
 Todo:
+
 - [x] Prisma, PostgreSQL, Supabase setup
-- [x] Auth (JWT, bcrypt)
+- [x] Auth (Supabase)
 - [x] Sign up
 - [x] Sign in
-- [x] Basic form validation (script injection, disposable domains, empty, input maxlength)
+- [x] Basic form validation (script injection, empty, input maxlength)
 - [ ] Dashboard (UI, functionality)
-- [ ] Dynamic routes for articles
+- [x] Dynamic routes for articles
 - [ ] Create article (UI, markdown, API)
-- [ ] Edit article (UI)
+- [x] Edit article (UI)
 - [ ] Toast messages
-- [ ] Private routes protection
+- [ ] Skeletons
+- [x] Private routes protection
+- [ ] Responsiveness
 - [ ] UI optimization
 - [ ] Code optimization

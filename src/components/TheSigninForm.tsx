@@ -2,7 +2,6 @@
 
 import React, { useState } from "react";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
-import { useRouter } from "next/navigation";
 
 interface SigninFormProps {
   onSuccessfulLogin: () => void;
@@ -21,7 +20,6 @@ export default function TheSigninForm({ onSuccessfulLogin }: SigninFormProps) {
     form?: string;
   }>({});
 
-  const router = useRouter();
   const supabase = createClientComponentClient();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -53,8 +51,7 @@ export default function TheSigninForm({ onSuccessfulLogin }: SigninFormProps) {
 
       if (error) throw error;
 
-      onSuccessfulLogin();
-      router.push("/dashboard");
+      onSuccessfulLogin(); // This will trigger the navigation in the parent component
     } catch (error) {
       setErrors({
         form: error instanceof Error ? error.message : "Something went wrong",
