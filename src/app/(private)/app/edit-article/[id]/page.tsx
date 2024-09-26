@@ -92,7 +92,7 @@ export default function EditArticlePage({
       if (error) throw error;
 
       setLoading(false);
-      router.push("/dashboard");
+      router.push("/app/dashboard");
     } catch (err) {
       setLoading(false);
       console.error("Error updating article:", err);

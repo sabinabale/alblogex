@@ -4,15 +4,7 @@ import Image from "next/image";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
-
-interface Comment {
-  id: number;
-  content: string;
-  createdAt: string;
-  author: { name: string };
-  upvotes: number;
-  downvotes: number;
-}
+import CommentSection from "@/components/TheCommentSection";
 
 interface Post {
   id: number;
@@ -23,10 +15,18 @@ interface Post {
   User: { name: string };
 }
 
+interface Comment {
+  id: number;
+  content: string;
+  createdAt: string;
+  author: { name: string };
+  upvotes: number;
+  downvotes: number;
+}
+
 export default function ArticlePage({ params }: { params: { id: string } }) {
   const [post, setPost] = useState<Post | null>(null);
-  const [comments, setComments] = useState<Comment[]>([]);
-  const [newComment, setNewComment] = useState("");
+  const [initialComments, setInitialComments] = useState<Comment[]>([]);
   const supabase = createClientComponentClient();
   const router = useRouter();
 
@@ -43,7 +43,7 @@ export default function ArticlePage({ params }: { params: { id: string } }) {
       return;
     }
 
-    setPost(postData);
+    setPost(postData as Post);
 
     const { data: commentsData, error: commentsError } = await supabase
       .from("Comment")
@@ -54,72 +54,13 @@ export default function ArticlePage({ params }: { params: { id: string } }) {
     if (commentsError) {
       console.error("Error fetching comments:", commentsError);
     } else {
-      setComments(commentsData || []);
+      setInitialComments((commentsData as Comment[]) || []);
     }
   }, [params.id, supabase, router]);
 
   useEffect(() => {
     fetchPostAndComments();
   }, [fetchPostAndComments]);
-
-  async function handleCommentSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (!user) {
-      alert("You must be logged in to comment.");
-      return;
-    }
-
-    const { data, error } = await supabase
-      .from("Comment")
-      .insert({
-        content: newComment,
-        postId: params.id,
-        authorId: user.id,
-      })
-      .select(`*, author:User (name)`)
-      .single();
-
-    if (error) {
-      console.error("Error submitting comment:", error);
-    } else if (data) {
-      setComments([data, ...comments]);
-      setNewComment("");
-    }
-  }
-
-  async function handleVote(
-    commentId: number,
-    voteType: "upvote" | "downvote"
-  ) {
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (!user) {
-      alert("You must be logged in to vote.");
-      return;
-    }
-
-    const { error } = await supabase
-      .from("CommentVote")
-      .upsert(
-        {
-          userId: user.id,
-          commentId: commentId,
-          voteType: voteType,
-        },
-        { onConflict: "userId, commentId" }
-      )
-      .select();
-
-    if (error) {
-      console.error("Error voting:", error);
-    } else {
-      fetchPostAndComments();
-    }
-  }
 
   if (!post) return <div>Loading...</div>;
 
@@ -140,49 +81,7 @@ export default function ArticlePage({ params }: { params: { id: string } }) {
       )}
       <div className="prose max-w-none mb-8">{post.content}</div>
 
-      <div className="mt-8">
-        <h2 className="text-2xl font-semibold mb-4">
-          Comments ({comments.length})
-        </h2>
-        <form onSubmit={handleCommentSubmit} className="mb-4">
-          <textarea
-            value={newComment}
-            onChange={(e) => setNewComment(e.target.value)}
-            placeholder="Write a comment..."
-            className="w-full p-2 border rounded"
-            rows={3}
-          />
-          <button
-            type="submit"
-            className="mt-2 px-4 py-2 bg-blue-500 text-white rounded"
-          >
-            Submit Comment
-          </button>
-        </form>
-        {comments.map((comment) => (
-          <div key={comment.id} className="mb-4 p-4 border rounded">
-            <p>{comment.content}</p>
-            <div className="mt-2 text-sm text-gray-500">
-              By {comment.author.name} ·{" "}
-              {new Date(comment.createdAt).toLocaleString()}
-            </div>
-            <div className="mt-2 flex items-center space-x-4">
-              <button
-                onClick={() => handleVote(comment.id, "upvote")}
-                className="text-green-500 hover:text-green-700"
-              >
-                ▲ {comment.upvotes}
-              </button>
-              <button
-                onClick={() => handleVote(comment.id, "downvote")}
-                className="text-red-500 hover:text-red-700"
-              >
-                ▼ {comment.downvotes}
-              </button>
-            </div>
-          </div>
-        ))}
-      </div>
+      <CommentSection postId={params.id} initialComments={initialComments} />
     </div>
   );
 }

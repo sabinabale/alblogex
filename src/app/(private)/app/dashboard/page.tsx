@@ -87,7 +87,7 @@ export default function Dashboard() {
           articles
         </h1>
         <Link
-          href="/create-article"
+          href="/app/create-article"
           className="w-fit py-1.5 px-3 text-sm bg-black text-white rounded-lg"
         >
           Create article

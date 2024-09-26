@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "Comment" ADD COLUMN     "downvoteCount" INTEGER NOT NULL DEFAULT 0,
+ADD COLUMN     "upvoteCount" INTEGER NOT NULL DEFAULT 0;

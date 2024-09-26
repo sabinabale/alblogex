@@ -129,37 +129,44 @@ export default function Page() {
     }
   };
 
+  const capitalizeTitle = (title: string) => {
+    return title
+      .split(" ")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
+  };
+
   return (
     <div className="space-y-8 text-base mb-8">
       <div className="flex gap-4 items-center">
-        <h1 className="text-2xl font-bold">Create a new article</h1>
+        <h1 className="text-2xl font-bold">Create A New Article</h1>
         <button
           type="submit"
           form="articleForm"
           className="bg-black/90 font-medium text-white text-sm px-3 py-1.5 rounded-md w-fit"
         >
-          Publish article
+          Publish Article
         </button>
       </div>
       <form id="articleForm" onSubmit={handleSubmit} className="space-y-8">
         <div className="flex flex-col gap-1 w-1/2">
           <label htmlFor="articleTitle" className="font-medium pl-1">
-            Article title
+            Article Title
           </label>
           <input
             id="articleTitle"
             type="text"
-            placeholder="Article title"
+            placeholder="Article Title"
             className="bg-white"
             value={articleTitle}
-            onChange={(e) => setArticleTitle(e.target.value)}
+            onChange={(e) => setArticleTitle(capitalizeTitle(e.target.value))}
           />
           {errors.title && (
             <div className="text-red-500 text-sm mt-1">{errors.title}</div>
           )}
         </div>
         <div className="flex flex-col gap-1 w-1/2">
-          <div className="font-medium pl-1">Featured image</div>
+          <div className="font-medium pl-1">Featured Image</div>
           <div className="flex items-center gap-4">
             <ImageUpload
               uploadedImage={uploadedImage}
@@ -210,23 +217,23 @@ const MarkdownQuickRef = () => {
     <div className="mt-7 border border-cyan-600/30 bg-cyan-600/20 rounded-md pl-4 pr-8 py-6 h-fit">
       <div className="font-bold mb-4 flex gap-2 items-center">
         <Image src={bulbicon} alt="bulb icon" />
-        Quick markdown refresher
+        Quick Markdown Refresher
       </div>
       <ul className="space-y-0.5 text-[14px]">
         <li className="pl-8">
-          # <span className="font-semibold">Headings start with a hash</span>
+          # <span className="font-semibold">Headings Start With A Hash</span>
         </li>
         <li className="pl-8">
-          - use two asterisks to make text ✳✳
-          <span className="font-bold">bold</span>✳✳
+          - Use Two Asterisks To Make Text ✳✳
+          <span className="font-bold">Bold</span>✳✳
         </li>
         <li className="pl-8">
-          - use one asterisk to make text ✳
-          <span className="italic">italic</span>✳
+          - Use One Asterisk To Make Text ✳
+          <span className="italic">Italic</span>✳
         </li>
-        <li className="pl-8">- use a blank line to separate paragraphs</li>
+        <li className="pl-8">- Use A Blank Line To Separate Paragraphs</li>
         <li className="pt-4 pl-2">
-          See more here:{" "}
+          See More Here:{" "}
           <a
             href="https://www.markdownguide.org/basic-syntax/"
             target="_blank"
@@ -262,7 +269,7 @@ const ImageUpload = ({
         htmlFor="imageUpload"
         className="bg-gray-500 hover:bg-gray-600 font-medium text-white text-sm px-3 py-1.5 rounded-md w-fit cursor-pointer"
       >
-        Upload image
+        Upload Image
       </label>
       {uploadedImage && (
         <div className="flex items-center gap-2">
@@ -270,7 +277,7 @@ const ImageUpload = ({
           <button
             onClick={handleRemoveImage}
             className="w-fit"
-            aria-label="Remove uploaded image"
+            aria-label="Remove Uploaded Image"
           >
             <Image
               src={crossicon}
@@ -296,11 +303,11 @@ const TextEditor = ({
   return (
     <>
       <label htmlFor="articleContent" className="font-medium pl-1">
-        Article content
+        Article Content
       </label>
       <textarea
         id="articleContent"
-        placeholder="Article content"
+        placeholder="Article Content"
         className="p-2 h-80 border border-gray-300 resize-none overflow-auto"
         value={markdownContent}
         onChange={(e) => setMarkdownContent(e.target.value)}
