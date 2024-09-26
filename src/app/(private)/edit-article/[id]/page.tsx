@@ -52,19 +52,32 @@ export default function EditArticlePage({
 
   const handlePublish = async () => {
     try {
+      setLoading(true);
       let imageUrl = currentImageUrl;
 
       if (uploadedImage) {
         const fileExt = uploadedImage.name.split(".").pop();
         const fileName = `${Math.random()}.${fileExt}`;
+        const filePath = `${params.id}/${fileName}`;
+
         const { error: uploadError } = await supabase.storage
-          .from("images")
-          .upload(fileName, uploadedImage);
+          .from("alblogex-postimages")
+          .upload(filePath, uploadedImage);
 
         if (uploadError) throw uploadError;
 
-        const { data } = supabase.storage.from("images").getPublicUrl(fileName);
+        const { data } = supabase.storage
+          .from("alblogex-postimages")
+          .getPublicUrl(filePath);
+
         imageUrl = data.publicUrl;
+
+        if (currentImageUrl) {
+          const oldFilePath = currentImageUrl.split("/").slice(-2).join("/");
+          await supabase.storage
+            .from("alblogex-postimages")
+            .remove([oldFilePath]);
+        }
       }
 
       const { error } = await supabase
@@ -78,8 +91,10 @@ export default function EditArticlePage({
 
       if (error) throw error;
 
+      setLoading(false);
       router.push("/dashboard");
     } catch (err) {
+      setLoading(false);
       console.error("Error updating article:", err);
       setError(err instanceof Error ? err.message : "Failed to update article");
     }

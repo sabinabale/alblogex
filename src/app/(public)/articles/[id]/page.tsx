@@ -117,7 +117,6 @@ export default function ArticlePage({ params }: { params: { id: string } }) {
     if (error) {
       console.error("Error voting:", error);
     } else {
-      // Refresh comments to reflect new vote count
       fetchPostAndComments();
     }
   }

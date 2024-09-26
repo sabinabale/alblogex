@@ -6,6 +6,7 @@ import MyArticleTable from "../../../components/MyArticleTable";
 import Link from "next/link";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { User } from "@supabase/auth-helpers-nextjs";
+import { MyArticleTableSkeleton } from "@/components/Skeletons";
 
 interface Article {
   id: number;
@@ -25,10 +26,9 @@ interface PostData {
 
 export default function Dashboard() {
   const router = useRouter();
-  const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<User | null>(null);
   const [articles, setArticles] = useState<Article[]>([]);
-  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const supabase = createClientComponentClient();
 
   const fetchArticles = useCallback(
@@ -38,12 +38,12 @@ export default function Dashboard() {
           .from("Post")
           .select(
             `
-            id,
-            title,
-            content,
-            author:User(name),
-            Comment(count)
-          `
+          id,
+          title,
+          content,
+          author:User(name),
+          Comment(count)
+        `
           )
           .eq("authorId", userId);
 
@@ -62,9 +62,8 @@ export default function Dashboard() {
         setArticles(formattedArticles);
       } catch (err) {
         console.error("Error fetching articles:", err);
-        setError(
-          err instanceof Error ? err.message : "Failed to fetch articles"
-        );
+      } finally {
+        setIsLoading(false);
       }
     },
     [supabase]
@@ -88,43 +87,20 @@ export default function Dashboard() {
         }
       } catch (err) {
         console.error("Authentication error:", err);
-        setError(
-          err instanceof Error ? err.message : "An unknown error occurred"
-        );
-      } finally {
-        setLoading(false);
+        router.push("/signin");
       }
     };
 
     getUser();
   }, [router, supabase.auth, fetchArticles]);
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
-  if (error) {
-    return (
-      <div>
-        <h1>Error</h1>
-        <p>{error}</p>
-        <button onClick={() => router.push("/signin")}>
-          Return to Sign In
-        </button>
-      </div>
-    );
-  }
-
-  if (!user) {
-    router.push("/signin");
-    return null;
-  }
+  if (!user) return null;
 
   return (
     <div className="flex flex-col gap-8">
       <div className="flex gap-4 items-center">
         <h1 className="text-2xl font-semibold">
-          {user?.user_metadata?.name ? `${user.user_metadata.name}'s` : "My"}{" "}
+          {user.user_metadata?.name ? `${user.user_metadata.name}'s` : "My"}{" "}
           articles
         </h1>
         <Link
@@ -134,7 +110,11 @@ export default function Dashboard() {
           Create article
         </Link>
       </div>
-      <MyArticleTable articles={articles} setArticles={setArticles} />
+      {isLoading ? (
+        <MyArticleTableSkeleton />
+      ) : (
+        <MyArticleTable articles={articles} setArticles={setArticles} />
+      )}
     </div>
   );
 }
