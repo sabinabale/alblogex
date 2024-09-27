@@ -69,15 +69,6 @@ textarea {
   font-size: 14px;
 }
 
-label {
-  font-size: 13px;
-  font-weight: 400;
-  margin-bottom: 4px;
-  margin-left: 4px;
-  display: block;
-  color: rgba(0, 0, 0, 0.6);
-}
-
 input[type="checkbox"] {
   border: 1px solid rgba(0, 0, 0, 0.5);
   border-radius: 6px;
@@ -93,4 +84,10 @@ input[type="checkbox"]:hover {
 
 input[type="checkbox"]:checked {
   background-color: rgb(0, 0, 0);
+}
+
+h4 {
+  font-size: 24px;
+  line-height: 28px;
+  font-weight: 600;
 }

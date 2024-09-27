@@ -1,6 +1,11 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { User } from "@supabase/supabase-js";
+import Image from "next/image";
+import profilepic from "@/assets/images/profilepic.jpg";
+import chevronup from "@/assets/icons/chevronup.svg";
+import chevrondown from "@/assets/icons/chevrondown.svg";
+import cross from "@/assets/icons/cross.svg";
 
 interface Comment {
   id: number;
@@ -90,18 +95,19 @@ export default function CommentSection({ postId }: CommentSectionProps) {
     e.preventDefault();
     if (!user) return;
 
-    const { data, error } = await supabase
-      .from("Comment")
-      .insert({
-        content: newComment,
-        postId,
-        authorId: user.id,
-      })
-      .select();
+    const now = new Date().toISOString();
+
+    const { error } = await supabase.from("Comment").insert({
+      content: newComment,
+      postId,
+      authorId: user.id,
+      createdAt: now,
+      updatedAt: now,
+    });
 
     if (error) {
       console.error("Error submitting comment:", error);
-    } else if (data) {
+    } else {
       setNewComment("");
       fetchComments();
     }
@@ -153,62 +159,111 @@ export default function CommentSection({ postId }: CommentSectionProps) {
   };
 
   return (
-    <div className="mt-8">
-      <h2 className="text-2xl font-bold mb-4">Comments</h2>
+    <div className="mt-8 border-t pt-8 border-gray-300">
+      <h4>Comments ({comments.length})</h4>
       {user && (
-        <form onSubmit={handleSubmitComment} className="mb-4">
-          <textarea
-            value={newComment}
-            onChange={(e) => setNewComment(e.target.value)}
-            className="w-full p-2 border rounded"
-            placeholder="Write a comment..."
-            required
-          />
-          <button
-            type="submit"
-            className="mt-2 px-4 py-2 bg-blue-500 text-white rounded"
-          >
-            Submit Comment
-          </button>
-        </form>
+        <div className="flex gap-4 mt-8 mb-6">
+          <div className="bg-gray-200 rounded-full w-11 h-11 flex-shrink-0">
+            <Image
+              src={profilepic}
+              alt="User Avatar"
+              width={44}
+              height={44}
+              className="h-11 w-11 object-cover rounded-full outline outline-1 outline-black/30"
+            />
+          </div>
+          <form onSubmit={handleSubmitComment} className="relative w-full">
+            <textarea
+              value={newComment}
+              onChange={(e) => setNewComment(e.target.value)}
+              className="w-full p-2 border rounded-md resize-none text-base"
+              placeholder="Join the discussion"
+              required
+              maxLength={500}
+            />
+            <button
+              type="submit"
+              className="absolute bottom-3 right-1 w-fit px-1 py-0.5 rounded-md"
+            >
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                className="opacity-20 hover:opacity-100 transition-all duration-200 ease-in-out "
+              >
+                <path
+                  d="M5.99997 12H9.24997M5.99997 12L3.3817 4.14513C3.24083 3.72253 3.68122 3.34059 4.07964 3.5398L20.1055 11.5528C20.4741 11.737 20.4741 12.2629 20.1055 12.4472L4.07964 20.4601C3.68122 20.6593 3.24083 20.2774 3.3817 19.8548L5.99997 12Z"
+                  stroke="black"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </button>
+          </form>
+        </div>
       )}
       {comments.map((comment) => (
-        <div key={comment.id} className="mb-4 p-4 border rounded">
-          <div className="flex justify-between items-center mb-2">
-            <span className="font-bold">{comment.User.name}</span>
-            <span className="text-sm text-gray-500">
-              {new Date(comment.createdAt).toLocaleDateString()}
-            </span>
-          </div>
-          <p>{comment.content}</p>
-          <div className="mt-2 flex items-center">
-            {user && (
-              <>
+        <div key={comment.id} className="mb-6 flex gap-4">
+          <div className="bg-gray-200 rounded-full w-11 h-11 flex-shrink-0"></div>
+          <div>
+            <div className="flex items-center mb-2 gap-2">
+              <span className="font-bold">{comment.User.name}</span>
+              <span className="text-sm text-gray-500">
+                {new Date(comment.createdAt).toLocaleDateString()}
+              </span>
+            </div>
+            <p>{comment.content}</p>
+            <div className="mt-2 flex items-center">
+              {user && (
+                <>
+                  <span className="mr-4">
+                    {formatVoteCount(comment.voteCount)}
+                  </span>
+                  <button
+                    onClick={() => handleVote(comment.id, 1)}
+                    className="px-2 py-1 w-fit"
+                  >
+                    <Image
+                      src={chevronup}
+                      alt="Upvote comment"
+                      width={40}
+                      height={40}
+                      className="opacity-50 hover:opacity-100 transition-all duration-200 ease-in-out"
+                    />
+                  </button>
+
+                  <button
+                    onClick={() => handleVote(comment.id, -1)}
+                    className="px-2 py-1 w-fit"
+                  >
+                    <Image
+                      src={chevrondown}
+                      alt="Downvote comment"
+                      width={40}
+                      height={40}
+                      className="opacity-50 hover:opacity-100 transition-all duration-200 ease-in-out"
+                    />
+                  </button>
+                </>
+              )}
+
+              {user && user.id === comment.User.id && (
                 <button
-                  onClick={() => handleVote(comment.id, 1)}
-                  className="mr-2 px-2 py-1 bg-green-500 text-white rounded"
+                  onClick={() => handleDeleteComment(comment.id)}
+                  className="px-2 py-1 w-fit opacity-50 hover:opacity-100 transition-all duration-200 ease-in-out"
                 >
-                  Upvote
+                  <Image
+                    src={cross}
+                    alt="Delete comment"
+                    width={30}
+                    height={30}
+                  />
                 </button>
-                <button
-                  onClick={() => handleVote(comment.id, -1)}
-                  className="mr-2 px-2 py-1 bg-red-500 text-white rounded"
-                >
-                  Downvote
-                </button>
-              </>
-            )}
-            <span className="mr-4">
-              Votes: {formatVoteCount(comment.voteCount)}
-            </span>
-            {user && user.id === comment.User.id && (
-              <button
-                onClick={() => handleDeleteComment(comment.id)}
-                className="px-2 py-1 bg-gray-500 text-white rounded"
-              >
-                Delete
-              </button>
-            )}
+              )}
+            </div>
           </div>
         </div>
       ))}

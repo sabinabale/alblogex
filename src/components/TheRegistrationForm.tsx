@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import InputLabel from "@/components/InputLabel";
 
 export default function TheRegistrationForm() {
   const router = useRouter();
@@ -64,7 +65,6 @@ export default function TheRegistrationForm() {
     setErrors({});
 
     try {
-      // Step 1: Sign up with Supabase
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: formData.email,
         password: formData.password,
@@ -116,7 +116,8 @@ export default function TheRegistrationForm() {
     <div className="border border-gray-200 rounded-xl p-8 shadow-sm bg-white">
       <form onSubmit={handleSubmit} className="w-72">
         <div>
-          <label htmlFor="name">Name</label>
+          <InputLabel htmlFor="name">Name</InputLabel>
+
           <input
             type="text"
             id="name"
@@ -130,7 +131,7 @@ export default function TheRegistrationForm() {
           </p>
         </div>
         <div>
-          <label htmlFor="email">Email</label>
+          <InputLabel htmlFor="email">Email</InputLabel>
           <input
             type="email"
             id="email"
@@ -144,7 +145,7 @@ export default function TheRegistrationForm() {
           </p>
         </div>
         <div>
-          <label htmlFor="password">Password</label>
+          <InputLabel htmlFor="password">Password</InputLabel>
           <input
             type="password"
             id="password"

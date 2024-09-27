@@ -8,18 +8,18 @@ import DeleteIcon from "@/assets/icons/delete.svg";
 import Image from "next/image";
 import Link from "next/link";
 
-interface Article {
+type Article = {
   id: number;
   title: string;
   perex: string;
   author: string;
   comments: number;
-}
+};
 
-interface MyArticleTableProps {
+type MyArticleTableProps = {
   articles: Article[];
   setArticles: React.Dispatch<React.SetStateAction<Article[]>>;
-}
+};
 
 export default function MyArticleTable({
   articles,
@@ -75,6 +75,9 @@ export default function MyArticleTable({
     }
   };
 
+  const isAllSelected = selectedArticles.length === articles.length;
+  const isSomeSelected = selectedArticles.length > 0 && !isAllSelected;
+
   const handleDeleteArticle = async (id: number) => {
     try {
       const response = await fetch(`/api/articles?postId=${id}`, {
@@ -125,14 +128,14 @@ export default function MyArticleTable({
   };
 
   return (
-    <div className="border border-gray-300 rounded-md bg-white">
-      <div className="grid grid-cols-[auto,290px,290px,200px,1fr,1fr] gap-4 items-center border-b border-gray-300 px-4 py-4">
-        <div className="font-bold flex items-center ">
-          <CustomCheckbox
-            onChange={handleSelectAll}
-            checked={selectedArticles.length === articles.length}
-          />
-        </div>
+    <div className="border border-gray-300 rounded-md bg-white overflow-scroll">
+      <div className="grid grid-cols-[auto,290px,290px,200px,1fr,1fr] gap-4 items-center border-b border-gray-300 px-4 py-2.5">
+        <CustomCheckbox
+          onChange={handleSelectAll}
+          checked={isAllSelected}
+          indeterminate={isSomeSelected}
+        />
+
         {(["title", "perex", "author", "comments"] as const).map((key) => (
           <button
             key={key}
@@ -168,15 +171,14 @@ export default function MyArticleTable({
         <div className="font-bold text-black/70">Actions</div>
       </div>
 
-      <div className="grid grid-cols-[auto,290px,290px,200px,1fr,1fr] gap-4 items-center px-4 py-2 ">
+      <div className="grid grid-cols-[auto,290px,290px,200px,1fr,1fr] gap-y-2 gap-x-4 items-center px-4 py-2 ">
         {sortedArticles.map((article) => (
           <React.Fragment key={article.id}>
-            <div className="flex items-center ">
-              <CustomCheckbox
-                onChange={() => handleSelectArticle(article.id)}
-                checked={selectedArticles.includes(article.id)}
-              />
-            </div>
+            <CustomCheckbox
+              onChange={() => handleSelectArticle(article.id)}
+              checked={selectedArticles.includes(article.id)}
+            />
+
             <div className="py-2 truncate">{article.title}</div>
             <div className="py-2 truncate">{article.perex}</div>
             <div className="py-2 truncate">{article.author}</div>

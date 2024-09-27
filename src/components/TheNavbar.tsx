@@ -1,11 +1,10 @@
 "use client";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
-import { useRouter, usePathname } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 
 export default function TheNavbar() {
-  const router = useRouter();
   const pathname = usePathname();
   const [isSignedIn, setIsSignedIn] = useState(false);
   const supabase = createClientComponentClient();
@@ -31,17 +30,19 @@ export default function TheNavbar() {
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
-    router.push("/");
+    window.location.href = "/";
   };
 
-  const getLinkClassName = (href: string) => {
-    const baseClasses =
-      "px-3 py-1.5 font-medium rounded-lg transition-colors duration-200 ease-in-out";
-    const activeClasses = "text-black font-semibold";
-    const hoverClasses = "hover:text-black hover:font-semibold";
-
-    return `${baseClasses} ${pathname === href ? activeClasses : hoverClasses}`;
-  };
+  const NavLink = ({ href, children }) => (
+    <Link
+      href={href}
+      className={`px-3 py-1.5 font-semibold rounded-md transition-colors duration-200 ease-in-out ${
+        pathname === href ? "text-black" : "text-black/50 hover:text-black"
+      }`}
+    >
+      {children}
+    </Link>
+  );
 
   return (
     <div className="border-b border-gray-300 bg-white font-medium">
@@ -75,46 +76,30 @@ export default function TheNavbar() {
               />
             </svg>
           </Link>
-          <Link
-            className={`flex items-center space-x-2 px-3 h-[32px] rounded-lg transition-colors duration-200 ease-in-out ${
-              pathname === "/"
-                ? "text-black font-semibold"
-                : "text-gray-600 hover:text-black hover:font-semibold"
-            }`}
-            href="/"
-          >
-            Recent articles
-          </Link>
+          <NavLink href="/">Recent articles</NavLink>
         </div>
         <div className="space-x-2">
           {isSignedIn ? (
             <>
+              <NavLink href="/app/dashboard">My articles</NavLink>
               <Link
-                className={getLinkClassName("/dashboard")}
-                href="/app/dashboard"
-              >
-                My articles
-              </Link>
-              <Link
-                className="bg-black text-white hover:bg-[#333333] rounded-lg px-4 py-1.5 h-8"
+                className="bg-black text-white hover:bg-[#333333] rounded-md px-4 py-1.5 h-8"
                 href="/app/create-article"
               >
                 Create article
               </Link>
               <button
                 onClick={handleLogout}
-                className="px-3 w-auto h-[32px] font-semibold text-red-600 rounded-lg hover:text-red-400 transition-colors duration-200 ease-in-out"
+                className="px-3 w-auto h-[32px] font-semibold text-red-600 rounded-md hover:text-red-400 transition-colors duration-200 ease-in-out"
               >
                 Log out
               </button>
             </>
           ) : (
             <>
-              <Link className={getLinkClassName("/signin")} href="/signin">
-                Sign in
-              </Link>
+              <NavLink href="/signin">Sign in</NavLink>
               <Link
-                className="px-3 py-1.5 h-[32px] bg-black font-semibold text-white rounded-lg hover:bg-[#333333] transition-colors duration-200 ease-in-out"
+                className="px-3 py-1.5 h-[32px] bg-black font-semibold text-white rounded-md hover:bg-[#333333] transition-colors duration-200 ease-in-out"
                 href="/signup"
               >
                 Sign up

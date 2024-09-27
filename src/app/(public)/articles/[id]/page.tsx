@@ -4,7 +4,7 @@ import Image from "next/image";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import CommentSection from "@/components/CommentSection"; // Import the new component
+import CommentSection from "@/components/CommentSection";
 
 interface Post {
   id: number;
@@ -52,9 +52,10 @@ export default function ArticlePage({ params }: { params: { id: string } }) {
         <Image
           src={post.imageUrl}
           alt={post.title}
-          width={800}
-          height={400}
-          className="rounded-lg mb-8 object-cover"
+          width={760}
+          height={500}
+          className="w-[760px] h-[500px] rounded-md mb-8 object-cover object-top border border-gray-300/50"
+          priority
         />
       )}
       <div className="prose max-w-none mb-8">{post.content}</div>

@@ -95,7 +95,8 @@ const ArticleCard = ({ post }: { post: Post }) => {
           alt={post.title}
           width={272}
           height={244}
-          className="rounded-md mr-8 object-cover"
+          className="h-auto w-auto rounded-md mr-8 object-cover"
+          priority
         />
       ) : (
         <div className="w-[272px] h-[244px] bg-gray-200 rounded-md mr-8"></div>
