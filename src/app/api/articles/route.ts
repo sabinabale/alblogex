@@ -39,8 +39,6 @@ export async function GET() {
       },
       { status: 500 }
     );
-  } finally {
-    await prisma.$disconnect();
   }
 }
 
@@ -64,56 +62,54 @@ export async function DELETE(request: Request) {
     }
 
     const { searchParams } = new URL(request.url);
-    const postIds = searchParams.get("postIds");
+    const postId = searchParams.get("postId");
 
-    if (!postIds) {
+    if (!postId) {
       return NextResponse.json(
-        { success: false, error: "Missing postIds for delete" },
+        { success: false, error: "Missing postId for delete" },
         { status: 400 }
       );
     }
 
-    const postIdsArray = postIds.split(",").map(Number);
-
     await prisma.$transaction(async (tx) => {
-      await tx.postImage.deleteMany({
-        where: { postId: { in: postIdsArray } },
+      const post = await tx.post.findUnique({
+        where: { id: parseInt(postId) },
+        include: { images: true },
       });
 
-      const posts = await tx.post.findMany({
-        where: { id: { in: postIdsArray } },
-        select: { id: true, imageUrl: true },
-      });
-
-      for (const post of posts) {
-        if (post.imageUrl) {
-          const imagePath = post.imageUrl.split("/").pop();
-          if (imagePath) {
-            await supabase.storage
-              .from("alblogex-postimages")
-              .remove([`${session.user.id}/${imagePath}`]);
-          }
-        }
+      if (!post || post.authorId !== session.user.id) {
+        throw new Error("Unauthorized or post not found");
       }
 
-      await tx.post.deleteMany({
-        where: { id: { in: postIdsArray } },
+      // Delete associated images from storage
+      for (const image of post.images) {
+        await supabase.storage
+          .from("alblogex-postimages")
+          .remove([`${session.user.id}/${image.fileName}`]);
+      }
+
+      // Delete PostImage records
+      await tx.postImage.deleteMany({
+        where: { postId: parseInt(postId) },
+      });
+
+      // Delete the post
+      await tx.post.delete({
+        where: { id: parseInt(postId) },
       });
     });
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error("Error in bulk DELETE article route:", error);
+    console.error("Error in DELETE article route:", error);
     return NextResponse.json(
       {
         success: false,
-        error: "Failed to handle bulk article deletion",
+        error: "Failed to delete article",
         details: error instanceof Error ? error.message : String(error),
       },
       { status: 500 }
     );
-  } finally {
-    await prisma.$disconnect();
   }
 }
 
@@ -129,11 +125,11 @@ async function handleArticle(request: Request, action: "create" | "update") {
     }
 
     const formData = await request.formData();
-    const title = formData.get("title") as string | null;
-    const content = formData.get("content") as string | null;
-    const image = formData.get("image") as Blob | null;
+    const title = formData.get("title") as string;
+    const content = formData.get("content") as string;
+    const image = formData.get("image") as File | null;
     const postId = formData.get("postId")
-      ? Number(formData.get("postId"))
+      ? parseInt(formData.get("postId") as string)
       : null;
 
     if (!title || !content) {
@@ -151,21 +147,17 @@ async function handleArticle(request: Request, action: "create" | "update") {
     }
 
     let imageUrl: string | null = null;
+    let fileName: string | null = null;
+
     if (image) {
-      const fileName = `${Date.now()}_${Math.random()
-        .toString(36)
-        .substring(7)}.jpg`;
+      fileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.jpg`;
       const filePath = `${session.user.id}/${fileName}`;
 
       const { error: uploadError } = await supabase.storage
         .from("alblogex-postimages")
-        .upload(filePath, image, {
-          contentType: image.type || "image/jpeg",
-        });
+        .upload(filePath, image);
 
-      if (uploadError) {
-        throw uploadError;
-      }
+      if (uploadError) throw uploadError;
 
       const { data: urlData } = supabase.storage
         .from("alblogex-postimages")
@@ -174,34 +166,61 @@ async function handleArticle(request: Request, action: "create" | "update") {
       imageUrl = urlData.publicUrl;
     }
 
-    let post;
-    if (action === "update") {
-      post = await prisma.post.update({
-        where: { id: postId! },
-        data: {
-          title,
-          content,
-          imageUrl,
-        },
-      });
-    } else {
-      post = await prisma.post.create({
-        data: {
-          title,
-          content,
-          imageUrl,
-          authorId: session.user.id,
-        },
-      });
-    }
+    const result = await prisma.$transaction(async (tx) => {
+      let post;
+      if (action === "update") {
+        post = await tx.post.update({
+          where: { id: postId! },
+          data: {
+            title,
+            content,
+            imageUrl,
+          },
+        });
+
+        if (imageUrl) {
+          await tx.postImage.upsert({
+            where: { postId: postId! },
+            update: {
+              url: imageUrl,
+              fileName: fileName!,
+            },
+            create: {
+              postId: postId!,
+              url: imageUrl,
+              fileName: fileName!,
+            },
+          });
+        }
+      } else {
+        post = await tx.post.create({
+          data: {
+            title,
+            content,
+            imageUrl,
+            authorId: session.user.id,
+            images: imageUrl
+              ? {
+                  create: {
+                    url: imageUrl,
+                    fileName: fileName!,
+                  },
+                }
+              : undefined,
+          },
+        });
+      }
+
+      return post;
+    });
 
     return NextResponse.json({
       success: true,
-      id: post.id,
-      imageUrl: post.imageUrl,
+      id: result.id,
+      imageUrl: result.imageUrl,
     });
   } catch (error) {
-    console.error("Error in article route:", error);
+    console.error("Error in handleArticle:", error);
     return NextResponse.json(
       {
         success: false,
@@ -210,7 +229,5 @@ async function handleArticle(request: Request, action: "create" | "update") {
       },
       { status: 500 }
     );
-  } finally {
-    await prisma.$disconnect();
   }
 }

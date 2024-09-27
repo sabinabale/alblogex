@@ -53,55 +53,34 @@ export default function EditArticlePage({
   const handlePublish = async () => {
     try {
       setLoading(true);
-      let imageUrl = currentImageUrl;
-
+      const formData = new FormData();
+      formData.append("title", articleTitle);
+      formData.append("content", markdownContent);
       if (uploadedImage) {
-        const fileExt = uploadedImage.name.split(".").pop();
-        const fileName = `${Date.now()}.${fileExt}`;
-        const filePath = `${params.id}/${fileName}`;
-
-        const { error: uploadError } = await supabase.storage
-          .from("alblogex-postimages")
-          .upload(filePath, uploadedImage);
-
-        if (uploadError) throw uploadError;
-
-        const { data: urlData } = supabase.storage
-          .from("alblogex-postimages")
-          .getPublicUrl(filePath);
-
-        imageUrl = urlData.publicUrl;
-
-        await supabase.from("PostImage").insert({
-          url: imageUrl,
-          fileName: fileName,
-          postId: parseInt(params.id),
-        });
-
-        if (currentImageUrl) {
-          const oldFilePath = currentImageUrl.split("/").slice(-2).join("/");
-          await supabase.storage
-            .from("alblogex-postimages")
-            .remove([oldFilePath]);
-
-          await supabase
-            .from("PostImage")
-            .delete()
-            .eq("postId", parseInt(params.id))
-            .neq("url", imageUrl);
-        }
+        formData.append("image", uploadedImage);
+      }
+      if (params.id) {
+        formData.append("postId", params.id);
       }
 
-      const { error } = await supabase
-        .from("Post")
-        .update({
-          title: articleTitle,
-          content: markdownContent,
-          imageUrl: imageUrl,
-        })
-        .eq("id", parseInt(params.id));
+      const response = await fetch("/api/articles", {
+        method: params.id ? "PUT" : "POST",
+        body: formData,
+      });
 
-      if (error) throw error;
+      if (!response.ok) {
+        throw new Error("Failed to save article");
+      }
+
+      const result = await response.json();
+
+      if (result.success) {
+        if (result.imageUrl) {
+          setCurrentImageUrl(result.imageUrl);
+        }
+      } else {
+        throw new Error(result.error || "Unknown error occurred");
+      }
 
       setLoading(false);
       router.push("/app/dashboard");
