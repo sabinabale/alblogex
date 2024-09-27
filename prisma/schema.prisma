@@ -13,14 +13,15 @@ enum Role {
 }
 
 model User {
-  id        String    @id
-  name      String
-  email     String    @unique
-  password  String
-  createdAt DateTime  @default(now())
-  role      Role      @default(USER)
-  Post      Post[]
-  Comment   Comment[]
+  id           String        @id
+  name         String
+  email        String        @unique
+  password     String
+  createdAt    DateTime      @default(now())
+  role         Role          @default(USER)
+  posts        Post[]
+  comments     Comment[]
+  commentVotes CommentVote[]
 }
 
 model Post {
@@ -32,21 +33,33 @@ model Post {
   updatedAt DateTime    @updatedAt
   author    User        @relation(fields: [authorId], references: [id])
   authorId  String
-  Comment   Comment[]
-  PostImage PostImage[]
+  comments  Comment[]
+  images    PostImage[]
 }
 
 model Comment {
-  id            Int      @id @default(autoincrement())
-  content       String
-  post          Post     @relation(fields: [postId], references: [id])
-  postId        Int
-  author        User     @relation(fields: [authorId], references: [id])
-  authorId      String
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  upvoteCount   Int      @default(0)
-  downvoteCount Int      @default(0)
+  id        Int           @id @default(autoincrement())
+  content   String
+  post      Post          @relation(fields: [postId], references: [id])
+  postId    Int
+  author    User          @relation(fields: [authorId], references: [id])
+  authorId  String
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+  votes     CommentVote[]
+}
+
+model CommentVote {
+  id        Int      @id @default(autoincrement())
+  value     Int
+  comment   Comment  @relation(fields: [commentId], references: [id])
+  commentId Int
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([commentId, userId])
 }
 
 model PostImage {

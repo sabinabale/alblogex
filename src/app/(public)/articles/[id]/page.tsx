@@ -4,7 +4,7 @@ import Image from "next/image";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import CommentSection from "@/components/TheCommentSection";
+import CommentSection from "@/components/CommentSection"; // Import the new component
 
 interface Post {
   id: number;
@@ -15,22 +15,12 @@ interface Post {
   User: { name: string };
 }
 
-interface Comment {
-  id: number;
-  content: string;
-  createdAt: string;
-  author: { name: string };
-  upvotes: number;
-  downvotes: number;
-}
-
 export default function ArticlePage({ params }: { params: { id: string } }) {
   const [post, setPost] = useState<Post | null>(null);
-  const [initialComments, setInitialComments] = useState<Comment[]>([]);
   const supabase = createClientComponentClient();
   const router = useRouter();
 
-  const fetchPostAndComments = useCallback(async () => {
+  const fetchPost = useCallback(async () => {
     const { data: postData, error: postError } = await supabase
       .from("Post")
       .select(`*, User (name)`)
@@ -43,24 +33,12 @@ export default function ArticlePage({ params }: { params: { id: string } }) {
       return;
     }
 
-    setPost(postData as Post);
-
-    const { data: commentsData, error: commentsError } = await supabase
-      .from("Comment")
-      .select(`*, author:User (name)`)
-      .eq("postId", params.id)
-      .order("createdAt", { ascending: false });
-
-    if (commentsError) {
-      console.error("Error fetching comments:", commentsError);
-    } else {
-      setInitialComments((commentsData as Comment[]) || []);
-    }
+    setPost(postData);
   }, [params.id, supabase, router]);
 
   useEffect(() => {
-    fetchPostAndComments();
-  }, [fetchPostAndComments]);
+    fetchPost();
+  }, [fetchPost]);
 
   if (!post) return <div>Loading...</div>;
 
@@ -80,8 +58,7 @@ export default function ArticlePage({ params }: { params: { id: string } }) {
         />
       )}
       <div className="prose max-w-none mb-8">{post.content}</div>
-
-      <CommentSection postId={params.id} initialComments={initialComments} />
+      <CommentSection postId={post.id} />
     </div>
   );
 }

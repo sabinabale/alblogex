@@ -12,12 +12,17 @@ export async function POST(req: Request) {
         postId: Number(postId),
         authorId,
       },
+      include: {
+        author: {
+          select: { name: true },
+        },
+      },
     });
     return NextResponse.json(newComment, { status: 201 });
   } catch (error) {
     console.error("Error creating comment:", error);
     return NextResponse.json(
-      { message: "Error creating comment" },
+      { message: "Error creating comment", details: error },
       { status: 500 }
     );
   }

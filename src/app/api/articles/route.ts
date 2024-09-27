@@ -18,7 +18,14 @@ export async function GET() {
 
     const posts = await prisma.post.findMany({
       where: { authorId: session.user.id },
-      include: { PostImage: true },
+      include: {
+        images: true,
+        comments: {
+          include: {
+            votes: true,
+          },
+        },
+      },
     });
 
     return NextResponse.json({ success: true, posts });
