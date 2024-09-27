@@ -67,15 +67,34 @@ export async function DELETE(req: Request) {
   const { searchParams } = new URL(req.url);
   const commentId = searchParams.get("id");
 
+  if (!commentId) {
+    return NextResponse.json(
+      { message: "Comment ID is required" },
+      { status: 400 }
+    );
+  }
+
   try {
-    await prisma.comment.delete({
-      where: { id: Number(commentId) },
+    const result = await prisma.$transaction(async (tx) => {
+      await tx.commentVote.deleteMany({
+        where: { commentId: Number(commentId) },
+      });
+
+      const deletedComment = await tx.comment.delete({
+        where: { id: Number(commentId) },
+      });
+
+      return deletedComment;
     });
-    return NextResponse.json({ message: "Comment deleted successfully" });
+
+    return NextResponse.json({
+      message: "Comment and associated votes deleted successfully",
+      comment: result,
+    });
   } catch (error) {
     console.error("Error deleting comment:", error);
     return NextResponse.json(
-      { message: "Error deleting comment" },
+      { message: "Error deleting comment", details: error },
       { status: 500 }
     );
   }

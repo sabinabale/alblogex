@@ -12,10 +12,18 @@ interface Comment {
     name: string;
     id: string;
   };
+  voteCount: number;
 }
 
 interface CommentSectionProps {
   postId: number;
+}
+
+interface VoteData {
+  commentId: number;
+  _sum: {
+    value: number;
+  };
 }
 
 export default function CommentSection({ postId }: CommentSectionProps) {
@@ -39,9 +47,28 @@ export default function CommentSection({ postId }: CommentSectionProps) {
     if (error) {
       console.error("Error fetching comments:", error);
     } else if (data) {
-      setComments(data as Comment[]);
+      setComments(data);
     }
   }, [supabase, postId]);
+
+  const fetchVotes = useCallback(async () => {
+    try {
+      const response = await fetch(`/api/comment-vote?postId=${postId}`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const votesData: VoteData[] = await response.json();
+      setComments((prevComments) =>
+        prevComments.map((comment) => ({
+          ...comment,
+          voteCount:
+            votesData.find((v) => v.commentId === comment.id)?._sum.value ?? 0,
+        }))
+      );
+    } catch (error) {
+      console.error("Error fetching votes:", error);
+    }
+  }, [postId]);
 
   const fetchUser = useCallback(async () => {
     const {
@@ -51,15 +78,17 @@ export default function CommentSection({ postId }: CommentSectionProps) {
   }, [supabase]);
 
   useEffect(() => {
-    fetchComments();
     fetchUser();
-  }, [fetchComments, fetchUser]);
+  }, [fetchUser]);
+
+  useEffect(() => {
+    fetchComments();
+    fetchVotes();
+  }, [fetchComments, fetchVotes]);
 
   const handleSubmitComment = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) return;
-
-    const now = new Date().toISOString();
 
     const { data, error } = await supabase
       .from("Comment")
@@ -67,8 +96,6 @@ export default function CommentSection({ postId }: CommentSectionProps) {
         content: newComment,
         postId,
         authorId: user.id,
-        createdAt: now,
-        updatedAt: now,
       })
       .select();
 
@@ -80,20 +107,49 @@ export default function CommentSection({ postId }: CommentSectionProps) {
     }
   };
 
+  const handleVote = async (commentId: number, value: number) => {
+    if (!user) return;
+
+    const response = await fetch("/api/comment-vote", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ commentId, userId: user.id, value }),
+    });
+
+    if (response.ok) {
+      fetchVotes();
+    } else {
+      console.error("Error voting");
+    }
+  };
+
   const handleDeleteComment = async (commentId: number) => {
     if (!user) return;
 
-    const { error } = await supabase
-      .from("Comment")
-      .delete()
-      .eq("id", commentId)
-      .eq("authorId", user.id);
+    try {
+      const response = await fetch(`/api/comments?id=${commentId}`, {
+        method: "DELETE",
+      });
 
-    if (error) {
-      console.error("Error deleting comment:", error);
-    } else {
+      if (!response.ok) {
+        throw new Error("Failed to delete comment");
+      }
+
+      const result = await response.json();
+      console.log(result.message);
+
       fetchComments();
+    } catch (error) {
+      console.error("Error deleting comment:", error);
     }
+  };
+
+  const formatVoteCount = (count: number = 0) => {
+    if (count > 0) return `+${count}`;
+    if (count < 0) return `${count}`;
+    return "0";
   };
 
   return (
@@ -126,6 +182,25 @@ export default function CommentSection({ postId }: CommentSectionProps) {
           </div>
           <p>{comment.content}</p>
           <div className="mt-2 flex items-center">
+            {user && (
+              <>
+                <button
+                  onClick={() => handleVote(comment.id, 1)}
+                  className="mr-2 px-2 py-1 bg-green-500 text-white rounded"
+                >
+                  Upvote
+                </button>
+                <button
+                  onClick={() => handleVote(comment.id, -1)}
+                  className="mr-2 px-2 py-1 bg-red-500 text-white rounded"
+                >
+                  Downvote
+                </button>
+              </>
+            )}
+            <span className="mr-4">
+              Votes: {formatVoteCount(comment.voteCount)}
+            </span>
             {user && user.id === comment.User.id && (
               <button
                 onClick={() => handleDeleteComment(comment.id)}
