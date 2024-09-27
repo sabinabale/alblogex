@@ -3,11 +3,7 @@ import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
-
-type NavLinkProps = {
-  href: string;
-  children: React.ReactNode;
-};
+import { NavLinkProps } from "@/types/types";
 
 export default function TheNavbar() {
   const pathname = usePathname();

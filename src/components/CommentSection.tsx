@@ -6,30 +6,7 @@ import profilepic from "@/assets/images/profilepic.jpg";
 import chevronup from "@/assets/icons/chevronup.svg";
 import chevrondown from "@/assets/icons/chevrondown.svg";
 import cross from "@/assets/icons/cross.svg";
-
-type Comment = {
-  id: number;
-  content: string;
-  createdAt: string;
-  postId: number;
-  authorId: string;
-  User: {
-    name: string;
-    id: string;
-  };
-  voteCount: number;
-};
-
-type CommentSectionProps = {
-  postId: number;
-};
-
-type VoteData = {
-  commentId: number;
-  _sum: {
-    value: number;
-  };
-};
+import { CommentSectionProps, Comment, VoteData } from "@/types/types";
 
 export default function CommentSection({ postId }: CommentSectionProps) {
   const [comments, setComments] = useState<Comment[]>([]);

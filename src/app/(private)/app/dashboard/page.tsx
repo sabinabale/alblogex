@@ -6,22 +6,7 @@ import Link from "next/link";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { User } from "@supabase/auth-helpers-nextjs";
 import { MyArticleTableSkeleton } from "@/components/Skeletons";
-
-interface Article {
-  id: number;
-  title: string;
-  perex: string;
-  author: string;
-  comments: number;
-}
-
-interface PostData {
-  id: number;
-  title: string;
-  content: string;
-  author: { name: string };
-  Comment: { count: number }[];
-}
+import { Article, PostData } from "@/types/types";
 
 export default function Dashboard() {
   const [user, setUser] = useState<User | null>(null);

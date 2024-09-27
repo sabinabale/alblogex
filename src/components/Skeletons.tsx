@@ -74,3 +74,17 @@ export function ArticleCardSkeleton() {
     </div>
   );
 }
+
+export function ArticleFullSkeleton() {
+  return (
+    <div className="max-w-3xl mx-auto py-8">
+      <div className={`h-10 w-3/4 rounded-md bg-gray-200 ${shimmer} mb-4`} />
+      <div className={`h-4 w-1/2 rounded-md bg-gray-200 ${shimmer} mb-4`} />
+      <div
+        className={`w-[760px] h-[500px] rounded-md bg-gray-200 ${shimmer} mb-8`}
+      />
+      <div className={`h-48 w-full rounded-md bg-gray-200 ${shimmer} mb-8`} />
+      <div className={`h-32 w-full rounded-md bg-gray-200 ${shimmer}`} />
+    </div>
+  );
+}

@@ -6,10 +6,7 @@ import passwordShow from "@/assets/icons/passwordvisible.svg";
 import passwordHide from "@/assets/icons/passwordhidden.svg";
 import Image from "next/image";
 import InputLabel from "@/components/InputLabel";
-
-interface SigninFormProps {
-  onSuccessfulLogin: () => void;
-}
+import { SigninFormProps } from "@/types/types";
 
 export default function TheSigninForm({ onSuccessfulLogin }: SigninFormProps) {
   const [formData, setFormData] = useState({

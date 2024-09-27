@@ -4,51 +4,22 @@ import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
 import { Suspense } from "react";
 import { ArticleCardSkeleton } from "@/components/Skeletons";
+import { Post } from "@/types/types";
 
 export const revalidate = 60;
 
-type Post = {
-  id: number;
-  title: string;
-  content: string;
-  imageUrl: string | null;
-  createdAt: string;
-  User: {
-    name: string;
-  };
-  Comment: {
-    count: number;
-  }[];
-};
-
-type RawPost = {
-  id: number;
-  title: string;
-  content: string;
-  imageUrl: string | null;
-  createdAt: string;
-  User: {
-    name: string;
-  } | null;
-  Comment:
-    | {
-        count: number;
-      }[]
-    | null;
-};
-
 function isPost(obj: unknown): obj is Post {
-  const post = obj as RawPost;
+  const post = obj as Post;
   return (
     typeof post.id === "number" &&
     typeof post.title === "string" &&
     typeof post.content === "string" &&
     (post.imageUrl === null || typeof post.imageUrl === "string") &&
     typeof post.createdAt === "string" &&
-    post.User !== null &&
-    typeof post.User.name === "string" &&
-    Array.isArray(post.Comment) &&
-    post.Comment.every((c) => typeof c.count === "number")
+    post.author !== null &&
+    typeof post.author.name === "string" &&
+    Array.isArray(post.comments) &&
+    post.comments.every((c) => typeof c.count === "number")
   );
 }
 
@@ -64,8 +35,8 @@ export default async function Home() {
       content,
       imageUrl,
       createdAt,
-      User (name),
-      Comment (count)
+      author:User (name),
+      comments:Comment (count)
     `
     )
     .order("createdAt", { ascending: false })
@@ -108,7 +79,7 @@ const ArticleCard = ({ post }: { post: Post }) => {
       <div className="flex flex-col gap-4 max-w-[560px]">
         <h2 className="text-2xl font-semibold text-black">{post.title}</h2>
         <div className="text-sm">
-          {post.User.name} · {new Date(post.createdAt).toLocaleDateString()}
+          {post.author.name} · {new Date(post.createdAt).toLocaleDateString()}
         </div>
         <p className="text-balance">{post.content.substring(0, 200)}...</p>
         <div className="flex gap-4 text-sm">
@@ -118,7 +89,7 @@ const ArticleCard = ({ post }: { post: Post }) => {
           >
             Read whole article
           </Link>
-          <div>{post.Comment[0]?.count || 0} comments</div>
+          <div>{post.comments[0]?.count || 0} comments</div>
         </div>
       </div>
     </article>

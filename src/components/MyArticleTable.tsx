@@ -7,19 +7,7 @@ import EditIcon from "@/assets/icons/edit.svg";
 import DeleteIcon from "@/assets/icons/delete.svg";
 import Image from "next/image";
 import Link from "next/link";
-
-type Article = {
-  id: number;
-  title: string;
-  perex: string;
-  author: string;
-  comments: number;
-};
-
-type MyArticleTableProps = {
-  articles: Article[];
-  setArticles: React.Dispatch<React.SetStateAction<Article[]>>;
-};
+import { Article, MyArticleTableProps } from "@/types/types";
 
 export default function MyArticleTable({
   articles,

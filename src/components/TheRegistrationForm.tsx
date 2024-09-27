@@ -45,7 +45,6 @@ export default function TheRegistrationForm() {
     if (!formData.email.trim()) newErrors.email = "Email is required";
     if (!formData.password.trim()) newErrors.password = "Password is required";
 
-    // Check for <> characters
     if (formData.name.includes("<") || formData.name.includes(">"))
       newErrors.name = "<> characters are not allowed";
     if (formData.email.includes("<") || formData.email.includes(">"))
