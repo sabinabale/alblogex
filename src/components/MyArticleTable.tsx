@@ -111,18 +111,34 @@ export default function MyArticleTable({
 
   const handleDeleteSelected = async () => {
     try {
-      for (const id of selectedArticles) {
-        await handleDeleteArticle(id);
+      const postIds = selectedArticles.join(",");
+      const response = await fetch(`/api/articles?postIds=${postIds}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(
+          errorData.error || "Failed to delete selected articles"
+        );
       }
+
+      setArticles((prevArticles) =>
+        prevArticles.filter((article) => !selectedArticles.includes(article.id))
+      );
       setSelectedArticles([]);
-    } catch (error: unknown) {
+
+      console.log("Selected articles have been deleted successfully.");
+    } catch (error) {
       console.error("Error deleting selected articles:", error);
       if (error instanceof Error) {
-        alert(
-          `Failed to delete some or all selected articles. Error: ${error.message}`
+        console.error(
+          `Failed to delete selected articles. Error: ${error.message}`
         );
       } else {
-        alert("An unknown error occurred while deleting selected articles.");
+        console.error(
+          "An unknown error occurred while deleting selected articles."
+        );
       }
     }
   };

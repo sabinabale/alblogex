@@ -56,75 +56,58 @@ export async function DELETE(request: Request) {
   const supabase = createRouteHandlerClient({ cookies });
 
   try {
-    console.log("DELETE request received");
-
     const {
       data: { session },
     } = await supabase.auth.getSession();
     if (!session) {
-      console.log("Unauthorized: No valid session");
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const { searchParams } = new URL(request.url);
-    const postId = searchParams.get("postId");
+    const postIds = searchParams.get("postIds");
 
-    console.log("Attempting to delete post:", postId);
-
-    if (!postId) {
-      console.log("Missing postId for delete");
+    if (!postIds) {
       return NextResponse.json(
-        { success: false, error: "Missing postId for delete" },
+        { success: false, error: "Missing postIds for delete" },
         { status: 400 }
       );
     }
 
+    const postIdsArray = postIds.split(",").map(Number);
+
     await prisma.$transaction(async (tx) => {
       await tx.postImage.deleteMany({
-        where: { postId: Number(postId) },
+        where: { postId: { in: postIdsArray } },
       });
 
-      console.log("Related PostImage records deleted");
-
-      const post = await tx.post.findUnique({
-        where: { id: Number(postId) },
+      const posts = await tx.post.findMany({
+        where: { id: { in: postIdsArray } },
+        select: { id: true, imageUrl: true },
       });
 
-      console.log("Found post:", post);
-
-      if (post?.imageUrl) {
-        console.log("Attempting to delete image from storage:", post.imageUrl);
-        const imagePath = post.imageUrl.split("/").pop();
-        if (imagePath) {
-          const { error: deleteImageError } = await supabase.storage
-            .from("alblogex-postimages")
-            .remove([`${session.user.id}/${imagePath}`]);
-
-          if (deleteImageError) {
-            console.error(
-              "Error deleting image from storage:",
-              deleteImageError
-            );
-          } else {
-            console.log("Image deleted successfully from storage");
+      for (const post of posts) {
+        if (post.imageUrl) {
+          const imagePath = post.imageUrl.split("/").pop();
+          if (imagePath) {
+            await supabase.storage
+              .from("alblogex-postimages")
+              .remove([`${session.user.id}/${imagePath}`]);
           }
         }
       }
 
-      await tx.post.delete({
-        where: { id: Number(postId) },
+      await tx.post.deleteMany({
+        where: { id: { in: postIdsArray } },
       });
-
-      console.log("Post deleted successfully");
     });
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error("Detailed error in DELETE article route:", error);
+    console.error("Error in bulk DELETE article route:", error);
     return NextResponse.json(
       {
         success: false,
-        error: "Failed to handle article deletion",
+        error: "Failed to handle bulk article deletion",
         details: error instanceof Error ? error.message : String(error),
       },
       { status: 500 }
