@@ -57,7 +57,7 @@ export default function EditArticlePage({
 
       if (uploadedImage) {
         const fileExt = uploadedImage.name.split(".").pop();
-        const fileName = `${Math.random()}.${fileExt}`;
+        const fileName = `${Date.now()}.${fileExt}`;
         const filePath = `${params.id}/${fileName}`;
 
         const { error: uploadError } = await supabase.storage
@@ -66,17 +66,29 @@ export default function EditArticlePage({
 
         if (uploadError) throw uploadError;
 
-        const { data } = supabase.storage
+        const { data: urlData } = supabase.storage
           .from("alblogex-postimages")
           .getPublicUrl(filePath);
 
-        imageUrl = data.publicUrl;
+        imageUrl = urlData.publicUrl;
+
+        await supabase.from("PostImage").insert({
+          url: imageUrl,
+          fileName: fileName,
+          postId: parseInt(params.id),
+        });
 
         if (currentImageUrl) {
           const oldFilePath = currentImageUrl.split("/").slice(-2).join("/");
           await supabase.storage
             .from("alblogex-postimages")
             .remove([oldFilePath]);
+
+          await supabase
+            .from("PostImage")
+            .delete()
+            .eq("postId", parseInt(params.id))
+            .neq("url", imageUrl);
         }
       }
 
@@ -87,7 +99,7 @@ export default function EditArticlePage({
           content: markdownContent,
           imageUrl: imageUrl,
         })
-        .eq("id", params.id);
+        .eq("id", parseInt(params.id));
 
       if (error) throw error;
 
