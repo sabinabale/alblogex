@@ -212,7 +212,26 @@ export default function CommentSection({ postId }: CommentSectionProps) {
             <div className="flex items-center mb-2 gap-2">
               <span className="font-bold">{comment.User.name}</span>
               <span className="text-sm text-gray-500">
-                {new Date(comment.createdAt).toLocaleDateString()}
+                {(() => {
+                  const now = new Date();
+                  const createdAt = new Date(comment.createdAt);
+                  const diffInHours = Math.floor(
+                    (now.getTime() - createdAt.getTime()) / (1000 * 60 * 60)
+                  );
+
+                  if (diffInHours < 24) {
+                    return `${diffInHours} hour${
+                      diffInHours !== 1 ? "s" : ""
+                    } ago`;
+                  } else if (diffInHours < 48) {
+                    return "yesterday";
+                  } else {
+                    const diffInDays = Math.floor(diffInHours / 24);
+                    return `${diffInDays} day${
+                      diffInDays !== 1 ? "s" : ""
+                    } ago`;
+                  }
+                })()}
               </span>
             </div>
             <p>{comment.content}</p>
