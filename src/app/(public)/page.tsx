@@ -2,10 +2,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
+import { Suspense } from "react";
+import { ArticleCardSkeleton } from "@/components/Skeletons";
 
 export const revalidate = 60;
 
-interface Post {
+type Post = {
   id: number;
   title: string;
   content: string;
@@ -17,9 +19,9 @@ interface Post {
   Comment: {
     count: number;
   }[];
-}
+};
 
-interface RawPost {
+type RawPost = {
   id: number;
   title: string;
   content: string;
@@ -33,7 +35,7 @@ interface RawPost {
         count: number;
       }[]
     | null;
-}
+};
 
 function isPost(obj: unknown): obj is Post {
   const post = obj as RawPost;
@@ -80,7 +82,9 @@ export default async function Home() {
     <div className="min-h-screen">
       <h1 className="text-3xl font-bold mb-8">Recent articles</h1>
       {posts.map((post) => (
-        <ArticleCard key={post.id} post={post} />
+        <Suspense key={post.id} fallback={<ArticleCardSkeleton />}>
+          <ArticleCard post={post} />
+        </Suspense>
       ))}
     </div>
   );
@@ -93,13 +97,13 @@ const ArticleCard = ({ post }: { post: Post }) => {
         <Image
           src={post.imageUrl}
           alt={post.title}
-          width={272}
-          height={244}
-          className="h-auto w-auto rounded-md mr-8 object-cover"
+          width={270}
+          height={240}
+          className="w-[270px] h-[240px] rounded-md mr-8 object-cover"
           priority
         />
       ) : (
-        <div className="w-[272px] h-[244px] bg-gray-200 rounded-md mr-8"></div>
+        <div className="w-[270px] h-[240px] bg-gray-200 rounded-md mr-8"></div>
       )}
       <div className="flex flex-col gap-4 max-w-[560px]">
         <h2 className="text-2xl font-semibold text-black">{post.title}</h2>

@@ -55,3 +55,22 @@ export function TableRowSkeleton() {
     </div>
   );
 }
+
+export function ArticleCardSkeleton() {
+  return (
+    <div className="flex mb-8">
+      <div
+        className={`w-[270px] h-[240px] bg-gray-200 rounded-md mr-8 ${shimmer}`}
+      />
+      <div className="flex flex-col gap-5 max-w-[560px]">
+        <div className={`h-8 w-3/4 rounded-md bg-gray-200 ${shimmer}`} />
+        <div className={`h-4 w-1/2 rounded-md bg-gray-200 ${shimmer}`} />
+        <div className={`h-24 w-full rounded-md bg-gray-200 ${shimmer}`} />
+        <div className="flex gap-4">
+          <div className={`h-5 w-32 rounded-md bg-gray-200 ${shimmer}`} />
+          <div className={`h-5 w-24 rounded-md bg-gray-200 ${shimmer}`} />
+        </div>
+      </div>
+    </div>
+  );
+}

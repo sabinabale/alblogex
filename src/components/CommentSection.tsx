@@ -7,7 +7,7 @@ import chevronup from "@/assets/icons/chevronup.svg";
 import chevrondown from "@/assets/icons/chevrondown.svg";
 import cross from "@/assets/icons/cross.svg";
 
-interface Comment {
+type Comment = {
   id: number;
   content: string;
   createdAt: string;
@@ -18,18 +18,18 @@ interface Comment {
     id: string;
   };
   voteCount: number;
-}
+};
 
-interface CommentSectionProps {
+type CommentSectionProps = {
   postId: number;
-}
+};
 
-interface VoteData {
+type VoteData = {
   commentId: number;
   _sum: {
     value: number;
   };
-}
+};
 
 export default function CommentSection({ postId }: CommentSectionProps) {
   const [comments, setComments] = useState<Comment[]>([]);

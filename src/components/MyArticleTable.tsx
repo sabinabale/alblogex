@@ -195,7 +195,12 @@ export default function MyArticleTable({
               checked={selectedArticles.includes(article.id)}
             />
 
-            <div className="py-2 truncate">{article.title}</div>
+            <Link
+              href={`/articles/${article.id}`}
+              className="py-2 truncate hover:underline hover:underline-offset-2"
+            >
+              {article.title}
+            </Link>
             <div className="py-2 truncate">{article.perex}</div>
             <div className="py-2 truncate">{article.author}</div>
             <div className="text-center">{article.comments}</div>
