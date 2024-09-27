@@ -4,6 +4,11 @@ import React, { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 
+type NavLinkProps = {
+  href: string;
+  children: React.ReactNode;
+};
+
 export default function TheNavbar() {
   const pathname = usePathname();
   const [isSignedIn, setIsSignedIn] = useState(false);
@@ -33,7 +38,7 @@ export default function TheNavbar() {
     window.location.href = "/";
   };
 
-  const NavLink = ({ href, children }) => (
+  const NavLink = ({ href, children }: NavLinkProps) => (
     <Link
       href={href}
       className={`px-3 py-1.5 font-semibold rounded-md transition-colors duration-200 ease-in-out ${
