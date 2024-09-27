@@ -10,6 +10,7 @@ import { SigninFormProps } from "@/types/types";
 import { Button } from "./basic/Buttons";
 import SpinnerIcon from "@/assets/icons/loginspinner.svg";
 import { Input } from "./basic/Inputs";
+import TheForm from "./basic/TheForm";
 
 export default function TheSigninForm({ onSuccessfulLogin }: SigninFormProps) {
   const [formData, setFormData] = useState({
@@ -70,8 +71,8 @@ export default function TheSigninForm({ onSuccessfulLogin }: SigninFormProps) {
   };
 
   return (
-    <div className="border border-gray-200 rounded-xl p-8 shadow-sm bg-white">
-      <form onSubmit={handleSubmit} className="w-72">
+    <TheForm>
+      <form onSubmit={handleSubmit} className="w-72 ">
         <div>
           <InputLabel htmlFor="email">Email</InputLabel>
           <Input
@@ -115,7 +116,7 @@ export default function TheSigninForm({ onSuccessfulLogin }: SigninFormProps) {
         <Button
           variant="primary"
           size="default"
-          className="w-full mt-4"
+          className="w-full mt-4 leading-[30px]"
           type="submit"
           disabled={loading}
         >
@@ -132,6 +133,6 @@ export default function TheSigninForm({ onSuccessfulLogin }: SigninFormProps) {
           <p className="text-red-500 text-sm mt-2">{errors.form}</p>
         )}
       </form>
-    </div>
+    </TheForm>
   );
 }
