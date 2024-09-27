@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from "react";
-import CustomCheckbox from "./CustomCheckbox";
+import CustomCheckbox from "@/components/basic/CustomCheckbox";
 import AscendingIcon from "@/assets/icons/chevronup.svg";
 import DescendingIcon from "@/assets/icons/chevrondown.svg";
 import ChevronsIcon from "@/assets/icons/chevrons.svg";
@@ -8,6 +8,7 @@ import DeleteIcon from "@/assets/icons/delete.svg";
 import Image from "next/image";
 import Link from "next/link";
 import { Article, MyArticleTableProps } from "@/types/types";
+import { Button } from "@/components/basic/Buttons";
 
 export default function MyArticleTable({
   articles,
@@ -215,13 +216,14 @@ export default function MyArticleTable({
           {selectedArticles.length} item
           {selectedArticles.length !== 1 ? "s" : ""} selected
         </div>
-        <button
-          className="w-fit disabled:bg-gray-300 transition-all duration-300 ease-out bg-red-700 text-white px-2 py-1 rounded-md hover:bg-red-800"
+        <Button
+          variant="destructive"
+          size="small"
           onClick={handleDeleteSelected}
           disabled={selectedArticles.length === 0}
         >
           Bulk delete
-        </button>
+        </Button>
       </div>
     </div>
   );

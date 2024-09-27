@@ -7,6 +7,8 @@ import chevronup from "@/assets/icons/chevronup.svg";
 import chevrondown from "@/assets/icons/chevrondown.svg";
 import cross from "@/assets/icons/cross.svg";
 import { CommentSectionProps, Comment, VoteData } from "@/types/types";
+import Link from "next/link";
+import { Button } from "./basic/Buttons";
 
 export default function CommentSection({ postId }: CommentSectionProps) {
   const [comments, setComments] = useState<Comment[]>([]);
@@ -137,9 +139,19 @@ export default function CommentSection({ postId }: CommentSectionProps) {
 
   return (
     <div className="mt-8 border-t pt-8 border-gray-300">
-      <h4>Comments ({comments.length})</h4>
+      <h4 className="mb-8">Comments ({comments.length})</h4>
+      {!user && (
+        <div>
+          <Button variant="link" size="none">
+            <Link className="block mb-8 text-base" href="/signin">
+              Sign in
+            </Link>
+          </Button>{" "}
+          to add a comment 💬
+        </div>
+      )}
       {user && (
-        <div className="flex gap-4 mt-8 mb-6">
+        <div className="flex gap-4 mb-6">
           <div className="bg-gray-200 rounded-full w-11 h-11 flex-shrink-0">
             <Image
               src={profilepic}

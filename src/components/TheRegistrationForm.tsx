@@ -3,8 +3,11 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
-import InputLabel from "@/components/InputLabel";
-
+import InputLabel from "@/components/basic/InputLabel";
+import { Input } from "./basic/Inputs";
+import passwordShow from "@/assets/icons/passwordvisible.svg";
+import passwordHide from "@/assets/icons/passwordhidden.svg";
+import Image from "next/image";
 export default function TheRegistrationForm() {
   const router = useRouter();
   const supabase = createClientComponentClient();
@@ -16,12 +19,17 @@ export default function TheRegistrationForm() {
   });
 
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState<{
     name?: string;
     email?: string;
     password?: string;
     form?: string;
   }>({});
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -117,7 +125,8 @@ export default function TheRegistrationForm() {
         <div>
           <InputLabel htmlFor="name">Name</InputLabel>
 
-          <input
+          <Input
+            variant="auth"
             type="text"
             id="name"
             name="name"
@@ -131,7 +140,8 @@ export default function TheRegistrationForm() {
         </div>
         <div>
           <InputLabel htmlFor="email">Email</InputLabel>
-          <input
+          <Input
+            variant="auth"
             type="email"
             id="email"
             name="email"
@@ -143,16 +153,28 @@ export default function TheRegistrationForm() {
             {errors.email || "\u00A0"}
           </p>
         </div>
-        <div>
+        <div className="relative">
           <InputLabel htmlFor="password">Password</InputLabel>
-          <input
-            type="password"
+          <Input
+            variant="auth"
+            type={showPassword ? "text" : "password"}
             id="password"
             name="password"
             value={formData.password}
             onChange={handleChange}
-            className="w-full border rounded p-2"
+            className="w-full border rounded p-2 pr-10 relative"
           />
+          <button
+            type="button"
+            onClick={togglePasswordVisibility}
+            className="absolute top-[50%] transform -translate-y-1/2 left-[255px]"
+          >
+            {showPassword ? (
+              <Image src={passwordShow} alt="Show password" />
+            ) : (
+              <Image src={passwordHide} alt="Hide password" />
+            )}
+          </button>
           <p className="text-red-500 text-xs h-6 pt-1 pl-1">
             {errors.password || "\u00A0"}
           </p>

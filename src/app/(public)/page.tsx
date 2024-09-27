@@ -3,8 +3,9 @@ import Link from "next/link";
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
 import { Suspense } from "react";
-import { ArticleCardSkeleton } from "@/components/Skeletons";
+import { ArticleCardSkeleton } from "@/components/basic/Skeletons";
 import { Post } from "@/types/types";
+import { Button } from "@/components/basic/Buttons";
 
 export const revalidate = 60;
 
@@ -83,12 +84,9 @@ const ArticleCard = ({ post }: { post: Post }) => {
         </div>
         <p className="text-balance">{post.content.substring(0, 200)}...</p>
         <div className="flex gap-4 text-sm">
-          <Link
-            className="text-cyan-600 underline underline-offset-2 hover:text-cyan-500"
-            href={`/articles/${post.id}`}
-          >
-            Read whole article
-          </Link>
+          <Button variant="link" size="none" asChild>
+            <Link href={`/articles/${post.id}`}>Read whole article</Link>
+          </Button>
           <div>{post.comments[0]?.count || 0} comments</div>
         </div>
       </div>

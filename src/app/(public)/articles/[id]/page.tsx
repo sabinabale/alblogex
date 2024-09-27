@@ -5,7 +5,7 @@ import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { useEffect, useState, useCallback, Suspense } from "react";
 import { useRouter } from "next/navigation";
 import CommentSection from "@/components/CommentSection";
-import { ArticleFullSkeleton } from "@/components/Skeletons";
+import { ArticleFullSkeleton } from "@/components/basic/Skeletons";
 import { Post } from "@/types/types";
 
 export default function ArticlePage({ params }: { params: { id: string } }) {
