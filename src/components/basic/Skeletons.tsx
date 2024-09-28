@@ -25,7 +25,7 @@ export function HeadingSkeleton() {
 
 export function TableSkeleton() {
   return (
-    <div className="relative rounded-md shadow-sm bg-white">
+    <div className="relative rounded-xl shadow-sm bg-white">
       <div className="border-b border-gray-100">
         <TableRowSkeleton />
       </div>
@@ -35,9 +35,9 @@ export function TableSkeleton() {
         <TableRowSkeleton />
         <TableRowSkeleton />
       </div>
-      <div className="flex items-center truncate rounded-xl gap-4 px-4 py-3">
-        <div className={`h-6 w-[120px] rounded-md bg-gray-100 ${shimmer}`} />
-        <div className={`h-7 w-[90px] rounded-md bg-gray-100 ${shimmer}`} />
+      <div className="flex items-center truncate gap-4 px-4 py-2">
+        <div className={`h-4 w-[120px] rounded-md bg-gray-100 ${shimmer}`} />
+        <div className={`h-4 w-[90px] rounded-md bg-gray-100 ${shimmer}`} />
       </div>
     </div>
   );
@@ -45,13 +45,13 @@ export function TableSkeleton() {
 
 export function TableRowSkeleton() {
   return (
-    <div className="flex items-center justify-center truncate rounded-xl gap-4 px-4 py-4">
-      <div className={`h-6 w-9 rounded-md bg-gray-100 ${shimmer}`} />
-      <div className={`h-6 w-2/5 rounded-md bg-gray-100 ${shimmer}`} />
-      <div className={`h-6 w-2/5 rounded-md bg-gray-100 ${shimmer}`} />
-      <div className={`h-6 w-1/4 rounded-md bg-gray-100 ${shimmer}`} />
-      <div className={`h-6 w-1/6 rounded-md bg-gray-100 ${shimmer}`} />
-      <div className={`h-6 w-1/6 rounded-md bg-gray-100 ${shimmer}`} />
+    <div className="flex items-center justify-center truncate gap-4 px-4 py-2">
+      <div className={`h-5 w-8 rounded-md bg-gray-100 ${shimmer}`} />
+      <div className={`h-4 w-1/4 rounded-md bg-gray-100 ${shimmer}`} />
+      <div className={`h-4 w-2/4 rounded-md bg-gray-100 ${shimmer}`} />
+      <div className={`h-4 w-1/6 rounded-md bg-gray-100 ${shimmer}`} />
+      <div className={`h-4 w-1/6 rounded-md bg-gray-100 ${shimmer}`} />
+      <div className={`h-4 w-1/6 rounded-md bg-gray-100 ${shimmer}`} />
     </div>
   );
 }

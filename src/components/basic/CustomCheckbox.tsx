@@ -34,7 +34,7 @@ const CustomCheckbox: React.FC<CustomCheckboxProps> = ({
           ref={checkboxRef}
         />
         <div
-          className={`w-[18px] h-[18px] border rounded-md transition-colors hover:border-black shadow-sm ${
+          className={`w-[18px] h-[18px] border rounded-[4px] transition-colors hover:border-black shadow-sm ${
             checked || indeterminate
               ? "bg-black border-black"
               : "bg-white border-gray-300"
@@ -42,7 +42,7 @@ const CustomCheckbox: React.FC<CustomCheckboxProps> = ({
         >
           {checked && !indeterminate && (
             <svg
-              className="w-4 h-4 text-white"
+              className="mx-auto mt-0.5 w-3 h-3 text-white"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -51,14 +51,14 @@ const CustomCheckbox: React.FC<CustomCheckboxProps> = ({
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                strokeWidth="2"
+                strokeWidth="4"
                 d="M5 13l4 4L19 7"
               ></path>
             </svg>
           )}
           {indeterminate && (
             <svg
-              className="w-4 h-4 text-white"
+              className="mx-auto mt-0.5 w-3 h-3 text-white"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -67,7 +67,7 @@ const CustomCheckbox: React.FC<CustomCheckboxProps> = ({
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                strokeWidth="2"
+                strokeWidth="4"
                 d="M5 12h14"
               ></path>
             </svg>

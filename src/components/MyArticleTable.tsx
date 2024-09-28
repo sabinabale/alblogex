@@ -66,7 +66,8 @@ export default function MyArticleTable({
   const isAllSelected = selectedArticles.length === articles.length;
   const isSomeSelected = selectedArticles.length > 0 && !isAllSelected;
 
-  const handleDeleteArticle = async (id: number) => {
+  const handleDeleteArticle = async (id: number, event: React.MouseEvent) => {
+    event.stopPropagation();
     const confirmDelete = window.confirm(
       "Are you sure you want to delete this article?"
     );
@@ -255,13 +256,16 @@ export default function MyArticleTable({
               className="border-t border-gray-300 hover:bg-gray-50 cursor-pointer"
               onClick={() => handleSelectArticle(article.id)}
             >
-              <td className="py-2 px-3">
+              <td className="py-2 px-3" onClick={(e) => e.stopPropagation()}>
                 <CustomCheckbox
                   onChange={() => handleSelectArticle(article.id)}
                   checked={selectedArticles.includes(article.id)}
                 />
               </td>
-              <td className="py-2 px-4 truncate">
+              <td
+                className="py-2 px-4 truncate"
+                onClick={(e) => e.stopPropagation()}
+              >
                 <Button variant="link" size="none" asChild>
                   <Link href={`/articles/${article.id}`}>{article.title}</Link>
                 </Button>
@@ -269,7 +273,7 @@ export default function MyArticleTable({
               <td className="py-2 px-4 truncate w-[290px]">{article.perex}</td>
               <td className="py-2 px-4 truncate">{article.author}</td>
               <td className="py-2 px-4">{article.comments}</td>
-              <td className="py-2 px-4">
+              <td className="py-2 px-4" onClick={(e) => e.stopPropagation()}>
                 <div className="flex space-x-4">
                   <Link
                     href={`/app/edit-article/${article.id}`}
@@ -279,7 +283,7 @@ export default function MyArticleTable({
                   </Link>
                   <button
                     className="w-fit hover:opacity-40"
-                    onClick={() => handleDeleteArticle(article.id)}
+                    onClick={(event) => handleDeleteArticle(article.id, event)}
                   >
                     <Image src={DeleteIcon} alt="delete icon" />
                   </button>
