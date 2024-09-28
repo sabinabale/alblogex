@@ -63,11 +63,12 @@ textarea {
   border-radius: 6px;
   width: 100%;
   transition: border-color 0.3s ease;
-  font-weight: 500;
 }
 
 :placeholder-shown {
   font-size: 14px;
+
+  font-weight: 400;
 }
 
 input[type="checkbox"] {

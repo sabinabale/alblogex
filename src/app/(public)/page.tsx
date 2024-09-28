@@ -7,8 +7,6 @@ import { ArticleCardSkeleton } from "@/components/basic/Skeletons";
 import { Post } from "@/types/types";
 import { Button } from "@/components/basic/Buttons";
 
-export const revalidate = 60;
-
 function isPost(obj: unknown): obj is Post {
   const post = obj as Post;
   return (

@@ -5,7 +5,7 @@ const labelVariants = cva("block  ml-1 font-normal", {
   variants: {
     variant: {
       auth: "text-black/60 text-[13px] mb-1",
-      article: "text-black/80 text-base",
+      article: "text-black/80 text-sm",
     },
   },
   defaultVariants: {

@@ -126,8 +126,6 @@ export default function MyArticleTable({
         prevArticles.filter((article) => !selectedArticles.includes(article.id))
       );
       setSelectedArticles([]);
-
-      alert("Selected articles have been deleted successfully.");
     } catch (error) {
       console.error("Error deleting selected articles:", error);
       if (error instanceof Error) {

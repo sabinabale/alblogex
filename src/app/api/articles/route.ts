@@ -63,49 +63,70 @@ export async function DELETE(request: Request) {
 
     const { searchParams } = new URL(request.url);
     const postId = searchParams.get("postId");
+    const postIds = searchParams.get("postIds");
 
-    if (!postId) {
+    if (!postId && !postIds) {
       return NextResponse.json(
-        { success: false, error: "Missing postId for delete" },
+        { success: false, error: "Missing postId or postIds for delete" },
         { status: 400 }
       );
     }
 
-    await prisma.$transaction(async (tx) => {
-      const post = await tx.post.findUnique({
-        where: { id: parseInt(postId) },
-        include: { images: true },
-      });
+    const idsToDelete = postIds
+      ? postIds.split(",").map((id) => parseInt(id, 10))
+      : [parseInt(postId!, 10)];
 
-      if (!post || post.authorId !== session.user.id) {
-        throw new Error("Unauthorized or post not found");
+    const results = await prisma.$transaction(async (tx) => {
+      const deleteResults = [];
+      for (const id of idsToDelete) {
+        try {
+          const post = await tx.post.findUnique({
+            where: { id },
+            include: { images: true },
+          });
+
+          if (!post || post.authorId !== session.user.id) {
+            deleteResults.push({ id, status: "not_found_or_unauthorized" });
+            continue;
+          }
+
+          // Delete associated images from storage
+          for (const image of post.images) {
+            await supabase.storage
+              .from("alblogex-postimages")
+              .remove([`${session.user.id}/${image.fileName}`]);
+          }
+
+          // Delete PostImage records
+          await tx.postImage.deleteMany({
+            where: { postId: id },
+          });
+
+          // Delete the post
+          await tx.post.delete({
+            where: { id },
+          });
+
+          deleteResults.push({ id, status: "deleted" });
+        } catch (error) {
+          console.error(`Error deleting post ${id}:`, error);
+          deleteResults.push({
+            id,
+            status: "error",
+            message: error instanceof Error ? error.message : String(error),
+          });
+        }
       }
-
-      // Delete associated images from storage
-      for (const image of post.images) {
-        await supabase.storage
-          .from("alblogex-postimages")
-          .remove([`${session.user.id}/${image.fileName}`]);
-      }
-
-      // Delete PostImage records
-      await tx.postImage.deleteMany({
-        where: { postId: parseInt(postId) },
-      });
-
-      // Delete the post
-      await tx.post.delete({
-        where: { id: parseInt(postId) },
-      });
+      return deleteResults;
     });
 
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ success: true, results });
   } catch (error) {
     console.error("Error in DELETE article route:", error);
     return NextResponse.json(
       {
         success: false,
-        error: "Failed to delete article",
+        error: "Failed to delete article(s)",
         details: error instanceof Error ? error.message : String(error),
       },
       { status: 500 }
