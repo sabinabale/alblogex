@@ -4,6 +4,8 @@ import Image from "next/image";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import ArrowIcon from "@/assets/icons/backarrow.svg";
 import CommentSection from "@/components/CommentSection";
 import { ArticleFullSkeleton } from "@/components/basic/Skeletons";
@@ -64,7 +66,7 @@ export default function ArticlePage({ params }: { params: { id: string } }) {
 
   return (
     <div className="max-w-3xl mx-auto py-8">
-      <Link href="/articles" className="flex gap-2 items-center text-sm my-4">
+      <Link href="/" className="flex gap-2 items-center text-sm my-4">
         <Image src={ArrowIcon} width={16} height={16} alt="go back icon" /> Back
         to recent articles
       </Link>
@@ -93,8 +95,13 @@ export default function ArticlePage({ params }: { params: { id: string } }) {
           Written by {post.author.name.split(" ")[0]}
         </div>
       </div>
-      <div className="prose max-w-none my-8">{post.content}</div>
+      <div className="prose max-w-none my-8">
+        <ReactMarkdown remarkPlugins={[remarkGfm]}>
+          {post.content}
+        </ReactMarkdown>
+      </div>
       <CommentSection postId={post.id} />
+      <ArticleFullSkeleton />
     </div>
   );
 }
