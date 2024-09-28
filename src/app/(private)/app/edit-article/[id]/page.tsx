@@ -8,6 +8,7 @@ import crossicon from "@/assets/icons/cross.svg";
 import remarkGfm from "remark-gfm";
 import { useRouter } from "next/navigation";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { Button } from "@/components/basic/Buttons";
 
 export default function EditArticlePage({
   params,
@@ -116,12 +117,15 @@ export default function EditArticlePage({
     <div className="space-y-8 text-base">
       <div className="flex gap-4 items-center">
         <h1 className="text-2xl font-bold">Edit article</h1>
-        <button
-          className="bg-black/90 font-medium text-white text-sm px-3 py-1.5 rounded-md w-fit"
+        <Button
+          variant="primary"
+          size="default"
+          type="submit"
+          form="articleForm"
           onClick={handlePublish}
         >
           Publish article
-        </button>
+        </Button>
       </div>
       <div className="flex flex-col gap-1 w-1/2">
         <div className="font-medium pl-1">Article title</div>
@@ -226,38 +230,7 @@ const ImageUpload = ({
   handleRemoveImage: () => void;
 }) => {
   return (
-    <>
-      <input
-        type="file"
-        accept="image/*"
-        id="imageUpload"
-        className="hidden"
-        onChange={handleImageUpload}
-      />
-      <label
-        htmlFor="imageUpload"
-        className="bg-gray-500 hover:bg-gray-600 font-medium text-white text-sm px-3 py-1.5 rounded-md w-fit cursor-pointer"
-      >
-        Upload image
-      </label>
-      {(uploadedImage || currentImageUrl) && (
-        <div className="flex items-center gap-2">
-          <span className="text-sm text-gray-600">
-            {uploadedImage ? uploadedImage.name : "Current image"}
-          </span>
-          <button
-            onClick={handleRemoveImage}
-            className="w-fit"
-            aria-label="Remove uploaded image"
-          >
-            <Image
-              src={crossicon}
-              alt="cross icon"
-              className="opacity-60 hover:opacity-100 "
-            />
-          </button>
-        </div>
-      )}
+    <div className="flex flex-col gap-2">
       {currentImageUrl && !uploadedImage && (
         <Image
           src={currentImageUrl}
@@ -266,7 +239,33 @@ const ImageUpload = ({
           height={100}
         />
       )}
-    </>
+      <input
+        type="file"
+        accept="image/*"
+        id="imageUpload"
+        className="hidden"
+        onChange={handleImageUpload}
+      />
+      <label htmlFor="imageUpload" className="text-cyan-600 cursor-pointer">
+        Upload new image
+      </label>
+      {(uploadedImage || currentImageUrl) && (
+        <div className="flex items-center gap-2">
+          <button
+            onClick={handleRemoveImage}
+            className="w-fit flex items-center gap-1"
+            aria-label="Remove uploaded image"
+          >
+            <span>Delete</span>
+            <Image
+              src={crossicon}
+              alt="cross icon"
+              className="opacity-60 hover:opacity-100 "
+            />
+          </button>
+        </div>
+      )}
+    </div>
   );
 };
 

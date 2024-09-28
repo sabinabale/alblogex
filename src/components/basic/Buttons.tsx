@@ -9,8 +9,8 @@ const buttonVariants = cva(
     variants: {
       variant: {
         primary: "bg-black/90 text-white w-full hover:bg-[#333333] w-fit",
-        destructive: "bg-red-700 text-white hover:bg-red-800",
-        link: "text-cyan-600 underline underline-offset-2 hover:text-cyan-500",
+        destructive: "text-red-700 hover:text-red-800",
+        link: "text-cyan-600 underline underline-offset-2 hover:text-cyan-800",
         icon: "bg-none border-none hover:opacity-40",
       },
       size: {

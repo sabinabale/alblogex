@@ -1,11 +1,11 @@
 import React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 
-const labelVariants = cva("block text-[13px] mb-1 ml-1 font-normal", {
+const labelVariants = cva("block  ml-1 font-normal", {
   variants: {
     variant: {
-      auth: "text-black/60",
-      article: "text-black/60",
+      auth: "text-black/60 text-[13px] mb-1",
+      article: "text-black/80 text-base",
     },
   },
   defaultVariants: {

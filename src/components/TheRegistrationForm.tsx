@@ -130,7 +130,7 @@ export default function TheRegistrationForm() {
           <InputLabel htmlFor="name">Name</InputLabel>
 
           <Input
-            variant="auth"
+            variant="general"
             type="text"
             id="name"
             name="name"
@@ -145,7 +145,7 @@ export default function TheRegistrationForm() {
         <div>
           <InputLabel htmlFor="email">Email</InputLabel>
           <Input
-            variant="auth"
+            variant="general"
             type="email"
             id="email"
             name="email"
@@ -160,7 +160,7 @@ export default function TheRegistrationForm() {
         <div className="relative">
           <InputLabel htmlFor="password">Password</InputLabel>
           <Input
-            variant="auth"
+            variant="general"
             type={showPassword ? "text" : "password"}
             id="password"
             name="password"

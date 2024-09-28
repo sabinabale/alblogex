@@ -8,6 +8,9 @@ import crossicon from "@/assets/icons/cross.svg";
 import remarkGfm from "remark-gfm";
 import { useRouter } from "next/navigation";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { Button } from "@/components/basic/Buttons";
+import InputLabel from "@/components/basic/InputLabel";
+import { Input } from "@/components/basic/Inputs";
 
 export default function Page() {
   const [markdownContent, setMarkdownContent] = useState("");
@@ -140,20 +143,24 @@ export default function Page() {
     <div className="space-y-8 text-base mb-8">
       <div className="flex gap-4 items-center">
         <h1 className="text-2xl font-bold">Create A New Article</h1>
-        <button
+        <Button
+          variant="primary"
+          size="default"
           type="submit"
           form="articleForm"
           className="bg-black/90 font-medium text-white text-sm px-3 py-1.5 rounded-md w-fit"
         >
           Publish Article
-        </button>
+        </Button>
       </div>
       <form id="articleForm" onSubmit={handleSubmit} className="space-y-8">
         <div className="flex flex-col gap-1 w-1/2">
-          <label htmlFor="articleTitle" className="font-medium pl-1">
+          <InputLabel variant="article" htmlFor="articleTitle">
             Article Title
-          </label>
-          <input
+          </InputLabel>
+
+          <Input
+            variant="general"
             id="articleTitle"
             type="text"
             placeholder="Article Title"

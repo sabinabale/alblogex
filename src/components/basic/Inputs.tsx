@@ -6,7 +6,8 @@ const inputVariants = cva(
   {
     variants: {
       variant: {
-        auth: "border-[rgba(0,0,0,0.2)] hover:border-black focus:border-black focus:outline-2 focus:outline-black focus:outline-offset-2",
+        general:
+          "border-[rgba(0,0,0,0.2)] hover:border-black focus:border-black focus:outline-2 focus:outline-black focus:outline-offset-2",
         error:
           "border-red-500 hover:border-red-600 focus:border-red-600 focus:outline-2 focus:outline-red-600 focus:outline-offset-2",
         success:
@@ -14,7 +15,7 @@ const inputVariants = cva(
       },
     },
     defaultVariants: {
-      variant: "auth",
+      variant: "general",
     },
   }
 );

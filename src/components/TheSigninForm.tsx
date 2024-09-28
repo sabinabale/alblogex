@@ -76,7 +76,7 @@ export default function TheSigninForm({ onSuccessfulLogin }: SigninFormProps) {
         <div>
           <InputLabel htmlFor="email">Email</InputLabel>
           <Input
-            variant="auth"
+            variant="general"
             type="email"
             id="email"
             name="email"
@@ -90,7 +90,7 @@ export default function TheSigninForm({ onSuccessfulLogin }: SigninFormProps) {
         <div className="relative">
           <InputLabel htmlFor="password">Password</InputLabel>
           <Input
-            variant="auth"
+            variant="general"
             type={showPassword ? "text" : "password"}
             id="password"
             name="password"

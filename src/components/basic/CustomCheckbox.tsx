@@ -34,10 +34,10 @@ const CustomCheckbox: React.FC<CustomCheckboxProps> = ({
           ref={checkboxRef}
         />
         <div
-          className={`w-[18px] h-[18px] border rounded-md transition-colors hover:border-black ${
+          className={`w-[18px] h-[18px] border rounded-md transition-colors hover:border-black shadow-sm ${
             checked || indeterminate
               ? "bg-black border-black"
-              : "border-gray-300"
+              : "bg-white border-gray-300"
           }`}
         >
           {checked && !indeterminate && (

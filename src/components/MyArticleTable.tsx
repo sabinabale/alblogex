@@ -2,7 +2,6 @@ import React, { useState, useMemo } from "react";
 import CustomCheckbox from "@/components/basic/CustomCheckbox";
 import AscendingIcon from "@/assets/icons/chevronup.svg";
 import DescendingIcon from "@/assets/icons/chevrondown.svg";
-import ChevronsIcon from "@/assets/icons/chevrons.svg";
 import EditIcon from "@/assets/icons/edit.svg";
 import DeleteIcon from "@/assets/icons/delete.svg";
 import Image from "next/image";
@@ -68,6 +67,11 @@ export default function MyArticleTable({
   const isSomeSelected = selectedArticles.length > 0 && !isAllSelected;
 
   const handleDeleteArticle = async (id: number) => {
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this article?"
+    );
+    if (!confirmDelete) return;
+
     try {
       const response = await fetch(`/api/articles?postId=${id}`, {
         method: "DELETE",
@@ -99,6 +103,11 @@ export default function MyArticleTable({
   };
 
   const handleDeleteSelected = async () => {
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete the selected articles?"
+    );
+    if (!confirmDelete) return;
+
     try {
       const postIds = selectedArticles.join(",");
       const response = await fetch(`/api/articles?postIds=${postIds}`, {
@@ -117,114 +126,191 @@ export default function MyArticleTable({
       );
       setSelectedArticles([]);
 
-      console.log("Selected articles have been deleted successfully.");
+      alert("Selected articles have been deleted successfully.");
     } catch (error) {
       console.error("Error deleting selected articles:", error);
       if (error instanceof Error) {
-        console.error(
-          `Failed to delete selected articles. Error: ${error.message}`
-        );
+        alert(`Failed to delete selected articles. Error: ${error.message}`);
       } else {
-        console.error(
-          "An unknown error occurred while deleting selected articles."
-        );
+        alert("An unknown error occurred while deleting selected articles.");
       }
     }
   };
 
   return (
-    <div className="border border-gray-300 rounded-md bg-white overflow-scroll">
-      <div className="grid grid-cols-[auto,290px,290px,200px,1fr,1fr] gap-4 items-center border-b border-gray-300 px-4 py-2.5">
-        <CustomCheckbox
-          onChange={handleSelectAll}
-          checked={isAllSelected}
-          indeterminate={isSomeSelected}
-        />
-
-        {(["title", "perex", "author", "comments"] as const).map((key) => (
-          <button
-            key={key}
-            className="font-bold text-left flex items-center group text-black/70 hover:text-black "
-            onClick={() => handleSort(key)}
-          >
-            {key.charAt(0).toUpperCase() + key.slice(1)}
-            <span className="ml-1 flex items-center ">
-              {sortConfig?.key === key ? (
-                sortConfig.direction === "ascending" ? (
-                  <Image
-                    src={AscendingIcon}
-                    alt="ascending icon"
-                    className="group-hover:scale-110 transition-all duration-300 ease-out"
-                  />
-                ) : (
-                  <Image
-                    src={DescendingIcon}
-                    alt="descending icon"
-                    className="group-hover:scale-110 transition-all duration-300 ease-out"
-                  />
-                )
-              ) : (
-                <Image
-                  src={ChevronsIcon}
-                  alt="chevrons icon"
-                  className="group-hover:scale-110 transition-all duration-300 ease-out"
-                />
-              )}
-            </span>
-          </button>
-        ))}
-        <div className="font-bold text-black/70">Actions</div>
-      </div>
-
-      <div className="grid grid-cols-[auto,290px,290px,200px,1fr,1fr] gap-y-2 gap-x-4 items-center px-4 py-2 ">
-        {sortedArticles.map((article) => (
-          <React.Fragment key={article.id}>
-            <CustomCheckbox
-              onChange={() => handleSelectArticle(article.id)}
-              checked={selectedArticles.includes(article.id)}
-            />
-
-            <Link
-              href={`/articles/${article.id}`}
-              className="py-2 truncate hover:underline hover:underline-offset-2"
-            >
-              {article.title}
-            </Link>
-            <div className="py-2 truncate">{article.perex}</div>
-            <div className="py-2 truncate">{article.author}</div>
-            <div className="text-center">{article.comments}</div>
-            <div className="flex space-x-4">
-              <Link
-                href={`/app/edit-article/${article.id}`}
-                className="w-fit hover:opacity-40"
-              >
-                <Image src={EditIcon} alt="edit icon" />
-              </Link>
+    <div className="border border-gray-300 rounded-xl text-sm bg-white shadow-sm w-full overflow-hidden">
+      <table className="w-full table-fixed">
+        <thead className="text-gray-500">
+          <tr className="bg-gray-50">
+            <th className="w-[4%] py-2 px-3">
+              <CustomCheckbox
+                onChange={handleSelectAll}
+                checked={isAllSelected}
+                indeterminate={isSomeSelected}
+              />
+            </th>
+            <th className="w-1/3 py-2 px-4">
               <button
-                className="w-fit hover:opacity-40"
-                onClick={() => handleDeleteArticle(article.id)}
+                className="text-left flex items-center group text-black/70 hover:text-black w-full text-gray-500"
+                onClick={() => handleSort("title")}
               >
-                <Image src={DeleteIcon} alt="delete icon" />
+                Title
+                <span className="flex items-center">
+                  {sortConfig?.key === "title" &&
+                    (sortConfig.direction === "ascending" ? (
+                      <Image
+                        src={AscendingIcon}
+                        alt="ascending icon"
+                        className="group-hover:scale-110 transition-all duration-300 ease-out"
+                      />
+                    ) : (
+                      <Image
+                        src={DescendingIcon}
+                        alt="descending icon"
+                        className="group-hover:scale-110 transition-all duration-300 ease-out"
+                      />
+                    ))}
+                </span>
               </button>
-            </div>
-          </React.Fragment>
-        ))}
-      </div>
-
-      <div className="py-2 px-4 flex gap-4 border-t text-sm border-gray-300 items-center">
-        <div className="w-[120px]">
-          {selectedArticles.length} item
-          {selectedArticles.length !== 1 ? "s" : ""} selected
-        </div>
-        <Button
-          variant="destructive"
-          size="small"
-          onClick={handleDeleteSelected}
-          disabled={selectedArticles.length === 0}
-        >
-          Bulk delete
-        </Button>
-      </div>
+            </th>
+            <th className="w-2/3 py-2 px-4">
+              <button
+                className="text-left flex items-center group text-black/70 hover:text-black w-full text-gray-500"
+                onClick={() => handleSort("perex")}
+              >
+                Perex
+                <span className="flex items-center">
+                  {sortConfig?.key === "perex" &&
+                    (sortConfig.direction === "ascending" ? (
+                      <Image
+                        src={AscendingIcon}
+                        alt="ascending icon"
+                        className="group-hover:scale-110 transition-all duration-300 ease-out"
+                      />
+                    ) : (
+                      <Image
+                        src={DescendingIcon}
+                        alt="descending icon"
+                        className="group-hover:scale-110 transition-all duration-300 ease-out"
+                      />
+                    ))}
+                </span>
+              </button>
+            </th>
+            <th className="w-1/4 py-2 px-4">
+              <button
+                className=" text-left flex items-center group text-black/70 hover:text-black w-full text-gray-500"
+                onClick={() => handleSort("author")}
+              >
+                Author
+                <span className="flex items-center">
+                  {sortConfig?.key === "author" &&
+                    (sortConfig.direction === "ascending" ? (
+                      <Image
+                        src={AscendingIcon}
+                        alt="ascending icon"
+                        className="group-hover:scale-110 transition-all duration-300 ease-out"
+                      />
+                    ) : (
+                      <Image
+                        src={DescendingIcon}
+                        alt="descending icon"
+                        className="group-hover:scale-110 transition-all duration-300 ease-out"
+                      />
+                    ))}
+                </span>
+              </button>
+            </th>
+            <th className="w-1/5 py-2 px-4">
+              <button
+                className="text-left flex items-center group text-black/70 hover:text-black w-full text-gray-500"
+                onClick={() => handleSort("comments")}
+              >
+                Comments
+                <span className="flex items-center">
+                  {sortConfig?.key === "comments" &&
+                    (sortConfig.direction === "ascending" ? (
+                      <Image
+                        src={AscendingIcon}
+                        alt="ascending icon"
+                        className="group-hover:scale-110 transition-all duration-300 ease-out"
+                      />
+                    ) : (
+                      <Image
+                        src={DescendingIcon}
+                        alt="descending icon"
+                        className="group-hover:scale-110 transition-all duration-300 ease-out"
+                      />
+                    ))}
+                </span>
+              </button>
+            </th>
+            <th className="w-2/12 py-2 px-4 font-[500] text-left">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {sortedArticles.map((article) => (
+            <tr
+              key={article.id}
+              className="border-t border-gray-300 hover:bg-gray-50 cursor-pointer"
+              onClick={() => handleSelectArticle(article.id)}
+            >
+              <td className="py-2 px-3">
+                <CustomCheckbox
+                  onChange={() => handleSelectArticle(article.id)}
+                  checked={selectedArticles.includes(article.id)}
+                />
+              </td>
+              <td className="py-2 px-4 truncate">
+                <Button variant="link" size="none" asChild>
+                  <Link href={`/articles/${article.id}`}>{article.title}</Link>
+                </Button>
+              </td>
+              <td className="py-2 px-4 truncate w-[290px]">{article.perex}</td>
+              <td className="py-2 px-4 truncate">{article.author}</td>
+              <td className="py-2 px-4">{article.comments}</td>
+              <td className="py-2 px-4">
+                <div className="flex space-x-4">
+                  <Link
+                    href={`/app/edit-article/${article.id}`}
+                    className="w-fit hover:opacity-40"
+                  >
+                    <Image src={EditIcon} alt="edit icon" />
+                  </Link>
+                  <button
+                    className="w-fit hover:opacity-40"
+                    onClick={() => handleDeleteArticle(article.id)}
+                  >
+                    <Image src={DeleteIcon} alt="delete icon" />
+                  </button>
+                </div>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+        <tfoot className="border-t border-gray-300">
+          <tr className="bg-gray-50">
+            <td colSpan={6} className="py-2 px-4">
+              <div className="flex gap-4 items-center">
+                <div className="text-gray-500">
+                  <span className="font-medium">{selectedArticles.length}</span>{" "}
+                  item
+                  {selectedArticles.length !== 1 ? "s" : ""} selected
+                </div>
+                {selectedArticles.length > 0 && (
+                  <Button
+                    variant="destructive"
+                    size="none"
+                    onClick={handleDeleteSelected}
+                  >
+                    Bulk delete
+                  </Button>
+                )}
+              </div>
+            </td>
+          </tr>
+        </tfoot>
+      </table>
     </div>
   );
 }
