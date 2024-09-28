@@ -19,6 +19,7 @@ export default function Page() {
   const [errors, setErrors] = useState<{ title?: string; content?: string }>(
     {}
   );
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
   const supabase = createClientComponentClient();
 
@@ -86,6 +87,8 @@ export default function Page() {
       return;
     }
 
+    setIsSubmitting(true);
+
     try {
       const {
         data: { session },
@@ -129,6 +132,8 @@ export default function Page() {
       alert(
         "Failed to create article. Please check the console for more details."
       );
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -149,8 +154,9 @@ export default function Page() {
           type="submit"
           form="articleForm"
           className="bg-black/90 font-medium text-white text-sm px-3 py-1.5 rounded-md w-fit"
+          disabled={isSubmitting}
         >
-          Publish Article
+          {isSubmitting ? "Publishing..." : "Publish Article"}
         </Button>
       </div>
       <form id="articleForm" onSubmit={handleSubmit} className="space-y-8">

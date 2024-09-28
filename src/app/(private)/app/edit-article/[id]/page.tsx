@@ -20,13 +20,14 @@ export default function EditArticlePage({
   const [articleTitle, setArticleTitle] = useState("");
   const [uploadedImage, setUploadedImage] = useState<File | null>(null);
   const [currentImageUrl, setCurrentImageUrl] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const supabase = createClientComponentClient();
 
   useEffect(() => {
     const fetchArticle = async () => {
       try {
+        setIsSubmitting(true);
         const { data, error } = await supabase
           .from("Post")
           .select("*")
@@ -38,13 +39,13 @@ export default function EditArticlePage({
         setArticleTitle(data.title);
         setMarkdownContent(data.content);
         setCurrentImageUrl(data.imageUrl);
-        setLoading(false);
       } catch (err) {
         console.error("Error fetching article:", err);
         setError(
           err instanceof Error ? err.message : "Failed to fetch article"
         );
-        setLoading(false);
+      } finally {
+        setIsSubmitting(false);
       }
     };
 
@@ -53,7 +54,7 @@ export default function EditArticlePage({
 
   const handlePublish = async () => {
     try {
-      setLoading(true);
+      setIsSubmitting(true);
       const formData = new FormData();
       formData.append("title", articleTitle);
       formData.append("content", markdownContent);
@@ -83,12 +84,12 @@ export default function EditArticlePage({
         throw new Error(result.error || "Unknown error occurred");
       }
 
-      setLoading(false);
       router.push("/app/dashboard");
     } catch (err) {
-      setLoading(false);
       console.error("Error updating article:", err);
       setError(err instanceof Error ? err.message : "Failed to update article");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -110,7 +111,6 @@ export default function EditArticlePage({
     }
   };
 
-  if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
 
   return (
@@ -123,8 +123,9 @@ export default function EditArticlePage({
           type="submit"
           form="articleForm"
           onClick={handlePublish}
+          disabled={isSubmitting}
         >
-          Publish article
+          {isSubmitting ? "Publishing..." : "Publish article"}
         </Button>
       </div>
       <div className="flex flex-col gap-1 w-1/2">
