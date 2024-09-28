@@ -56,7 +56,7 @@ export default function ArticleCard({ post }: { post: Post }) {
                 isParagraphClamped ? "line-clamp-1" : "line-clamp-2"
               }`}
             >
-              {post.content.substring(0, 200)}
+              {removeMarkdown(post.content.substring(0, 200))}
             </p>
           </div>
           <div className="flex gap-2 text-sm text-gray-500">
@@ -77,4 +77,31 @@ export default function ArticleCard({ post }: { post: Post }) {
       </article>
     </Link>
   );
+}
+
+function removeMarkdown(text: string): string {
+  // Remove bold and italic markers
+  text = text.replace(/(\*\*|__)(.*?)\1/g, "$2");
+  text = text.replace(/(\*|_)(.*?)\1/g, "$2");
+
+  // Remove links
+  text = text.replace(/\[([^\]]+)\]\(([^)]+)\)/g, "$1");
+
+  // Remove code blocks
+  text = text.replace(/`{3}[\s\S]*?`{3}/g, "");
+  text = text.replace(/`([^`]+)`/g, "$1");
+
+  // Remove headers
+  text = text.replace(/^#{1,6}\s+/gm, "");
+
+  // Remove blockquotes
+  text = text.replace(/^>\s+/gm, "");
+
+  // Remove horizontal rules
+  text = text.replace(/^(?:[-*_]){3,}$/gm, "");
+
+  // Remove list markers
+  text = text.replace(/^[\s*-+]+/gm, "");
+
+  return text.trim();
 }
