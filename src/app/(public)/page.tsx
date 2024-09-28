@@ -5,7 +5,6 @@ import { cookies } from "next/headers";
 import { Suspense } from "react";
 import { ArticleCardSkeleton } from "@/components/basic/Skeletons";
 import { Post } from "@/types/types";
-import { Button } from "@/components/basic/Buttons";
 
 function isPost(obj: unknown): obj is Post {
   const post = obj as Post;
@@ -51,43 +50,58 @@ export default async function Home() {
   return (
     <div className="min-h-screen">
       <h1 className="text-3xl font-bold mb-8">Recent articles</h1>
-      {posts.map((post) => (
-        <Suspense key={post.id} fallback={<ArticleCardSkeleton />}>
-          <ArticleCard post={post} />
-        </Suspense>
-      ))}
+      <div className="flex flex-wrap gap-2">
+        {posts.map((post) => (
+          <Suspense key={post.id} fallback={<ArticleCardSkeleton />}>
+            <div className="w-[32%] pr-2">
+              <ArticleCard post={post} />
+            </div>
+          </Suspense>
+        ))}
+      </div>
     </div>
   );
 }
 
 const ArticleCard = ({ post }: { post: Post }) => {
   return (
-    <article className="flex mb-8">
-      {post.imageUrl ? (
-        <Image
-          src={post.imageUrl}
-          alt={post.title}
-          width={270}
-          height={240}
-          className="w-[270px] h-[240px] rounded-md mr-8 object-cover"
-          priority
-        />
-      ) : (
-        <div className="w-[270px] h-[240px] bg-gray-200 rounded-md mr-8"></div>
-      )}
-      <div className="flex flex-col gap-4 max-w-[560px]">
-        <h2 className="text-2xl font-semibold text-black">{post.title}</h2>
-        <div className="text-sm">
-          {post.author.name} · {new Date(post.createdAt).toLocaleDateString()}
+    <Link href={`/articles/${post.id}`}>
+      <article className="flex h-fit flex-col mb-8 border border-gray-200 rounded-xl bg-white overflow-hidden shadow-sm hover:scale-[1.02] transition-all duration-[250ms] ease-in-out hover:shadow-lg">
+        {post.imageUrl ? (
+          <Image
+            src={post.imageUrl}
+            alt={post.title}
+            width={500}
+            height={240}
+            className="w-full h-[240px] rounded-t-md mr-4 object-cover"
+            priority
+          />
+        ) : (
+          <div className="w-[270px] h-[240px] bg-gray-200 rounded-md mr-8"></div>
+        )}
+        <div className="flex flex-col gap-4 p-6">
+          <div className="text-sm text-gray-500">
+            Written by {post.author.name}
+          </div>
+          <div className="flex flex-col">
+            <h2 className="text-xl font-semibold text-black truncate">
+              {post.title}
+            </h2>
+
+            <p className="h-[50px] line-clamp-2 overflow-hidden">
+              {post.content.substring(0, 200)}
+            </p>
+          </div>
+          <div className="flex gap-4 text-sm text-gray-500">
+            {new Date(post.createdAt).toLocaleDateString()}
+
+            <div className="flex gap-1">
+              {post.comments[0]?.count || 0}
+              <span>comments</span>
+            </div>
+          </div>
         </div>
-        <p className="text-balance">{post.content.substring(0, 200)}...</p>
-        <div className="flex gap-4 text-sm">
-          <Button variant="link" size="none" asChild>
-            <Link href={`/articles/${post.id}`}>Read whole article</Link>
-          </Button>
-          <div>{post.comments[0]?.count || 0} comments</div>
-        </div>
-      </div>
-    </article>
+      </article>
+    </Link>
   );
 };
