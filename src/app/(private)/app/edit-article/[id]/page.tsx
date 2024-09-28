@@ -3,11 +3,11 @@
 import Image from "next/image";
 import React, { useState, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
-import bulbicon from "@/assets/icons/bulb.svg";
 import crossicon from "@/assets/icons/cross.svg";
 import { useRouter } from "next/navigation";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { Button } from "@/components/basic/Buttons";
+import MarkdownQuickRef from "@/components/basic/MarkdownQuickRef";
 
 export default function EditArticlePage({
   params,
@@ -166,41 +166,6 @@ export default function EditArticlePage({
     </div>
   );
 }
-
-const MarkdownQuickRef = () => {
-  return (
-    <div className="mt-7 border border-cyan-600/30 bg-cyan-600/20 rounded-md pl-4 pr-8 py-6 h-fit">
-      <div className="font-bold mb-4 flex gap-2 items-center">
-        <Image src={bulbicon} alt="bulb icon" />
-        Quick markdown refresher
-      </div>
-      <ul className="space-y-0.5 text-[14px]">
-        <li className="pl-8">
-          # <span className="font-semibold">Headings start with a hash</span>
-        </li>
-        <li className="pl-8">
-          - use two asterisks to make text ✳✳
-          <span className="font-bold">bold</span>✳✳
-        </li>
-        <li className="pl-8">
-          - use one asterisk to make text ✳
-          <span className="italic">italic</span>✳
-        </li>
-        <li className="pl-8">- use a blank line to separate paragraphs</li>
-        <li className="pt-4 pl-2">
-          See more here:{" "}
-          <a
-            href="https://www.markdownguide.org/basic-syntax/"
-            target="_blank"
-            className="text-cyan-700 underline underline-offset-2 font-medium"
-          >
-            Markdown Guide
-          </a>
-        </li>
-      </ul>
-    </div>
-  );
-};
 
 const ImageUpload = ({
   uploadedImage,
