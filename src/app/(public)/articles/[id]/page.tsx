@@ -3,7 +3,8 @@
 import Image from "next/image";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { useEffect, useState, useCallback } from "react";
-
+import Link from "next/link";
+import ArrowIcon from "@/assets/icons/backarrow.svg";
 import CommentSection from "@/components/CommentSection";
 import { ArticleFullSkeleton } from "@/components/basic/Skeletons";
 import { Post } from "@/types/types";
@@ -63,21 +64,36 @@ export default function ArticlePage({ params }: { params: { id: string } }) {
 
   return (
     <div className="max-w-3xl mx-auto py-8">
-      <h1 className="text-4xl font-bold mb-4">{post.title}</h1>
-      <div className="mb-4 text-sm">
-        By {post.author.name} · {new Date(post.createdAt).toLocaleDateString()}
-      </div>
+      <Link href="/articles" className="flex gap-2 items-center text-sm my-4">
+        <Image src={ArrowIcon} width={16} height={16} alt="go back icon" /> Back
+        to recent articles
+      </Link>
       {post.imageUrl && (
         <Image
           src={post.imageUrl}
           alt={post.title}
           width={760}
-          height={500}
-          className="w-[760px] h-[500px] rounded-md mb-8 object-cover object-top border border-gray-300/50"
+          height={400}
+          className="w-[760px] h-[400px] rounded-2xl mb-8 object-cover border border-gray-300/50"
           priority
         />
       )}
-      <div className="prose max-w-none mb-8">{post.content}</div>
+
+      <h1 className="text-4xl font-bold mb-4">{post.title}</h1>
+      <div className="flex gap-2 text-sm text-gray-500 my-4">
+        {new Date(post.createdAt)
+          .toLocaleDateString("en-US", {
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+          })
+          .replace(/\//g, ".")}
+        <span>·</span>
+        <div className="flex gap-1">
+          Written by {post.author.name.split(" ")[0]}
+        </div>
+      </div>
+      <div className="prose max-w-none my-8">{post.content}</div>
       <CommentSection postId={post.id} />
     </div>
   );
