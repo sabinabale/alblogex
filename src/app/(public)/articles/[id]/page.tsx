@@ -101,7 +101,6 @@ export default function ArticlePage({ params }: { params: { id: string } }) {
         </ReactMarkdown>
       </div>
       <CommentSection postId={post.id} />
-      <ArticleFullSkeleton />
     </div>
   );
 }

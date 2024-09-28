@@ -5,7 +5,6 @@ import React, { useState, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
 import bulbicon from "@/assets/icons/bulb.svg";
 import crossicon from "@/assets/icons/cross.svg";
-import remarkGfm from "remark-gfm";
 import { useRouter } from "next/navigation";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { Button } from "@/components/basic/Buttons";
@@ -160,24 +159,8 @@ export default function EditArticlePage({
       </div>
       <div className="w-1/2">
         <div className="font-medium pl-1 mb-1">Preview</div>
-        <div className="px-3 py-1.5 border border-gray-300 rounded-md prose bg-white h-80 overflow-auto">
-          <ReactMarkdown
-            remarkPlugins={[remarkGfm]}
-            components={{
-              h1: ({ ...props }) => (
-                <h1 className="text-2xl font-bold" {...props} />
-              ),
-              h2: ({ ...props }) => (
-                <h2 className="text-xl font-bold" {...props} />
-              ),
-              h3: ({ ...props }) => (
-                <h3 className="text-lg font-bold" {...props} />
-              ),
-              p: ({ ...props }) => <p className="mt-2" {...props} />,
-            }}
-          >
-            {markdownContent}
-          </ReactMarkdown>
+        <div className="px-3 py-1.5 border border-gray-300 rounded-md prose bg-white h-80 overflow-auto leading-normal">
+          <ReactMarkdown>{markdownContent}</ReactMarkdown>
         </div>
       </div>
     </div>
