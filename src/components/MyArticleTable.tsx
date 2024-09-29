@@ -299,7 +299,7 @@ export default function MyArticleTable({
                   item
                   {selectedArticles.length !== 1 ? "s" : ""} selected
                 </div>
-                {selectedArticles.length > 0 && (
+                {selectedArticles.length > 1 && (
                   <Button
                     variant="destructive"
                     size="none"

@@ -2,12 +2,10 @@
 
 import React, { useEffect, useState } from "react";
 import MyArticleTable from "@/components/MyArticleTable";
-import Link from "next/link";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { User } from "@supabase/auth-helpers-nextjs";
 import { MyArticleTableSkeleton } from "@/components/basic/Skeletons";
 import { Article, PostData } from "@/types/types";
-import { Button } from "@/components/basic/Buttons";
 
 export default function Dashboard() {
   const [user, setUser] = useState<User | null>(null);
@@ -72,9 +70,6 @@ export default function Dashboard() {
           {user?.user_metadata?.name ? `${user.user_metadata.name}'s` : "My"}{" "}
           articles
         </h1>
-        <Button variant="primary" size="default">
-          <Link href="/app/create-article">Create article</Link>
-        </Button>
       </div>
       <MyArticleTable articles={articles} setArticles={setArticles} />
     </div>

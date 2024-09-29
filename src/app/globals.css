@@ -93,3 +93,7 @@ h4 {
   line-height: 24px;
   font-weight: 600;
 }
+
+th {
+  font-weight: 500;
+}

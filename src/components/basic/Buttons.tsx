@@ -4,12 +4,12 @@ import { cva, VariantProps } from "class-variance-authority";
 import { Slot } from "@/components/basic/Slot";
 
 const buttonVariants = cva(
-  "inline-flex w-fit items-center justify-center whitespace-nowrap rounded-md flex-shrink-0 text-[14px] font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-40 transition-all duration-200 ease-in-out",
+  "inline-flex w-fit items-center justify-center whitespace-nowrap rounded-full flex-shrink-0 text-[14px] font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-40 transition-all duration-200 ease-in-out",
   {
     variants: {
       variant: {
         primary: "bg-black/90 text-white w-full hover:bg-[#333333] w-fit",
-        destructive: "text-red-700 hover:text-red-800",
+        destructive: "text-red-600 hover:opacity-70",
         link: "text-cyan-600 underline underline-offset-2 hover:text-cyan-800",
         icon: "bg-none border-none hover:opacity-40",
       },

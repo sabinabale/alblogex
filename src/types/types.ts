@@ -1,3 +1,11 @@
+export type User = {
+  name?: string;
+  user_metadata?: {
+    name?: string;
+  };
+  email?: string;
+};
+
 export type Article = {
   id: number;
   title: string;
