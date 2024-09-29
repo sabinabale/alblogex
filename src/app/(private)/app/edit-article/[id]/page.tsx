@@ -59,6 +59,8 @@ export default function EditArticlePage({
       formData.append("content", markdownContent);
       if (uploadedImage) {
         formData.append("image", uploadedImage);
+      } else if (currentImageUrl) {
+        formData.append("imageUrl", currentImageUrl);
       }
       if (params.id) {
         formData.append("postId", params.id);

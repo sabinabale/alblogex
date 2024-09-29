@@ -149,6 +149,7 @@ async function handleArticle(request: Request, action: "create" | "update") {
     const title = formData.get("title") as string;
     const content = formData.get("content") as string;
     const image = formData.get("image") as File | null;
+    const existingImageUrl = formData.get("imageUrl") as string | null;
     const postId = formData.get("postId")
       ? parseInt(formData.get("postId") as string)
       : null;
@@ -185,6 +186,8 @@ async function handleArticle(request: Request, action: "create" | "update") {
         .getPublicUrl(filePath);
 
       imageUrl = urlData.publicUrl;
+    } else if (existingImageUrl) {
+      imageUrl = existingImageUrl;
     }
 
     const result = await prisma.$transaction(async (tx) => {
@@ -199,7 +202,7 @@ async function handleArticle(request: Request, action: "create" | "update") {
           },
         });
 
-        if (imageUrl) {
+        if (imageUrl && image) {
           await tx.postImage.upsert({
             where: { postId: postId! },
             update: {
@@ -220,14 +223,15 @@ async function handleArticle(request: Request, action: "create" | "update") {
             content,
             imageUrl,
             authorId: session.user.id,
-            images: imageUrl
-              ? {
-                  create: {
-                    url: imageUrl,
-                    fileName: fileName!,
-                  },
-                }
-              : undefined,
+            images:
+              imageUrl && image
+                ? {
+                    create: {
+                      url: imageUrl,
+                      fileName: fileName!,
+                    },
+                  }
+                : undefined,
           },
         });
       }
