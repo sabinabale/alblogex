@@ -3,7 +3,7 @@
 import Image from "next/image";
 import React, { useState, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
-import crossicon from "@/assets/icons/cross.svg";
+
 import { useRouter } from "next/navigation";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { Button } from "@/components/basic/Buttons";
@@ -101,17 +101,6 @@ export default function EditArticlePage({
     }
   };
 
-  const handleRemoveImage = () => {
-    setUploadedImage(null);
-    setCurrentImageUrl(null);
-    const fileInput = document.getElementById(
-      "imageUpload"
-    ) as HTMLInputElement;
-    if (fileInput) {
-      fileInput.value = "";
-    }
-  };
-
   if (error) return <div>Error: {error}</div>;
 
   return (
@@ -146,7 +135,6 @@ export default function EditArticlePage({
             uploadedImage={uploadedImage}
             currentImageUrl={currentImageUrl}
             handleImageUpload={handleImageUpload}
-            handleRemoveImage={handleRemoveImage}
           />
         </div>
       </div>
@@ -173,49 +161,64 @@ const ImageUpload = ({
   uploadedImage,
   currentImageUrl,
   handleImageUpload,
-  handleRemoveImage,
 }: {
   uploadedImage: File | null;
   currentImageUrl: string | null;
   handleImageUpload: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  handleRemoveImage: () => void;
 }) => {
+  const [previewUrl, setPreviewUrl] = useState<string | null>(currentImageUrl);
+
+  useEffect(() => {
+    if (uploadedImage) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreviewUrl(reader.result as string);
+      };
+      reader.readAsDataURL(uploadedImage);
+    } else {
+      setPreviewUrl(currentImageUrl);
+    }
+  }, [uploadedImage, currentImageUrl]);
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    handleImageUpload(event);
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreviewUrl(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   return (
     <div className="flex flex-col gap-2">
-      {currentImageUrl && !uploadedImage && (
+      {previewUrl && (
         <Image
-          src={currentImageUrl}
-          alt="Current featured image"
+          src={previewUrl}
+          alt="Featured image"
           width={100}
           height={100}
+          className="rounded-md ml-1"
         />
       )}
-      <input
-        type="file"
-        accept="image/*"
-        id="imageUpload"
-        className="hidden"
-        onChange={handleImageUpload}
-      />
-      <label htmlFor="imageUpload" className="text-cyan-600 cursor-pointer">
-        Upload new image
-      </label>
-      {(uploadedImage || currentImageUrl) && (
-        <div className="flex items-center gap-2">
-          <button
-            onClick={handleRemoveImage}
-            className="w-fit flex items-center gap-1"
-            aria-label="Remove uploaded image"
-          >
-            <span>Delete</span>
-            <Image
-              src={crossicon}
-              alt="cross icon"
-              className="opacity-60 hover:opacity-100 "
-            />
-          </button>
-        </div>
-      )}
+
+      <div className="flex flex-col gap-2 ml-1">
+        <input
+          type="file"
+          accept="image/*"
+          id="imageUpload"
+          className="hidden"
+          onChange={handleFileChange}
+        />
+        <label
+          htmlFor="imageUpload"
+          className="text-cyan-700 cursor-pointer text-sm font-medium"
+        >
+          Update
+        </label>
+      </div>
     </div>
   );
 };
