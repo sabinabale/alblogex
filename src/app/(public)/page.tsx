@@ -1,9 +1,7 @@
-// import Image from "next/image";
-// import Link from "next/link";
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
 import { Suspense } from "react";
-import { ArticleCardSkeleton } from "@/components/basic/Skeletons";
+import { RecentArticleSkeleton } from "@/components/basic/Skeletons";
 import { Post } from "@/types/types";
 import TheArticleCard from "@/components/TheArticleCard";
 
@@ -53,7 +51,7 @@ export default async function Home() {
       <h1 className="text-3xl font-bold mb-8">Recent articles</h1>
       <div className="flex flex-wrap gap-4">
         {posts.slice(0, 3).map((post) => (
-          <Suspense key={post.id} fallback={<ArticleCardSkeleton />}>
+          <Suspense key={post.id} fallback={<RecentArticleSkeleton />}>
             <div className="flex-1 min-w-0 basis-[calc(33.333%-1rem)]">
               <TheArticleCard post={post} />
             </div>
