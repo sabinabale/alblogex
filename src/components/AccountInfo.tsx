@@ -22,7 +22,7 @@ export default function AccountInfo({ user }: AccountInfoProps) {
         <div className="font-medium text-black">
           {user?.user_metadata?.name || "Why would you"}
         </div>
-        <div className="text-gray-500 text-xs font-medium pr-[30px]">
+        <div className="text-gray-500 text-[13px] font-medium pr-[30px]">
           {user?.email}
         </div>
       </div>
