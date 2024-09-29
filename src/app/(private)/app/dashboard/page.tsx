@@ -77,7 +77,6 @@ export default function Dashboard() {
         </Button>
       </div>
       <MyArticleTable articles={articles} setArticles={setArticles} />
-      <MyArticleTableSkeleton />
     </div>
   );
 }
