@@ -70,7 +70,9 @@ export default function ArticleCard({ post }: { post: Post }) {
             <span>·</span>
             <div className="flex gap-1">
               {post.comments[0]?.count || 0}
-              <span>comments</span>
+              <span>
+                {post.comments[0]?.count !== 1 ? "comments" : "comment"}
+              </span>
             </div>
           </div>
         </div>
