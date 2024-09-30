@@ -4,6 +4,7 @@ import "./globals.css";
 import TheNavbar from "@/components/TheNavbar";
 import TheContainer from "@/components/TheContainer";
 import Footer from "@/components/Footer";
+import { ClientToaster } from "@/components/basic/TheToast";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -23,7 +24,10 @@ export default function RootLayout({
         className={`${inter.className} antialiased bg-gray-50 text-[#212529] flex flex-col min-h-screen w-full`}
       >
         <TheNavbar />
-        <TheContainer>{children}</TheContainer>
+        <TheContainer>
+          <ClientToaster />
+          {children}
+        </TheContainer>
 
         <Footer />
       </body>

@@ -8,6 +8,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Article, MyArticleTableProps } from "@/types/types";
 import { Button } from "@/components/basic/Buttons";
+import { toast } from "react-hot-toast";
 
 export default function MyArticleTable({
   articles,
@@ -68,37 +69,48 @@ export default function MyArticleTable({
 
   const handleDeleteArticle = async (id: number, event: React.MouseEvent) => {
     event.stopPropagation();
+
     const confirmDelete = window.confirm(
       "Are you sure you want to delete this article?"
     );
     if (!confirmDelete) return;
 
     try {
-      const response = await fetch(`/api/articles?postId=${id}`, {
+      const deletePromise = fetch(`/api/articles?postId=${id}`, {
         method: "DELETE",
+      }).then((response) => {
+        if (!response.ok) {
+          return response.json().then((errorData) => {
+            console.error("Server response:", errorData);
+            throw new Error(
+              errorData.error ||
+                `Failed to delete article. Status: ${response.status}`
+            );
+          });
+        }
+        return response.json();
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        console.error("Server response:", errorData);
-        throw new Error(
-          errorData.error ||
-            `Failed to delete article. Status: ${response.status}`
-        );
-      }
-
-      const responseData = await response.json();
-      console.log("Delete response:", responseData);
-
-      setArticles((prevArticles) =>
-        prevArticles.filter((article) => article.id !== id)
-      );
+      toast.promise(deletePromise, {
+        loading: "Deleting article...",
+        success: (data) => {
+          console.log("Delete response:", data);
+          setArticles((prevArticles) =>
+            prevArticles.filter((article) => article.id !== id)
+          );
+          return "Article deleted successfully";
+        },
+        error: (err) => {
+          console.error("Error deleting article:", err);
+          return `Failed to delete article. Error: ${err.message}`;
+        },
+      });
     } catch (error: unknown) {
       console.error("Error deleting article:", error);
       if (error instanceof Error) {
-        alert(`Failed to delete article. Error: ${error.message}`);
+        toast.error(`Failed to delete article. Error: ${error.message}`);
       } else {
-        alert("An unknown error occurred while deleting the article.");
+        toast.error("An unknown error occurred while deleting the article.");
       }
     }
   };
@@ -111,27 +123,46 @@ export default function MyArticleTable({
 
     try {
       const postIds = selectedArticles.join(",");
-      const response = await fetch(`/api/articles?postIds=${postIds}`, {
+
+      const deletePromise = fetch(`/api/articles?postIds=${postIds}`, {
         method: "DELETE",
+      }).then((response) => {
+        if (!response.ok) {
+          return response.json().then((errorData) => {
+            throw new Error(
+              errorData.error || "Failed to delete selected articles"
+            );
+          });
+        }
+        return response.json();
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(
-          errorData.error || "Failed to delete selected articles"
-        );
-      }
-
-      setArticles((prevArticles) =>
-        prevArticles.filter((article) => !selectedArticles.includes(article.id))
-      );
-      setSelectedArticles([]);
+      await toast.promise(deletePromise, {
+        loading: "Deleting selected articles...",
+        success: () => {
+          setArticles((prevArticles) =>
+            prevArticles.filter(
+              (article) => !selectedArticles.includes(article.id)
+            )
+          );
+          setSelectedArticles([]);
+          return `Successfully deleted ${selectedArticles.length} article(s)`;
+        },
+        error: (err) => {
+          console.error("Error deleting selected articles:", err);
+          return `Failed to delete selected articles. Error: ${err.message}`;
+        },
+      });
     } catch (error) {
       console.error("Error deleting selected articles:", error);
       if (error instanceof Error) {
-        alert(`Failed to delete selected articles. Error: ${error.message}`);
+        toast.error(
+          `Failed to delete selected articles. Error: ${error.message}`
+        );
       } else {
-        alert("An unknown error occurred while deleting selected articles.");
+        toast.error(
+          "An unknown error occurred while deleting selected articles."
+        );
       }
     }
   };

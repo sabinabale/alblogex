@@ -81,14 +81,22 @@ export default function EditArticlePage({
         if (result.imageUrl) {
           setCurrentImageUrl(result.imageUrl);
         }
+
+        router.push(
+          "/app/dashboard?message=Article updated successfully!&type=success"
+        );
       } else {
         throw new Error(result.error || "Unknown error occurred");
       }
-
-      router.push("/app/dashboard");
     } catch (err) {
       console.error("Error updating article:", err);
       setError(err instanceof Error ? err.message : "Failed to update article");
+
+      router.push(
+        `/app/dashboard?message=${encodeURIComponent(
+          err instanceof Error ? err.message : "Failed to update article"
+        )}&type=error`
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -104,7 +112,7 @@ export default function EditArticlePage({
   if (error) return <div>Error: {error}</div>;
 
   return (
-    <div className="space-y-8 text-base">
+    <div className="space-y-8 text-base mb-8">
       <div className="flex gap-4 items-center">
         <h1 className="text-2xl font-bold">Edit article</h1>
         <Button

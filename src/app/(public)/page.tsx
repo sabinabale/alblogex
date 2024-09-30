@@ -51,7 +51,7 @@ export default async function Home() {
       <h1 className="text-3xl font-bold mb-8">Recent articles</h1>
       <div className="flex flex-wrap gap-4">
         <Suspense fallback={<RecentArticleSkeleton />}>
-          {posts.slice(0, 3).map((post) => (
+          {posts.map((post) => (
             <div
               key={post.id}
               className="flex-1 min-w-0 basis-[calc(33.333%-1rem)]"

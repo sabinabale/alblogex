@@ -94,8 +94,9 @@ export default function Page() {
       } = await supabase.auth.getSession();
 
       if (!session) {
-        alert("Your session has expired. Please log in again.");
-        router.push("/signin");
+        router.push(
+          "/signin?message=Your session has expired. Please log in again.&type=error"
+        );
         return;
       }
 
@@ -118,18 +119,20 @@ export default function Page() {
         throw new Error(result.error || "Failed to create article");
       }
 
-      alert("Article created successfully!");
       setArticleTitle("");
       setMarkdownContent("");
       setUploadedImage(null);
       localStorage.removeItem("articleTitle");
       localStorage.removeItem("markdownContent");
 
-      router.push(`/app/dashboard`);
+      router.push(
+        `/app/dashboard?message=Article created successfully!&type=success`
+      );
     } catch (error) {
       console.error("Error creating article:", error);
-      alert(
-        "Failed to create article. Please check the console for more details."
+
+      router.push(
+        `/app/dashboard?message=Failed to create article. Please try again.&type=error`
       );
     } finally {
       setIsSubmitting(false);
@@ -147,6 +150,15 @@ export default function Page() {
     <div className="space-y-8 text-base mb-8">
       <div className="flex gap-4 items-center">
         <h1 className="text-2xl font-bold">Create a new article</h1>
+        <Button
+          variant="primary"
+          size="default"
+          type="submit"
+          className="bg-black/90 font-medium text-white text-sm px-3 py-1.5 w-fit"
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? "Publishing..." : "Publish Article"}
+        </Button>
       </div>
       <form id="articleForm" onSubmit={handleSubmit} className="space-y-8">
         <div className="flex flex-col gap-1 w-1/2">
@@ -188,15 +200,6 @@ export default function Page() {
           </div>
           <MarkdownQuickRef />
         </div>
-        <Button
-          variant="primary"
-          size="default"
-          type="submit"
-          className="bg-black/90 font-medium text-white text-sm px-3 py-1.5 rounded-md w-fit"
-          disabled={isSubmitting}
-        >
-          {isSubmitting ? "Publishing..." : "Publish Article"}
-        </Button>
       </form>
       <div className="w-1/2">
         <div id="previewLabel">Preview</div>
