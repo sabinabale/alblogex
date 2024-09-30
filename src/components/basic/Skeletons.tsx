@@ -76,7 +76,7 @@ export function TableRowSkeleton() {
 
 export function RecentArticleSkeleton() {
   return (
-    <div className="flex flex-wrap gap-4">
+    <div className="flex flex-wrap gap-4 w-full">
       <ArticleCardSkeleton />
       <ArticleCardSkeleton />
       <ArticleCardSkeleton />
