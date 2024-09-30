@@ -17,7 +17,7 @@ export default function AccountInfo({ user }: AccountInfoProps) {
     window.location.href = "/";
   };
   return (
-    <div className="flex flex-col border border-gray-300 rounded-lg w-fit text-sm overflow-hidden shadow-md">
+    <div className="flex flex-col border border-gray-300 rounded-lg w-fit text-sm overflow-hidden shadow-md appear">
       <div className="border-b border-gray-300 p-3 space-y-0.5 bg-gray-100">
         <div className="font-medium text-black">
           {user?.user_metadata?.name || "Why would you"}
