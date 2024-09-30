@@ -60,7 +60,6 @@ export default async function Home() {
             </div>
           ))}
         </Suspense>
-        <RecentArticleSkeleton />
       </div>
     </div>
   );
