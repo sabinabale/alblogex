@@ -82,11 +82,11 @@ export default function TheNavbar() {
   return (
     <div className="border-b border-gray-300 bg-white font-medium">
       <nav className="flex max-w-6xl mx-auto justify-between items-center py-2 text-sm text-gray-700">
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center">
           <Link href="/">
-            <Image src={catIcon} alt="cat icon" />
+            <Image src={catIcon} width={30} height={30} alt="cat icon" />
           </Link>
-          <NavLink href="/">Recent articles</NavLink>
+          <NavLink href="/">Blog</NavLink>
         </div>
         <div className="flex items-center gap-2">
           {isSignedIn ? (
