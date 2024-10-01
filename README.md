@@ -16,11 +16,11 @@ Todo:
 - [x] Basic form validation (script injection, empty, input maxlength)
 - [ ] Dashboard (UI, functionality)
 - [x] Dynamic routes for articles
-- [ ] Create article (UI, markdown, API)
+- [x] Create article (UI, markdown, API)
 - [x] Edit article (UI)
-- [ ] Toast messages
-- [ ] Skeletons
+- [x] Toast messages
+- [x] Skeletons
 - [x] Private routes protection
-- [ ] Responsiveness
-- [ ] UI optimization
+- [x] Responsiveness
+- [x] UI optimization
 - [ ] Code optimization
