@@ -10,6 +10,7 @@ import { Button } from "@/components/basic/Buttons";
 import InputLabel from "@/components/basic/InputLabel";
 import { Input } from "@/components/basic/Inputs";
 import MarkdownQuickRef from "@/components/basic/MarkdownQuickRef";
+import TextEditor from "@/components/TextEditor";
 
 export default function Page() {
   const [markdownContent, setMarkdownContent] = useState("");
@@ -195,7 +196,6 @@ export default function Page() {
             <TextEditor
               markdownContent={markdownContent}
               setMarkdownContent={setMarkdownContent}
-              error={errors.content}
             />
           </div>
           <MarkdownQuickRef />
@@ -256,31 +256,5 @@ const ImageUpload = ({
         </div>
       )}
     </div>
-  );
-};
-
-const TextEditor = ({
-  markdownContent,
-  setMarkdownContent,
-  error,
-}: {
-  markdownContent: string;
-  setMarkdownContent: React.Dispatch<React.SetStateAction<string>>;
-  error?: string;
-}) => {
-  return (
-    <>
-      <InputLabel variant="article" htmlFor="articleContent">
-        Article Content
-      </InputLabel>
-      <textarea
-        id="articleContent"
-        placeholder="Article Content"
-        className="p-2 h-80 border border-gray-300 resize-none overflow-auto"
-        value={markdownContent}
-        onChange={(e) => setMarkdownContent(e.target.value)}
-      />
-      {error && <div className="text-red-500 text-sm mt-1">{error}</div>}
-    </>
   );
 };

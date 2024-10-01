@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { Button } from "@/components/basic/Buttons";
 import MarkdownQuickRef from "@/components/basic/MarkdownQuickRef";
+import TextEditor from "@/components/TextEditor";
 
 export default function EditArticlePage({
   params,
@@ -228,25 +229,5 @@ const ImageUpload = ({
         </label>
       </div>
     </div>
-  );
-};
-
-const TextEditor = ({
-  markdownContent,
-  setMarkdownContent,
-}: {
-  markdownContent: string;
-  setMarkdownContent: React.Dispatch<React.SetStateAction<string>>;
-}) => {
-  return (
-    <>
-      <div className="font-medium pl-1">Article content</div>
-      <textarea
-        placeholder="Article content"
-        className="p-2 h-80 border border-gray-300 resize-none overflow-auto"
-        value={markdownContent}
-        onChange={(e) => setMarkdownContent(e.target.value)}
-      />
-    </>
   );
 };

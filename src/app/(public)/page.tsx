@@ -37,7 +37,7 @@ export default async function Home() {
     `
     )
     .order("createdAt", { ascending: false })
-    .limit(5);
+    .limit(10);
 
   if (error) {
     console.error("Error fetching posts:", error);

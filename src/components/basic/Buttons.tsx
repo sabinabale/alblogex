@@ -12,11 +12,14 @@ const buttonVariants = cva(
         destructive: "text-red-600 hover:opacity-70",
         link: "text-cyan-600 underline underline-offset-2 hover:text-cyan-800",
         icon: "bg-none border-none hover:opacity-40",
+        table:
+          "font-[500] text-black/70 hover:text-black w-full text-gray-500 text-sm text-left flex items-center group",
       },
       size: {
         default: "py-1.5 px-3",
         none: "p-0",
         small: "py-1 px-2",
+        table: "py-2 px-4",
       },
     },
     defaultVariants: {

@@ -180,8 +180,9 @@ export default function MyArticleTable({
               />
             </th>
             <th className="w-1/3 py-2 px-4">
-              <button
-                className="text-left flex items-center group text-black/70 hover:text-black w-full text-gray-500"
+              <Button
+                variant="table"
+                size="table"
                 onClick={() => handleSort("title")}
               >
                 Title
@@ -201,7 +202,7 @@ export default function MyArticleTable({
                       />
                     ))}
                 </span>
-              </button>
+              </Button>
             </th>
             <th className="w-2/3 py-2 px-4">
               <button
