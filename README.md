@@ -14,7 +14,7 @@ Todo:
 - [x] Sign up
 - [x] Sign in
 - [x] Basic form validation (script injection, empty, input maxlength)
-- [ ] Dashboard (UI, functionality)
+- [x] Dashboard (UI, functionality)
 - [x] Dynamic routes for articles
 - [x] Create article (UI, markdown, API)
 - [x] Edit article (UI)
