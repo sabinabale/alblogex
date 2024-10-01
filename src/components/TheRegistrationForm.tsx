@@ -83,6 +83,7 @@ export default function TheRegistrationForm() {
           data: {
             name: formData.name,
           },
+          emailRedirectTo: "https://alblogex.vercel.app/signin",
         },
       });
 
