@@ -110,7 +110,7 @@ export default function TheRegistrationForm() {
       }
 
       setFormData({ name: "", email: "", password: "" });
-      router.push("/signin");
+      router.push("/confirm-email");
     } catch (err: unknown) {
       setErrors({
         form:

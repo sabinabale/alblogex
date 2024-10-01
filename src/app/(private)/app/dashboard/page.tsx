@@ -67,8 +67,8 @@ export default function Dashboard() {
     <div className="flex flex-col gap-8">
       <div className="flex gap-4 items-center">
         <h1>
-          {user?.user_metadata?.name[0]
-            ? `${user.user_metadata.name[0]}'s`
+          {user?.user_metadata?.name
+            ? `${user.user_metadata.name.split(" ")[0]}'s`
             : "My"}{" "}
           articles
         </h1>

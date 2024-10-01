@@ -83,9 +83,7 @@ export default function EditArticlePage({
           setCurrentImageUrl(result.imageUrl);
         }
 
-        router.push(
-          "/app/dashboard?message=Article updated successfully!&type=success"
-        );
+        router.push(`/articles/${result.id}`);
       } else {
         throw new Error(result.error || "Unknown error occurred");
       }
