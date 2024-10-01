@@ -72,7 +72,7 @@ export default function TheSigninForm({ onSuccessfulLogin }: SigninFormProps) {
 
   return (
     <TheForm>
-      <form onSubmit={handleSubmit} className="w-72 ">
+      <form onSubmit={handleSubmit} className="w-72">
         <div>
           <InputLabel htmlFor="email">Email</InputLabel>
           <Input

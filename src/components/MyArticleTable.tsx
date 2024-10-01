@@ -168,8 +168,8 @@ export default function MyArticleTable({
   };
 
   return (
-    <div className="border border-gray-300 rounded-xl text-sm bg-white shadow-sm w-full overflow-hidden">
-      <table className="w-full table-fixed">
+    <div className="border border-gray-300 rounded-xl text-sm bg-white shadow-sm w-full overflow-x-scroll">
+      <table className="w-full md:table-fixed ">
         <thead className="text-gray-500">
           <tr className="bg-gray-50">
             <th className="w-[4%] py-2 px-3">

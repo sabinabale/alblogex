@@ -4,8 +4,8 @@ import TheRegistrationForm from "../../../components/TheRegistrationForm";
 
 export default function Page() {
   return (
-    <div className="flex flex-col items-center mt-40 h-screen">
-      <h1 className="text-2xl font-bold mb-8 tracking-tight">Sign up</h1>
+    <div className="flex flex-col items-center mt-20 md:mt-40 h-screen">
+      <h1 className="mb-8 tracking-tight">Sign up</h1>
       <TheRegistrationForm />
       <small className="mt-8 text-gray-600">
         Already have an account?{" "}

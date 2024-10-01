@@ -149,7 +149,7 @@ export default function Page() {
   return (
     <div className="space-y-8 text-base mb-8">
       <div className="flex gap-4 items-center">
-        <h1 className="text-2xl font-bold">Create a new article</h1>
+        <h1>Create a new article</h1>
         <Button
           variant="primary"
           size="default"
@@ -161,7 +161,7 @@ export default function Page() {
         </Button>
       </div>
       <form id="articleForm" onSubmit={handleSubmit} className="space-y-8">
-        <div className="flex flex-col gap-1 w-1/2">
+        <div className="flex flex-col gap-1 w-full md:w-1/2">
           <InputLabel variant="article" htmlFor="articleTitle">
             Article Title
           </InputLabel>
@@ -178,7 +178,7 @@ export default function Page() {
             <div className="text-red-500 text-sm mt-1">{errors.title}</div>
           )}
         </div>
-        <div className="flex flex-col gap-1 w-1/2">
+        <div className="flex flex-col gap-1 w-full md:w-1/2">
           <InputLabel variant="article" htmlFor="imageUpload">
             Featured Image
           </InputLabel>
@@ -191,7 +191,7 @@ export default function Page() {
           </div>
         </div>
         <div className="flex gap-6">
-          <div className="flex flex-col gap-1 w-1/2">
+          <div className="flex flex-col gap-1 w-full md:w-1/2">
             <TextEditor
               markdownContent={markdownContent}
               setMarkdownContent={setMarkdownContent}
@@ -201,7 +201,7 @@ export default function Page() {
           <MarkdownQuickRef />
         </div>
       </form>
-      <div className="w-1/2">
+      <div className="w-full md:w-1/2">
         <div id="previewLabel">Preview</div>
         <div
           className="px-3 py-1.5 border border-gray-300 rounded-md prose bg-white h-80 overflow-auto leading-normal"

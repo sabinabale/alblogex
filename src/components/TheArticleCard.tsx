@@ -24,7 +24,7 @@ export default function ArticleCard({ post }: { post: Post }) {
 
   return (
     <Link href={`/articles/${post.id}`}>
-      <article className="flex h-[444px] flex-col mb-8 border border-gray-200 rounded-xl bg-white overflow-hidden shadow-sm hover:scale-[1.02] transition-all duration-[250ms] ease-in-out hover:shadow-lg">
+      <article className="flex h-[444px] flex-col mb-4 md:mb-8 border border-gray-200 rounded-xl bg-white overflow-hidden shadow-sm hover:scale-[1.02] transition-all duration-[250ms] ease-in-out hover:shadow-lg">
         {post.imageUrl ? (
           <Image
             src={post.imageUrl}

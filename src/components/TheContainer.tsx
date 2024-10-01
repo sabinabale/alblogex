@@ -5,5 +5,9 @@ export default function TheContainer({
 }: {
   children: React.ReactNode;
 }) {
-  return <div className="max-w-6xl mx-auto mt-16  w-full">{children}</div>;
+  return (
+    <div className="max-w-6xl mx-auto mt-16 px-5 md:px-0 w-full">
+      {children}
+    </div>
+  );
 }

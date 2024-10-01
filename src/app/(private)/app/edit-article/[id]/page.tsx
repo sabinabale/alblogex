@@ -114,7 +114,7 @@ export default function EditArticlePage({
   return (
     <div className="space-y-8 text-base mb-8">
       <div className="flex gap-4 items-center">
-        <h1 className="text-2xl font-bold">Edit article</h1>
+        <h1>Edit article</h1>
         <Button
           variant="primary"
           size="default"
@@ -126,7 +126,7 @@ export default function EditArticlePage({
           {isSubmitting ? "Publishing..." : "Publish article"}
         </Button>
       </div>
-      <div className="flex flex-col gap-1 w-1/2">
+      <div className="flex flex-col gap-1 w-full md:w-1/2">
         <div className="font-medium pl-1">Article title</div>
         <input
           type="text"
@@ -136,7 +136,7 @@ export default function EditArticlePage({
           onChange={(e) => setArticleTitle(e.target.value)}
         />
       </div>
-      <div className="flex flex-col gap-1 w-1/2">
+      <div className="flex flex-col gap-1 w-full md:w-1/2">
         <div className="font-medium pl-1">Featured image</div>
         <div className="flex items-center gap-4">
           <ImageUpload
@@ -147,7 +147,7 @@ export default function EditArticlePage({
         </div>
       </div>
       <div className="flex gap-6">
-        <div className="flex flex-col gap-1 w-1/2">
+        <div className="flex flex-col gap-1 w-full md:w-1/2">
           <TextEditor
             markdownContent={markdownContent}
             setMarkdownContent={setMarkdownContent}
@@ -155,7 +155,7 @@ export default function EditArticlePage({
         </div>
         <MarkdownQuickRef />
       </div>
-      <div className="w-1/2">
+      <div className="w-full md:w-1/2">
         <div className="font-medium pl-1 mb-1">Preview</div>
         <div className="px-3 py-1.5 border border-gray-300 rounded-md prose bg-white h-80 overflow-auto leading-normal">
           <ReactMarkdown>{markdownContent}</ReactMarkdown>

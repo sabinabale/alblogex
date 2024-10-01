@@ -110,3 +110,12 @@ h4 {
 th {
   font-weight: 500;
 }
+
+h1 {
+  font-size: clamp(1.25rem, 1.25rem, 1.5rem);
+  font-weight: 700;
+}
+
+.article-heading {
+  font-size: clamp(1.75rem, 2rem, 2.25rem);
+}

@@ -48,13 +48,13 @@ export default async function Home() {
 
   return (
     <div className="min-h-screen">
-      <h1 className="text-3xl font-bold mb-8">Recent articles</h1>
-      <div className="flex flex-wrap gap-4">
+      <h1 className="mb-8">Recent articles</h1>
+      <div className="flex flex-col md:flex-row flex-wrap gap-4">
         <Suspense fallback={<RecentArticleSkeleton />}>
           {posts.map((post) => (
             <div
               key={post.id}
-              className="flex-1 min-w-0 basis-[calc(33.333%-1rem)]"
+              className="flex-1 min-w-0 basis-[calc(50%-0.5rem)] md:basis-[calc(33.333%-1rem)] w-full"
             >
               <TheArticleCard post={post} />
             </div>
