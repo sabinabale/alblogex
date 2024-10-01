@@ -4,7 +4,7 @@ import bulbicon from "@/assets/icons/bulb.svg";
 export default function MarkdownQuickRef() {
   return (
     <aside
-      className="mt-7 border border-cyan-600/30 bg-cyan-600/20 rounded-md pl-4 pr-8 py-6 h-fit hidden md:block"
+      className="mt-7 border border-cyan-600/30 bg-cyan-600/20 rounded-md pl-4 pr-8 py-6 h-fit hidden lg:block"
       aria-labelledby="quickref-title"
     >
       <h2
