@@ -21,7 +21,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${inter.className} antialiased bg-gray-50 text-[#212529] flex flex-col min-h-screen w-full`}
+        className={`${inter.className} antialiased bg-gray-50 text-[#212529] flex flex-col min-h-screen w-full overflow-x-hidden`}
       >
         <TheNavbar />
         <TheContainer>

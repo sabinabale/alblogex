@@ -13,7 +13,7 @@ export default function SigninPage() {
   };
 
   return (
-    <div className="flex flex-col items-center mt-20 md:mt-40 h-screen">
+    <div className="flex flex-col items-center mt-16 lg:mt-40 h-screen">
       <h1 className="mb-8 tracking-tight">Sign in</h1>
       <TheSigninForm onSuccessfulLogin={handleSuccessfulLogin} />
       <small className="mt-8">

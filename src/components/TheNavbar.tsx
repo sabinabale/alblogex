@@ -81,7 +81,7 @@ export default function TheNavbar() {
 
   return (
     <div className="border-b border-gray-300 bg-white font-medium">
-      <nav className="flex max-w-6xl mx-auto justify-between items-center py-2 text-sm text-gray-700 px-5 md:px-0">
+      <nav className="flex max-w-6xl mx-auto justify-between items-center py-2 text-sm text-gray-700 px-5 lg:px-0">
         <div className="flex items-center">
           <Link href="/">
             <Image src={catIcon} width={30} height={30} alt="cat icon" />
