@@ -80,7 +80,11 @@ export default function Page() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (
+    event:
+      | React.FormEvent<HTMLFormElement>
+      | React.MouseEvent<HTMLButtonElement>
+  ) => {
     event.preventDefault();
 
     if (!validateForm()) {
@@ -126,9 +130,14 @@ export default function Page() {
       localStorage.removeItem("articleTitle");
       localStorage.removeItem("markdownContent");
 
-      router.push(
-        `/app/dashboard?message=Article created successfully!&type=success`
-      );
+      if (result.id) {
+        router.push(`/articles/${result.id}`);
+      } else {
+        console.error("Article ID not returned from API");
+        router.push(
+          "/app/dashboard?message=Article created but ID not returned. Please check your dashboard.&type=warning"
+        );
+      }
     } catch (error) {
       console.error("Error creating article:", error);
 
@@ -155,6 +164,7 @@ export default function Page() {
           variant="primary"
           size="default"
           type="submit"
+          onClick={handleSubmit}
           className="bg-black/90 font-medium text-white text-sm px-3 py-1.5 w-fit"
           disabled={isSubmitting}
         >

@@ -6,34 +6,12 @@ import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { User } from "@supabase/auth-helpers-nextjs";
 import { MyArticleTableSkeleton } from "@/components/basic/Skeletons";
 import { Article, PostData } from "@/types/types";
-import { toast } from "react-hot-toast";
-import { useSearchParams } from "next/navigation";
 
 export default function Dashboard() {
   const [user, setUser] = useState<User | null>(null);
   const [articles, setArticles] = useState<Article[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const supabase = createClientComponentClient();
-  const [toastShown, setToastShown] = useState(false);
-
-  const searchParams = useSearchParams();
-
-  useEffect(() => {
-    const message = searchParams.get("message");
-    const type = searchParams.get("type");
-    if (message && !toastShown) {
-      if (type === "success") {
-        toast.success(message);
-      } else if (type === "error") {
-        toast.error(message);
-      }
-      setToastShown(true);
-    }
-  }, [searchParams, toastShown]);
-
-  useEffect(() => {
-    setToastShown(false);
-  }, [searchParams]);
 
   useEffect(() => {
     const fetchUserAndArticles = async () => {
