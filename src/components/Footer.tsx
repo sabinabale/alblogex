@@ -8,7 +8,8 @@ export default function Footer() {
           &copy; {new Date().getFullYear()} Sabina Balejikova 👩🏼‍💻
         </small>
         <small className="text-right">
-          This footer is a little boring but the page would be sad without it.
+          This footer is a little boring but the page would be sad without it
+          🏝️.
         </small>
       </div>
     </footer>
