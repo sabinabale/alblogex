@@ -57,14 +57,15 @@ export default function MyArticleTable({
   };
 
   const handleSelectAll = (isChecked: boolean) => {
-    if (isChecked) {
+    if (isChecked && articles.length > 0) {
       setSelectedArticles(articles.map((article) => article.id));
     } else {
       setSelectedArticles([]);
     }
   };
 
-  const isAllSelected = selectedArticles.length === articles.length;
+  const isAllSelected =
+    articles.length > 0 && selectedArticles.length === articles.length;
   const isSomeSelected = selectedArticles.length > 0 && !isAllSelected;
 
   const handleDeleteArticle = async (id: number, event: React.MouseEvent) => {

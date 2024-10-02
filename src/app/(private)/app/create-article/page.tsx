@@ -3,7 +3,7 @@
 import Image from "next/image";
 import React, { useState, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
-import crossicon from "@/assets/icons/cross.svg";
+
 import { useRouter } from "next/navigation";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { Button } from "@/components/basic/Buttons";
@@ -52,16 +52,6 @@ export default function Page() {
     const file = event.target.files?.[0];
     if (file) {
       setUploadedImage(file);
-    }
-  };
-
-  const handleRemoveImage = () => {
-    setUploadedImage(null);
-    const fileInput = document.getElementById(
-      "imageUpload"
-    ) as HTMLInputElement;
-    if (fileInput) {
-      fileInput.value = "";
     }
   };
 
@@ -197,7 +187,6 @@ export default function Page() {
             <ImageUpload
               uploadedImage={uploadedImage}
               handleImageUpload={handleImageUpload}
-              handleRemoveImage={handleRemoveImage}
             />
           </div>
         </div>
@@ -227,14 +216,38 @@ export default function Page() {
 const ImageUpload = ({
   uploadedImage,
   handleImageUpload,
-  handleRemoveImage,
 }: {
   uploadedImage: File | null;
   handleImageUpload: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  handleRemoveImage: () => void;
 }) => {
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (uploadedImage) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreviewUrl(reader.result as string);
+      };
+      reader.readAsDataURL(uploadedImage);
+    } else {
+      setPreviewUrl(null);
+    }
+  }, [uploadedImage]);
+
   return (
-    <div>
+    <div className="flex flex-col gap-2">
+      {previewUrl && (
+        <div className="relative w-24 h-24 mb-2">
+          <Image
+            src={previewUrl}
+            alt="Preview"
+            layout="fill"
+            objectFit="cover"
+            className="rounded-md"
+          />
+        </div>
+      )}
+
       <input
         type="file"
         accept="image/*"
@@ -247,24 +260,8 @@ const ImageUpload = ({
         htmlFor="imageUpload"
         className="bg-gray-500 hover:bg-gray-600 font-medium text-white text-sm px-3 py-1.5 rounded-md w-fit cursor-pointer"
       >
-        Upload Image
+        {uploadedImage ? "Change Image" : "Upload Image"}
       </label>
-      {uploadedImage && (
-        <div className="flex items-center gap-2 mt-2">
-          <span className="text-sm text-gray-600">{uploadedImage.name}</span>
-          <button
-            onClick={handleRemoveImage}
-            className="w-fit"
-            aria-label="Remove Uploaded Image"
-          >
-            <Image
-              src={crossicon}
-              alt=""
-              className="opacity-60 hover:opacity-100"
-            />
-          </button>
-        </div>
-      )}
     </div>
   );
 };
