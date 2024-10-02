@@ -89,26 +89,7 @@ export default function CommentSection({ postId }: CommentSectionProps) {
             <div className="flex items-center mb-2 gap-2">
               <span className="font-bold">{comment.User.name}</span>
               <span className="text-sm text-gray-500">
-                {(() => {
-                  const now = new Date();
-                  const createdAt = new Date(comment.createdAt);
-                  const diffInHours = Math.floor(
-                    (now.getTime() - createdAt.getTime()) / (1000 * 60 * 60)
-                  );
-
-                  if (diffInHours < 24) {
-                    return `${diffInHours} hour${
-                      diffInHours !== 1 ? "s" : ""
-                    } ago`;
-                  } else if (diffInHours < 48) {
-                    return "yesterday";
-                  } else {
-                    const diffInDays = Math.floor(diffInHours / 24);
-                    return `${diffInDays} day${
-                      diffInDays !== 1 ? "s" : ""
-                    } ago`;
-                  }
-                })()}
+                {(() => getTimeAgo(comment.createdAt))()}
               </span>
             </div>
             <p>{comment.content}</p>
@@ -200,3 +181,37 @@ function AddCommentForm({
     </>
   );
 }
+
+const getTimeAgo = (createdAt: Date | string): string => {
+  const now = new Date();
+  const created = new Date(createdAt);
+
+  const tzOffset = now.getTimezoneOffset() * 60000;
+  const localNow = new Date(now.getTime() - tzOffset);
+  const localCreated = new Date(created.getTime() - tzOffset);
+
+  const diffInSeconds = Math.floor(
+    (localNow.getTime() - localCreated.getTime()) / 1000
+  );
+
+  if (diffInSeconds < 60) {
+    return `${diffInSeconds} second${diffInSeconds !== 1 ? "s" : ""} ago`;
+  }
+
+  const diffInMinutes = Math.floor(diffInSeconds / 60);
+  if (diffInMinutes < 60) {
+    return `${diffInMinutes} minute${diffInMinutes !== 1 ? "s" : ""} ago`;
+  }
+
+  const diffInHours = Math.floor(diffInMinutes / 60);
+  if (diffInHours < 24) {
+    return `${diffInHours} hour${diffInHours !== 1 ? "s" : ""} ago`;
+  }
+
+  if (diffInHours < 48) {
+    return "yesterday";
+  }
+
+  const diffInDays = Math.floor(diffInHours / 24);
+  return `${diffInDays} day${diffInDays !== 1 ? "s" : ""} ago`;
+};
