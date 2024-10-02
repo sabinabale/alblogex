@@ -1,12 +1,8 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { User } from "@supabase/supabase-js";
-import Image from "next/image";
 
-import chevronup from "@/assets/icons/chevronup.svg";
-import chevrondown from "@/assets/icons/chevrondown.svg";
-import cross from "@/assets/icons/cross.svg";
-import { CommentSectionProps, Comment, VoteData } from "@/types/types";
+import { CommentSectionProps, Comment } from "@/types/types";
 import Link from "next/link";
 import { Button } from "./basic/Buttons";
 
@@ -35,25 +31,6 @@ export default function CommentSection({ postId }: CommentSectionProps) {
     }
   }, [supabase, postId]);
 
-  const fetchVotes = useCallback(async () => {
-    try {
-      const response = await fetch(`/api/comment-vote?postId=${postId}`);
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const votesData: VoteData[] = await response.json();
-      setComments((prevComments) =>
-        prevComments.map((comment) => ({
-          ...comment,
-          voteCount:
-            votesData.find((v) => v.commentId === comment.id)?._sum.value ?? 0,
-        }))
-      );
-    } catch (error) {
-      console.error("Error fetching votes:", error);
-    }
-  }, [postId]);
-
   const fetchUser = useCallback(async () => {
     const {
       data: { user },
@@ -67,8 +44,7 @@ export default function CommentSection({ postId }: CommentSectionProps) {
 
   useEffect(() => {
     fetchComments();
-    fetchVotes();
-  }, [fetchComments, fetchVotes]);
+  }, [fetchComments]);
 
   const handleSubmitComment = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -90,51 +66,6 @@ export default function CommentSection({ postId }: CommentSectionProps) {
       setNewComment("");
       fetchComments();
     }
-  };
-
-  const handleVote = async (commentId: number, value: number) => {
-    if (!user) return;
-
-    const response = await fetch("/api/comment-vote", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ commentId, userId: user.id, value }),
-    });
-
-    if (response.ok) {
-      fetchVotes();
-    } else {
-      console.error("Error voting");
-    }
-  };
-
-  const handleDeleteComment = async (commentId: number) => {
-    if (!user) return;
-
-    try {
-      const response = await fetch(`/api/comments?id=${commentId}`, {
-        method: "DELETE",
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to delete comment");
-      }
-
-      const result = await response.json();
-      console.log(result.message);
-
-      fetchComments();
-    } catch (error) {
-      console.error("Error deleting comment:", error);
-    }
-  };
-
-  const formatVoteCount = (count: number = 0) => {
-    if (count > 0) return `+${count}`;
-    if (count < 0) return `${count}`;
-    return "0";
   };
 
   return (
@@ -181,54 +112,6 @@ export default function CommentSection({ postId }: CommentSectionProps) {
               </span>
             </div>
             <p>{comment.content}</p>
-            <div className="mt-2 flex items-center">
-              {user && (
-                <>
-                  <span className="mr-4">
-                    {formatVoteCount(comment.voteCount)}
-                  </span>
-                  <button
-                    onClick={() => handleVote(comment.id, 1)}
-                    className="px-2 py-1 w-fit"
-                  >
-                    <Image
-                      src={chevronup}
-                      alt="Upvote comment"
-                      width={40}
-                      height={40}
-                      className="opacity-50 hover:opacity-100 transition-all duration-200 ease-in-out"
-                    />
-                  </button>
-
-                  <button
-                    onClick={() => handleVote(comment.id, -1)}
-                    className="px-2 py-1 w-fit"
-                  >
-                    <Image
-                      src={chevrondown}
-                      alt="Downvote comment"
-                      width={40}
-                      height={40}
-                      className="opacity-50 hover:opacity-100 transition-all duration-200 ease-in-out"
-                    />
-                  </button>
-                </>
-              )}
-
-              {user && user.id === comment.User.id && (
-                <button
-                  onClick={() => handleDeleteComment(comment.id)}
-                  className="px-2 py-1 w-fit opacity-50 hover:opacity-100 transition-all duration-200 ease-in-out"
-                >
-                  <Image
-                    src={cross}
-                    alt="Delete comment"
-                    width={30}
-                    height={30}
-                  />
-                </button>
-              )}
-            </div>
           </div>
         </div>
       ))}
