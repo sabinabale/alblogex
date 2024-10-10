@@ -75,21 +75,13 @@ export async function DELETE(req: Request) {
   }
 
   try {
-    const result = await prisma.$transaction(async (tx) => {
-      await tx.commentVote.deleteMany({
-        where: { commentId: Number(commentId) },
-      });
-
-      const deletedComment = await tx.comment.delete({
-        where: { id: Number(commentId) },
-      });
-
-      return deletedComment;
+    const deletedComment = await prisma.comment.delete({
+      where: { id: Number(commentId) },
     });
 
     return NextResponse.json({
-      message: "Comment and associated votes deleted successfully",
-      comment: result,
+      message: "Comment deleted successfully",
+      comment: deletedComment,
     });
   } catch (error) {
     console.error("Error deleting comment:", error);

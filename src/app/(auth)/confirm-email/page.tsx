@@ -19,7 +19,7 @@ export default function Page() {
         <div className="text-center">
           We&apos;ve sent you an confirmation link.
         </div>
-        <div>Please click the link to confirm your address.</div>
+        <div>Please click the link to confirm your address and sign in.</div>
       </div>
     </div>
   );
