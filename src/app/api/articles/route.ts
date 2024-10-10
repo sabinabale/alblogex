@@ -22,7 +22,7 @@ export async function GET() {
         images: true,
         comments: {
           include: {
-            votes: true,
+            author: true,
           },
         },
       },
