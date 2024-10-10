@@ -3,7 +3,7 @@ import { cookies } from "next/headers";
 import { Suspense } from "react";
 import { RecentArticleSkeleton } from "@/components/basic/Skeletons";
 import { Post } from "@/types/types";
-import TheArticleCard from "@/components/TheArticleCard";
+import TheArticleCard from "@/components/articles/TheArticleCard";
 
 function isPost(obj: unknown): obj is Post {
   const post = obj as Post;

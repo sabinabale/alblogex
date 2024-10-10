@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
-import ArticleForm from "@/components/ArticleForm";
+import ArticleForm from "@/components/articles/ArticleForm";
 
 export default function CreateArticlePage() {
   const [isSubmitting, setIsSubmitting] = useState(false);

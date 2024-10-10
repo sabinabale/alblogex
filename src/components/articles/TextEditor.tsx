@@ -1,12 +1,14 @@
-import InputLabel from "./basic/InputLabel";
+import InputLabel from "../basic/InputLabel";
+
+type TextEditorProps = {
+  markdownContent: string;
+  setMarkdownContent: (content: string) => void;
+};
 
 export default function TextEditor({
   markdownContent,
   setMarkdownContent,
-}: {
-  markdownContent: string;
-  setMarkdownContent: React.Dispatch<React.SetStateAction<string>>;
-}) {
+}: TextEditorProps) {
   return (
     <>
       <InputLabel variant="article" htmlFor="articleContent">

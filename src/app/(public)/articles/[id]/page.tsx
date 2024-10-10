@@ -7,7 +7,7 @@ import Link from "next/link";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import ArrowIcon from "@/assets/icons/backarrow.svg";
-import CommentSection from "@/components/CommentSection";
+import CommentSection from "@/components/articles/CommentSection";
 import { ArticleFullSkeleton } from "@/components/basic/Skeletons";
 import { Post } from "@/types/types";
 
