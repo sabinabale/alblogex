@@ -66,7 +66,7 @@ export default function ArticlePage({ params }: { params: { id: string } }) {
 
   return (
     <div className="max-w-3xl mx-auto py-8">
-      <ReturnToArticles post={post} />
+      <ReturnToArticles />
       <ArticleHeader post={post} />
       <div className="prose max-w-none my-8">
         <ReactMarkdown remarkPlugins={[remarkGfm]}>
@@ -78,13 +78,20 @@ export default function ArticlePage({ params }: { params: { id: string } }) {
   );
 }
 
-function ReturnToArticles({ post }: { post: Post }) {
+function ReturnToArticles() {
   return (
     <>
       <Link href="/" className="flex gap-2 items-center text-sm my-4">
         <Image src={ArrowIcon} width={16} height={16} alt="go back icon" /> Back
         to recent articles
       </Link>
+    </>
+  );
+}
+
+function ArticleHeader({ post }: { post: Post }) {
+  return (
+    <>
       {post.imageUrl && (
         <Image
           src={post.imageUrl}
@@ -95,13 +102,6 @@ function ReturnToArticles({ post }: { post: Post }) {
           priority
         />
       )}
-    </>
-  );
-}
-
-function ArticleHeader({ post }: { post: Post }) {
-  return (
-    <>
       <h1 className="article-heading mb-4">{post.title}</h1>
       <div className="flex gap-2 text-sm text-gray-500 my-4">
         {new Date(post.createdAt)

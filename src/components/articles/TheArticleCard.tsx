@@ -29,7 +29,7 @@ export default function ArticleCard({ post }: { post: Post }) {
           <Image
             src={post.imageUrl}
             alt={post.title}
-            width={360}
+            width={374}
             height={240}
             className="w-full h-[240px] rounded-t-md mr-4 object-cover overflow-hidden"
             priority
@@ -37,6 +37,7 @@ export default function ArticleCard({ post }: { post: Post }) {
         ) : (
           <div className="w-full h-[240px] bg-gray-200 rounded-t-md mr-8"></div>
         )}
+
         <div className="flex flex-col gap-4 p-6">
           <div className="text-sm text-gray-500">
             Written by {post.author.name.split(" ")[0]}
