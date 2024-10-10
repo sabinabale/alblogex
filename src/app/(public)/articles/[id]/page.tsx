@@ -66,6 +66,21 @@ export default function ArticlePage({ params }: { params: { id: string } }) {
 
   return (
     <div className="max-w-3xl mx-auto py-8">
+      <ReturnToArticles post={post} />
+      <ArticleHeader post={post} />
+      <div className="prose max-w-none my-8">
+        <ReactMarkdown remarkPlugins={[remarkGfm]}>
+          {post.content}
+        </ReactMarkdown>
+      </div>
+      <CommentSection postId={post.id} />
+    </div>
+  );
+}
+
+function ReturnToArticles({ post }: { post: Post }) {
+  return (
+    <>
       <Link href="/" className="flex gap-2 items-center text-sm my-4">
         <Image src={ArrowIcon} width={16} height={16} alt="go back icon" /> Back
         to recent articles
@@ -80,7 +95,13 @@ export default function ArticlePage({ params }: { params: { id: string } }) {
           priority
         />
       )}
+    </>
+  );
+}
 
+function ArticleHeader({ post }: { post: Post }) {
+  return (
+    <>
       <h1 className="article-heading mb-4">{post.title}</h1>
       <div className="flex gap-2 text-sm text-gray-500 my-4">
         {new Date(post.createdAt)
@@ -95,13 +116,7 @@ export default function ArticlePage({ params }: { params: { id: string } }) {
           Written by {post.author.name.split(" ")[0]}
         </div>
       </div>
-      <div className="prose max-w-none my-8">
-        <ReactMarkdown remarkPlugins={[remarkGfm]}>
-          {post.content}
-        </ReactMarkdown>
-      </div>
-      <CommentSection postId={post.id} />
-    </div>
+    </>
   );
 }
 

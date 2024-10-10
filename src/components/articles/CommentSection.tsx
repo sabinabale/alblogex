@@ -79,14 +79,14 @@ export default function CommentSection({ postId }: CommentSectionProps) {
         setNewComment={setNewComment}
       />
       {comments.map((comment) => (
-        <div key={comment.id} className="mb-6 flex gap-4">
+        <div key={comment.id} className="mb-6 flex gap-4 items-center">
           <div className="h-11 w-11 flex-shrink-0 rounded-full outline outline-1 outline-black/20 bg-gray-200 text-black/20 flex items-center justify-center text-lg font-semibold">
             {comment.User.name
               ? comment.User.name.charAt(0).toUpperCase()
               : "AA"}
           </div>
           <div>
-            <div className="flex items-center mb-2 gap-2">
+            <div className="flex items-center mb-1 gap-2">
               <span className="font-bold">
                 {comment.User.name.split(" ")[0]}
               </span>
