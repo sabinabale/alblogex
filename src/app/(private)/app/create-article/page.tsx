@@ -1,42 +1,17 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import ArticleForm from "@/components/articles/ArticleForm";
 
 export default function CreateArticlePage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
-  const supabase = createClientComponentClient();
-
-  useEffect(() => {
-    const checkSession = async () => {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      if (!session) {
-        router.push("/signin");
-      }
-    };
-    checkSession();
-  }, [supabase, router]);
 
   const handleSubmit = async (formData: FormData) => {
     setIsSubmitting(true);
 
     try {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-
-      if (!session) {
-        router.push(
-          "/signin?message=Your session has expired. Please log in again.&type=error"
-        );
-        return;
-      }
-
       const response = await fetch("/api/articles", {
         method: "POST",
         body: formData,
@@ -62,7 +37,6 @@ export default function CreateArticlePage() {
       }
     } catch (error) {
       console.error("Error creating article:", error);
-
       router.push(
         `/app/dashboard?message=Failed to create article. Please try again.&type=error`
       );

@@ -87,7 +87,9 @@ export default function CommentSection({ postId }: CommentSectionProps) {
           </div>
           <div>
             <div className="flex items-center mb-2 gap-2">
-              <span className="font-bold">{comment.User.name}</span>
+              <span className="font-bold">
+                {comment.User.name.split(" ")[0]}
+              </span>
               <span className="text-sm text-gray-500">
                 {(() => getTimeAgo(comment.createdAt))()}
               </span>
