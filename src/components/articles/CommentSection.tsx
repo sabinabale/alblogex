@@ -69,7 +69,7 @@ export default function CommentSection({ postId }: CommentSectionProps) {
   };
 
   return (
-    <div className="mt-8 border-t pt-8 border-gray-300">
+    <div className="mt-8 border-t pt-8 border-gray-200">
       <h4 className="mb-8">Comments</h4>
       <VisitorView user={user} />
       <AddCommentForm
