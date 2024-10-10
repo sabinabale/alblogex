@@ -63,21 +63,27 @@ export type Comment = {
     name: string;
     id: string;
   };
-  voteCount: number;
 };
 
 export type CommentSectionProps = {
   postId: number;
 };
 
-export type VoteData = {
-  commentId: number;
-  _sum: {
-    value: number;
-  };
-};
-
 export type NavLinkProps = {
   href: string;
   children: React.ReactNode;
+};
+
+export type ArticleFormProps = {
+  initialTitle: string;
+  initialContent: string;
+  initialImageUrl?: string | null;
+  onSubmit: (formData: FormData) => Promise<void>;
+  submitButtonText: string;
+  isSubmitting: boolean;
+};
+
+export type FormErrors = {
+  title?: string;
+  content?: string;
 };

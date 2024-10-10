@@ -59,7 +59,7 @@ export default function ArticleCard({ post }: { post: Post }) {
               {removeMarkdown(post.content.substring(0, 200))}
             </p>
           </div>
-          <div className="flex gap-2 text-sm text-gray-500">
+          <div className="flex gap-2 text-sm text-gray-500 mt-auto">
             {new Date(post.createdAt)
               .toLocaleDateString("en-US", {
                 year: "numeric",
