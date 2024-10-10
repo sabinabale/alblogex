@@ -94,14 +94,16 @@ export default function MyArticleTable({
 
       toast.promise(deletePromise, {
         loading: "Deleting article...",
-        success: (data) => {
+        success: (data: unknown) => {
           console.log("Delete response:", data);
           setArticles((prevArticles) =>
             prevArticles.filter((article) => article.id !== id)
           );
-          return "Article deleted successfully";
+          // Clear all selections when a single article is deleted
+          setSelectedArticles([]);
+          return "Article deleted successfully" as const;
         },
-        error: (err) => {
+        error: (err: Error) => {
           console.error("Error deleting article:", err);
           return `Failed to delete article. Error: ${err.message}`;
         },
