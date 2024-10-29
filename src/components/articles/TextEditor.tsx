@@ -1,4 +1,4 @@
-import InputLabel from "../basic/InputLabel";
+import InputLabel from "../layout/InputLabel";
 
 type TextEditorProps = {
   markdownContent: string;

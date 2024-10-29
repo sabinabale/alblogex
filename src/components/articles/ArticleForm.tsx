@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Button } from "@/components/basic/Buttons";
+import { Button } from "@/components/layout/Buttons";
 import ImageUploader from "./ImageUploader";
 import TitleInput from "./TitleInput";
 import ContentEditor from "./ContentEditor";

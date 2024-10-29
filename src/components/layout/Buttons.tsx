@@ -1,7 +1,7 @@
 import * as React from "react";
 import { cn } from "@/utils/cn";
 import { cva, VariantProps } from "class-variance-authority";
-import { Slot } from "@/components/basic/Slot";
+import { Slot } from "@/components/layout/Slot";
 
 const buttonVariants = cva(
   "inline-flex w-fit items-center justify-center whitespace-nowrap rounded-full flex-shrink-0 text-[14px] font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-40 transition-all duration-200 ease-in-out",

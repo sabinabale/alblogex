@@ -1,6 +1,6 @@
 import React from "react";
 import TextEditor from "./TextEditor";
-import MarkdownQuickRef from "../basic/MarkdownQuickRef";
+import MarkdownQuickRef from "../layout/MarkdownQuickRef";
 
 type ContentEditorProps = {
   content: string;

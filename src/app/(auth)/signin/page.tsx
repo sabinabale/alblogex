@@ -2,7 +2,7 @@
 
 import React from "react";
 import { useRouter } from "next/navigation";
-import TheSigninForm from "@/components/TheSigninForm";
+import TheSigninForm from "@/components/auth/TheSigninForm";
 import Link from "next/link";
 
 export default function SigninPage() {

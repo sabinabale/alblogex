@@ -1,69 +1,42 @@
 "use client";
 
 import React, { useState } from "react";
-import { useRouter } from "next/navigation";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
-import InputLabel from "@/components/basic/InputLabel";
-import { Input } from "./basic/Inputs";
 import passwordShow from "@/assets/icons/passwordvisible.svg";
 import passwordHide from "@/assets/icons/passwordhidden.svg";
 import Image from "next/image";
-import TheForm from "./basic/TheForm";
+import InputLabel from "@/components/layout/InputLabel";
+import { SigninFormProps } from "@/types/types";
+import { Button } from "../layout/Buttons";
 import SpinnerIcon from "@/assets/icons/loginspinner.svg";
-import { Button } from "./basic/Buttons";
+import { Input } from "../layout/Inputs";
+import TheForm from "../layout/TheForm";
 
-export default function TheRegistrationForm() {
-  const router = useRouter();
-  const supabase = createClientComponentClient();
-
+export default function TheSigninForm({ onSuccessfulLogin }: SigninFormProps) {
   const [formData, setFormData] = useState({
-    name: "",
     email: "",
     password: "",
   });
-
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState<{
-    name?: string;
     email?: string;
     password?: string;
     form?: string;
   }>({});
 
-  const togglePasswordVisibility = () => {
-    setShowPassword(!showPassword);
-  };
+  const supabase = createClientComponentClient();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    if (value.includes("<") || value.includes(">")) {
-      setErrors((prev) => ({
-        ...prev,
-        [name]: "<> characters are not allowed",
-      }));
-    } else {
-      setFormData({
-        ...formData,
-        [name]: name === "email" ? value.toLowerCase() : value,
-      });
-      setErrors((prev) => ({ ...prev, [name]: undefined }));
-    }
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    setErrors((prev) => ({ ...prev, [name]: undefined }));
   };
 
   const validateForm = () => {
     const newErrors: typeof errors = {};
-    if (!formData.name.trim()) newErrors.name = "Name is required";
     if (!formData.email.trim()) newErrors.email = "Email is required";
     if (!formData.password.trim()) newErrors.password = "Password is required";
-
-    if (formData.name.includes("<") || formData.name.includes(">"))
-      newErrors.name = "<> characters are not allowed";
-    if (formData.email.includes("<") || formData.email.includes(">"))
-      newErrors.email = "<> characters are not allowed";
-    if (formData.password.includes("<") || formData.password.includes(">"))
-      newErrors.password = "<> characters are not allowed";
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -76,73 +49,30 @@ export default function TheRegistrationForm() {
     setErrors({});
 
     try {
-      const { data: authData, error: authError } = await supabase.auth.signUp({
+      const { error } = await supabase.auth.signInWithPassword({
         email: formData.email,
         password: formData.password,
-        options: {
-          data: {
-            name: formData.name,
-          },
-          emailRedirectTo: "https://alblogex.vercel.app/signin",
-        },
       });
 
-      if (authError) throw authError;
+      if (error) throw error;
 
-      if (authData.user) {
-        const res = await fetch("/api/create-user", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            id: authData.user.id,
-            name: formData.name,
-            email: formData.email,
-          }),
-        });
-
-        if (!res.ok) {
-          const errorData = await res.json();
-          throw new Error(
-            errorData.message || "Failed to create user in database"
-          );
-        }
-      }
-
-      setFormData({ name: "", email: "", password: "" });
-      router.push("/confirm-email");
-    } catch (err: unknown) {
+      onSuccessfulLogin();
+    } catch (error) {
       setErrors({
-        form:
-          err instanceof Error
-            ? err.message
-            : "Something went wrong during registration",
+        form: error instanceof Error ? error.message : "Something went wrong",
       });
     } finally {
       setLoading(false);
     }
   };
 
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
   return (
     <TheForm>
       <form onSubmit={handleSubmit} className="w-72">
-        <div>
-          <InputLabel htmlFor="name">Name</InputLabel>
-
-          <Input
-            variant="general"
-            type="text"
-            id="name"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            className="w-full border border-gray-100 rounded p-2"
-          />
-          <p className="text-red-500 text-xs h-6 pt-1 pl-1">
-            {errors.name || "\u00A0"}
-          </p>
-        </div>
         <div>
           <InputLabel htmlFor="email">Email</InputLabel>
           <Input
@@ -152,7 +82,6 @@ export default function TheRegistrationForm() {
             name="email"
             value={formData.email}
             onChange={handleChange}
-            className="w-full border border-gray-200 rounded p-2"
           />
           <p className="text-red-500 text-xs h-6 pt-1 pl-1">
             {errors.email || "\u00A0"}
@@ -187,17 +116,17 @@ export default function TheRegistrationForm() {
         <Button
           variant="primary"
           size="default"
-          className="w-full leading-[30px] mt-4"
-          disabled={loading}
+          className="w-full mt-4 leading-[30px]"
           type="submit"
+          disabled={loading}
         >
           {loading ? (
             <>
               <Image src={SpinnerIcon} alt="Spinner" className="mr-2" />
-              <span>Creating your account...</span>
+              <span>Signing you in...</span>
             </>
           ) : (
-            "Sign up"
+            "Sign in"
           )}
         </Button>
         {errors.form && (

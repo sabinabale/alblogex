@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from "react";
-import CustomCheckbox from "@/components/basic/CustomCheckbox";
+import CustomCheckbox from "@/components/layout/CustomCheckbox";
 import AscendingIcon from "@/assets/icons/chevronup.svg";
 import DescendingIcon from "@/assets/icons/chevrondown.svg";
 import EditIcon from "@/assets/icons/edit.svg";
@@ -7,7 +7,7 @@ import DeleteIcon from "@/assets/icons/delete.svg";
 import Image from "next/image";
 import Link from "next/link";
 import { Article, MyArticleTableProps } from "@/types/types";
-import { Button } from "@/components/basic/Buttons";
+import { Button } from "@/components/layout/Buttons";
 import { toast } from "react-hot-toast";
 
 export default function MyArticleTable({

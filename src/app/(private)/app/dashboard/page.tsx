@@ -1,10 +1,10 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import MyArticleTable from "@/components/MyArticleTable";
+import MyArticleTable from "@/components/articles/MyArticleTable";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { User } from "@supabase/auth-helpers-nextjs";
-import { MyArticleTableSkeleton } from "@/components/basic/Skeletons";
+import { MyArticleTableSkeleton } from "@/components/layout/Skeletons";
 import { Article, PostData } from "@/types/types";
 
 export default function Dashboard() {

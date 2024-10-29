@@ -4,13 +4,13 @@ import React, { useEffect, useState, useRef } from "react";
 import { usePathname } from "next/navigation";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { NavLinkProps } from "@/types/types";
-import { Button } from "@/components/basic/Buttons";
+import { Button } from "@/components/layout/Buttons";
 import catIcon from "@/assets/icons/caticon.svg";
 import Image from "next/image";
 import WriteIcon from "@/assets/icons/write.svg";
 import type { User } from "@/types/types";
 import ChevronDown from "@/assets/icons/chevrondown.svg";
-import AccountInfo from "@/components/AccountInfo";
+import AccountInfo from "@/components/auth/AccountInfo";
 
 export default function TheNavbar() {
   const pathname = usePathname();

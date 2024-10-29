@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
-import InputLabel from "@/components/basic/InputLabel";
+import InputLabel from "@/components/layout/InputLabel";
 
 type ImageUploaderProps = {
   uploadedImage: File | null;

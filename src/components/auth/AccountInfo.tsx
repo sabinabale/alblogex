@@ -1,5 +1,5 @@
 import React from "react";
-import { Button } from "@/components/basic/Buttons";
+import { Button } from "@/components/layout/Buttons";
 import logOut from "@/assets/icons/logout.svg";
 import Image from "next/image";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";

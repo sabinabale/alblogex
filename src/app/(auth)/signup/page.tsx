@@ -1,6 +1,6 @@
 import Link from "next/link";
 import React from "react";
-import TheRegistrationForm from "../../../components/TheRegistrationForm";
+import TheRegistrationForm from "@/components/auth/TheRegistrationForm";
 
 export default function Page() {
   return (

@@ -3,8 +3,16 @@ import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { User } from "@supabase/supabase-js";
 import { CommentSectionProps, Comment } from "@/types/types";
 import Link from "next/link";
-import { Button } from "../basic/Buttons";
+import { Button } from "../layout/Buttons";
 import AddCommentForm from "./AddCommentForm";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
+import relativeTime from "dayjs/plugin/relativeTime";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
+dayjs.extend(relativeTime);
 
 export default function CommentSection({ postId }: CommentSectionProps) {
   const [comments, setComments] = useState<Comment[]>([]);
@@ -50,14 +58,15 @@ export default function CommentSection({ postId }: CommentSectionProps) {
     e.preventDefault();
     if (!user) return;
 
-    const now = new Date().toISOString();
+    const now = new Date();
+    const timestamp = now.toISOString();
 
     const { error } = await supabase.from("Comment").insert({
       content: newComment,
       postId,
       authorId: user.id,
-      createdAt: now,
-      updatedAt: now,
+      createdAt: timestamp,
+      updatedAt: timestamp,
     });
 
     if (error) {
@@ -83,6 +92,17 @@ export default function CommentSection({ postId }: CommentSectionProps) {
   );
 }
 
+function formatCommentTime(timestamp: string) {
+  try {
+    const localDate = dayjs.utc(timestamp).tz(dayjs.tz.guess());
+
+    return localDate.fromNow();
+  } catch (error) {
+    console.error("Error formatting date:", error);
+    return "a few seconds ago";
+  }
+}
+
 function Comments({ comments }: { comments: Comment[] }) {
   return (
     <>
@@ -99,7 +119,7 @@ function Comments({ comments }: { comments: Comment[] }) {
                 {comment.User.name.split(" ")[0]}
               </span>
               <span className="text-sm text-gray-500">
-                {(() => getTimeAgo(comment.createdAt))()}
+                {formatCommentTime(comment.createdAt)}
               </span>
             </div>
             <p>{comment.content}</p>
@@ -126,37 +146,3 @@ function VisitorView({ user }: { user: User | null }) {
     </>
   );
 }
-
-const getTimeAgo = (createdAt: Date | string): string => {
-  const now = new Date();
-  const created = new Date(createdAt);
-
-  const tzOffset = now.getTimezoneOffset() * 60000;
-  const localNow = new Date(now.getTime() - tzOffset);
-  const localCreated = new Date(created.getTime() - tzOffset);
-
-  const diffInSeconds = Math.floor(
-    (localNow.getTime() - localCreated.getTime()) / 1000
-  );
-
-  if (diffInSeconds < 60) {
-    return `${diffInSeconds} second${diffInSeconds !== 1 ? "s" : ""} ago`;
-  }
-
-  const diffInMinutes = Math.floor(diffInSeconds / 60);
-  if (diffInMinutes < 60) {
-    return `${diffInMinutes} minute${diffInMinutes !== 1 ? "s" : ""} ago`;
-  }
-
-  const diffInHours = Math.floor(diffInMinutes / 60);
-  if (diffInHours < 24) {
-    return `${diffInHours} hour${diffInHours !== 1 ? "s" : ""} ago`;
-  }
-
-  if (diffInHours < 48) {
-    return "yesterday";
-  }
-
-  const diffInDays = Math.floor(diffInHours / 24);
-  return `${diffInDays} day${diffInDays !== 1 ? "s" : ""} ago`;
-};

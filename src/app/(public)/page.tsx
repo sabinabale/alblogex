@@ -1,7 +1,7 @@
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
 import { Suspense } from "react";
-import { RecentArticleSkeleton } from "@/components/basic/Skeletons";
+import { RecentArticleSkeleton } from "@/components/layout/Skeletons";
 import { Post } from "@/types/types";
 import TheArticleCard from "@/components/articles/TheArticleCard";
 

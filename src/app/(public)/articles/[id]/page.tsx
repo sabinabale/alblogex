@@ -8,7 +8,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import ArrowIcon from "@/assets/icons/backarrow.svg";
 import CommentSection from "@/components/articles/CommentSection";
-import { ArticleFullSkeleton } from "@/components/basic/Skeletons";
+import { ArticleFullSkeleton } from "@/components/layout/Skeletons";
 import { Post } from "@/types/types";
 
 export default function ArticlePage({ params }: { params: { id: string } }) {

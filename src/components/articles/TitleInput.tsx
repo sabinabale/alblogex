@@ -1,6 +1,6 @@
 import React from "react";
-import InputLabel from "@/components/basic/InputLabel";
-import { Input } from "@/components/basic/Inputs";
+import InputLabel from "@/components/layout/InputLabel";
+import { Input } from "@/components/layout/Inputs";
 
 type TitleInputProps = {
   value: string;
