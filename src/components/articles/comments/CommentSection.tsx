@@ -3,7 +3,7 @@ import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { User } from "@supabase/supabase-js";
 import { CommentSectionProps, Comment } from "@/types/types";
 import Link from "next/link";
-import { Button } from "../layout/Buttons";
+import { Button } from "../../layout/Buttons";
 import AddCommentForm from "./AddCommentForm";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";

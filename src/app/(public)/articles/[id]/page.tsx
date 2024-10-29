@@ -5,7 +5,7 @@ import Link from "next/link";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import ArrowIcon from "@/assets/icons/backarrow.svg";
-import CommentSection from "@/components/articles/CommentSection";
+import CommentSection from "@/components/articles/comments/CommentSection";
 import { ArticleFullSkeleton } from "@/components/layout/Skeletons";
 import type { PostWithAuthorAndComments } from "@/lib/supabase-shared-queries";
 import { useFetchPost } from "@/lib/hooks/useFetchPost";

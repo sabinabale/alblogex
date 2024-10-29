@@ -1,22 +1,19 @@
+"use client";
+
 import React, { useState } from "react";
 import Image from "next/image";
-import passwordShow from "@/assets/icons/passwordvisible.svg";
-import passwordHide from "@/assets/icons/passwordhidden.svg";
-import SpinnerIcon from "@/assets/icons/loginspinner.svg";
 import InputLabel from "@/components/layout/InputLabel";
 import { Input } from "../layout/Inputs";
-import { Button } from "../layout/Buttons";
+import passwordShow from "@/assets/icons/passwordvisible.svg";
+import passwordHide from "@/assets/icons/passwordhidden.svg";
 import TheForm from "../layout/TheForm";
-import useSignIn from "@/lib/hooks/useSignIn";
+import SpinnerIcon from "@/assets/icons/loginspinner.svg";
+import { Button } from "../layout/Buttons";
+import useSignUp from "@/lib/hooks/useSignUp";
 
-type SigninFormProps = {
-  onSuccessfulLogin: () => void;
-};
-
-export default function TheSigninForm({ onSuccessfulLogin }: SigninFormProps) {
+export default function TheSignUpForm() {
   const [showPassword, setShowPassword] = useState(false);
-  const { formData, loading, errors, handleChange, handleSubmit } =
-    useSignIn(onSuccessfulLogin);
+  const { formData, loading, errors, handleChange, handleSubmit } = useSignUp();
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -26,6 +23,22 @@ export default function TheSigninForm({ onSuccessfulLogin }: SigninFormProps) {
     <TheForm>
       <form onSubmit={handleSubmit} className="w-72">
         <div>
+          <InputLabel htmlFor="name">Name</InputLabel>
+          <Input
+            variant="general"
+            type="text"
+            id="name"
+            name="name"
+            value={formData.name}
+            onChange={handleChange}
+            className="w-full border border-gray-100 rounded p-2"
+          />
+          <p className="text-red-500 text-xs h-6 pt-1 pl-1">
+            {errors.name || "\u00A0"}
+          </p>
+        </div>
+
+        <div>
           <InputLabel htmlFor="email">Email</InputLabel>
           <Input
             variant="general"
@@ -34,6 +47,7 @@ export default function TheSigninForm({ onSuccessfulLogin }: SigninFormProps) {
             name="email"
             value={formData.email}
             onChange={handleChange}
+            className="w-full border border-gray-200 rounded p-2"
           />
           <p className="text-red-500 text-xs h-6 pt-1 pl-1">
             {errors.email || "\u00A0"}
@@ -70,17 +84,17 @@ export default function TheSigninForm({ onSuccessfulLogin }: SigninFormProps) {
         <Button
           variant="primary"
           size="default"
-          className="w-full mt-4 leading-[30px]"
-          type="submit"
+          className="w-full leading-[30px] mt-4"
           disabled={loading}
+          type="submit"
         >
           {loading ? (
             <>
               <Image src={SpinnerIcon} alt="Spinner" className="mr-2" />
-              <span>Signing you in...</span>
+              <span>Creating your account...</span>
             </>
           ) : (
-            "Sign in"
+            "Sign up"
           )}
         </Button>
 

@@ -1,4 +1,4 @@
-import { Article } from "@/types/types";
+import { Article } from "@/types/supabase";
 import { useTableSort } from "@/lib/hooks/useTableSort";
 import { useArticleSelection } from "@/lib/hooks/useArticleSelection";
 import { useArticleActions } from "@/lib/hooks/useArticleActions";

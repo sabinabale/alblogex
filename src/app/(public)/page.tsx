@@ -2,7 +2,7 @@ import { createServer } from "@/lib/supabase-server";
 import { queries } from "@/lib/supabase-shared-queries";
 import { Suspense } from "react";
 import { RecentArticleSkeleton } from "@/components/layout/Skeletons";
-import { Post } from "@/types/types";
+import { Post } from "@/types/supabase";
 import TheArticleCard from "@/components/articles/TheArticleCard";
 
 function isValidPost(post: unknown): post is Post {
