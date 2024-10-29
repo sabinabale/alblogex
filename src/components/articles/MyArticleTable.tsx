@@ -99,7 +99,7 @@ export default function MyArticleTable({
           setArticles((prevArticles) =>
             prevArticles.filter((article) => article.id !== id)
           );
-          // Clear all selections when a single article is deleted
+
           setSelectedArticles([]);
           return "Article deleted successfully" as const;
         },

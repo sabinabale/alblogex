@@ -47,7 +47,7 @@ export default async function Home() {
   const posts = (data as unknown[]).filter(isPost);
 
   return (
-    <div className="min-h-screen px-5">
+    <div className="min-h-screen">
       <h1 className="mb-8">Recent articles</h1>
       <div className="flex flex-col md:flex-row flex-wrap gap-4 ">
         <Suspense fallback={<RecentArticleSkeleton />}>
