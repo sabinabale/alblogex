@@ -1,55 +1,41 @@
-import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
-import { cookies } from "next/headers";
+import { createServer } from "@/lib/supabase-server";
+import { queries } from "@/lib/supabase-shared-queries";
 import { Suspense } from "react";
 import { RecentArticleSkeleton } from "@/components/layout/Skeletons";
 import { Post } from "@/types/types";
 import TheArticleCard from "@/components/articles/TheArticleCard";
 
-function isPost(obj: unknown): obj is Post {
-  const post = obj as Post;
+function isValidPost(post: unknown): post is Post {
+  const p = post as Post;
   return (
-    typeof post.id === "number" &&
-    typeof post.title === "string" &&
-    typeof post.content === "string" &&
-    (post.imageUrl === null || typeof post.imageUrl === "string") &&
-    typeof post.createdAt === "string" &&
-    post.author !== null &&
-    typeof post.author.name === "string" &&
-    Array.isArray(post.comments) &&
-    post.comments.every((c) => typeof c.count === "number")
+    typeof p.id === "number" &&
+    typeof p.title === "string" &&
+    typeof p.content === "string" &&
+    (p.imageUrl === null || typeof p.imageUrl === "string") &&
+    typeof p.createdAt === "string" &&
+    p.author !== null &&
+    typeof p.author.name === "string" &&
+    Array.isArray(p.comments) &&
+    p.comments.every((c) => typeof c.count === "number")
   );
 }
 
 export default async function Home() {
-  const supabase = createServerComponentClient({ cookies });
+  const supabase = createServer();
 
-  const { data, error } = await supabase
-    .from("Post")
-    .select(
-      `
-      id,
-      title,
-      content,
-      imageUrl,
-      createdAt,
-      author:User (name),
-      comments:Comment (count)
-    `
-    )
-    .order("createdAt", { ascending: false })
-    .limit(10);
+  const { data, error } = await queries.getRecentPosts(supabase);
 
   if (error) {
     console.error("Error fetching posts:", error);
     return <div>Error loading recent articles</div>;
   }
 
-  const posts = (data as unknown[]).filter(isPost);
+  const posts = (data || []).filter(isValidPost);
 
   return (
     <div className="min-h-screen">
       <h1 className="mb-8">Recent articles</h1>
-      <div className="flex flex-col md:flex-row flex-wrap gap-4 ">
+      <div className="flex flex-col md:flex-row flex-wrap gap-4">
         <Suspense fallback={<RecentArticleSkeleton />}>
           {posts.map((post) => (
             <div

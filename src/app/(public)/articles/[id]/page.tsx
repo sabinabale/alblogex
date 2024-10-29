@@ -1,97 +1,41 @@
 "use client";
 
 import Image from "next/image";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
-import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import ArrowIcon from "@/assets/icons/backarrow.svg";
 import CommentSection from "@/components/articles/CommentSection";
 import { ArticleFullSkeleton } from "@/components/layout/Skeletons";
-import { Post } from "@/types/types";
+import type { PostWithAuthorAndComments } from "@/lib/supabase-shared-queries";
+import { useFetchPost } from "@/lib/hooks/useFetchPost";
 
-export default function ArticlePage({ params }: { params: { id: string } }) {
-  const [post, setPost] = useState<Post | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const supabase = createClientComponentClient();
-
-  const fetchPost = useCallback(async () => {
-    try {
-      setIsLoading(true);
-      const { data: postData, error: postError } = await supabase
-        .from("Post")
-        .select(`*, author:User (name)`)
-        .eq("id", params.id)
-        .single();
-
-      if (postError) {
-        throw new Error(postError.message);
-      }
-
-      if (isPost(postData)) {
-        setPost(postData);
-      } else {
-        throw new Error("Fetched data does not match Post type");
-      }
-    } catch (err: unknown) {
-      if (err instanceof Error) {
-        console.error("Error fetching post:", err);
-        setError(err.message);
-      } else {
-        console.error("Error fetching post:", err);
-        setError("An unknown error occurred");
-      }
-    } finally {
-      setIsLoading(false);
-    }
-  }, [params.id, supabase]);
-
-  useEffect(() => {
-    fetchPost();
-  }, [fetchPost]);
-
-  if (isLoading) {
-    return <ArticleFullSkeleton />;
-  }
-
-  if (error) {
-    return <div>Error: {error}</div>;
-  }
-
-  if (!post) {
-    return <div>Post not found</div>;
-  }
-
+function FormattedDate({ date }: { date: string }) {
   return (
-    <div className="max-w-3xl mx-auto py-8">
-      <ReturnToArticles />
-      <ArticleHeader post={post} />
-      <div className="prose max-w-none my-8">
-        <ReactMarkdown remarkPlugins={[remarkGfm]}>
-          {post.content}
-        </ReactMarkdown>
-      </div>
-      <CommentSection postId={post.id} />
-    </div>
+    <time dateTime={date}>
+      {new Date(date)
+        .toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+        })
+        .replace(/\//g, ".")}
+    </time>
   );
 }
 
 function ReturnToArticles() {
   return (
-    <>
-      <Link href="/" className="flex gap-2 items-center text-sm my-4">
-        <Image src={ArrowIcon} width={16} height={16} alt="go back icon" /> Back
-        to recent articles
-      </Link>
-    </>
+    <Link href="/" className="flex gap-2 items-center text-sm my-4">
+      <Image src={ArrowIcon} width={16} height={16} alt="go back icon" />
+      Back to recent articles
+    </Link>
   );
 }
 
-function ArticleHeader({ post }: { post: Post }) {
+function ArticleHeader({ post }: { post: PostWithAuthorAndComments }) {
   return (
-    <>
+    <header>
       {post.imageUrl && (
         <Image
           src={post.imageUrl}
@@ -104,31 +48,35 @@ function ArticleHeader({ post }: { post: Post }) {
       )}
       <h1 className="article-heading mb-4">{post.title}</h1>
       <div className="flex gap-2 text-sm text-gray-500 my-4">
-        {new Date(post.createdAt)
-          .toLocaleDateString("en-US", {
-            year: "numeric",
-            month: "2-digit",
-            day: "2-digit",
-          })
-          .replace(/\//g, ".")}
+        <FormattedDate date={post.createdAt} />
         <span>·</span>
-        <div className="flex gap-1">
-          Written by {post.author.name.split(" ")[0]}
-        </div>
+        <div>Written by {post.author.name.split(" ")[0]}</div>
       </div>
-    </>
+    </header>
   );
 }
 
-function isPost(obj: unknown): obj is Post {
-  const post = obj as Post;
+function ArticleContent({ content }: { content: string }) {
   return (
-    typeof post.id === "number" &&
-    typeof post.title === "string" &&
-    typeof post.content === "string" &&
-    (post.imageUrl === null || typeof post.imageUrl === "string") &&
-    typeof post.createdAt === "string" &&
-    post.author !== null &&
-    typeof post.author.name === "string"
+    <div className="prose max-w-none my-8">
+      <ReactMarkdown remarkPlugins={[remarkGfm]}>{content}</ReactMarkdown>
+    </div>
+  );
+}
+
+export default function ArticlePage({ params }: { params: { id: string } }) {
+  const { post, isLoading, error } = useFetchPost(params.id);
+
+  if (isLoading) return <ArticleFullSkeleton />;
+  if (error) return <div>Error: {error}</div>;
+  if (!post) return <div>Post not found</div>;
+
+  return (
+    <div className="max-w-3xl mx-auto py-8">
+      <ReturnToArticles />
+      <ArticleHeader post={post} />
+      <ArticleContent content={post.content} />
+      <CommentSection postId={post.id} />
+    </div>
   );
 }

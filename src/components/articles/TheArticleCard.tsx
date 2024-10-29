@@ -70,10 +70,16 @@ export default function ArticleCard({ post }: { post: Post }) {
               .replace(/\//g, ".")}
             <span>·</span>
             <div className="flex gap-1">
-              {post.comments[0]?.count || 0}
-              <span>
-                {post.comments[0]?.count !== 1 ? "comments" : "comment"}
-              </span>
+              {!post.comments[0]?.count ? (
+                "no comments yet"
+              ) : (
+                <>
+                  {post.comments[0].count}
+                  <span>
+                    {post.comments[0].count === 1 ? "comment" : "comments"}
+                  </span>
+                </>
+              )}
             </div>
           </div>
         </div>
