@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import TheSignInForm from "./TheSignInForm";
+import TheSignInForm from "@/components/auth/TheSignInForm";
 
 export default function SignInFormWrapper() {
   const router = useRouter();
