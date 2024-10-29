@@ -9,11 +9,11 @@ import { Button } from "../layout/Buttons";
 import TheForm from "../layout/TheForm";
 import useSignIn from "@/lib/hooks/useSignIn";
 
-type SigninFormProps = {
+type SignInFormProps = {
   onSuccessfulLogin: () => void;
 };
 
-export default function TheSigninForm({ onSuccessfulLogin }: SigninFormProps) {
+export default function TheSignInForm({ onSuccessfulLogin }: SignInFormProps) {
   const [showPassword, setShowPassword] = useState(false);
   const { formData, loading, errors, handleChange, handleSubmit } =
     useSignIn(onSuccessfulLogin);
