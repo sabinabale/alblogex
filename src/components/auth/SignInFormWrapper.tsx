@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import TheSignInForm from "./TheSignInForm";
 
-export default function SigninFormWrapper() {
+export default function SignInFormWrapper() {
   const router = useRouter();
 
   const handleSuccessfulLogin = () => {
