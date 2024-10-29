@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import TheSigninForm from "./TheSignInForm";
+import TheSignInForm from "./TheSignInForm";
 
 export default function SigninFormWrapper() {
   const router = useRouter();
@@ -10,5 +10,5 @@ export default function SigninFormWrapper() {
     router.push("/app/dashboard");
   };
 
-  return <TheSigninForm onSuccessfulLogin={handleSuccessfulLogin} />;
+  return <TheSignInForm onSuccessfulLogin={handleSuccessfulLogin} />;
 }
