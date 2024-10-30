@@ -1,5 +1,8 @@
+"use client";
+
 import React, { useState } from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import passwordShow from "@/assets/icons/passwordvisible.svg";
 import passwordHide from "@/assets/icons/passwordhidden.svg";
 import SpinnerIcon from "@/assets/icons/loginspinner.svg";
@@ -9,14 +12,17 @@ import { Button } from "../layout/Buttons";
 import TheForm from "../layout/TheForm";
 import useSignIn from "@/lib/hooks/useSignIn";
 
-type SignInFormProps = {
-  onSuccessfulLogin: () => void;
-};
-
-export default function TheSignInForm({ onSuccessfulLogin }: SignInFormProps) {
+export default function TheSignInForm() {
   const [showPassword, setShowPassword] = useState(false);
-  const { formData, loading, errors, handleChange, handleSubmit } =
-    useSignIn(onSuccessfulLogin);
+  const router = useRouter();
+
+  const handleSuccessfulLogin = () => {
+    router.push("/app/dashboard");
+  };
+
+  const { formData, loading, errors, handleChange, handleSubmit } = useSignIn(
+    handleSuccessfulLogin
+  );
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
