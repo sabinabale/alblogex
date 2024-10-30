@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
-import { createClient } from "@/lib/supabase-client";
-import { queries } from "@/lib/supabase-shared-queries";
-import type { PostWithAuthorAndComments } from "@/lib/supabase-shared-queries";
+import { createClient } from "@/lib/supabase/supabase-client";
+import { queries } from "@/lib/supabase/supabase-shared-queries";
+import type { PostWithAuthorAndComments } from "@/lib/supabase/supabase-shared-queries";
 
 type PostState = {
   post: PostWithAuthorAndComments | null;

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { CommentSectionProps } from "@/types/supabase";
+import { CommentSectionProps } from "@/lib/types/supabase";
 import { useComments } from "@/lib/hooks/useComments";
 import { useAuth } from "@/lib/hooks/useAuth";
 import { useFormattedTime } from "@/lib/hooks/useFormattedTime";

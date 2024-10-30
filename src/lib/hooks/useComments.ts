@@ -1,6 +1,11 @@
 import { useState, useCallback, useEffect } from "react";
-import { createClient } from "@/lib/supabase-client";
-import { Comment, CommentInsert, CommentFromDB, User } from "@/types/supabase";
+import { createClient } from "@/lib/supabase/supabase-client";
+import {
+  Comment,
+  CommentInsert,
+  CommentFromDB,
+  User,
+} from "@/lib/types/supabase";
 
 export const useComments = (postId: number) => {
   const [comments, setComments] = useState<Comment[]>([]);

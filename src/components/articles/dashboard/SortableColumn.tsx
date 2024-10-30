@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { Article } from "@/types/supabase";
+import { Article } from "@/lib/types/supabase";
 import AscendingIcon from "@/assets/icons/chevronup.svg";
 import DescendingIcon from "@/assets/icons/chevrondown.svg";
 

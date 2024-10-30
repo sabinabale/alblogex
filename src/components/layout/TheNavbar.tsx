@@ -2,14 +2,14 @@
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
-import { NavLinkProps, User } from "@/types/supabase";
+import { NavLinkProps, User } from "@/lib/types/supabase";
 import { Button } from "@/components/layout/Buttons";
 import catIcon from "@/assets/icons/caticon.svg";
 import Image from "next/image";
 import WriteIcon from "@/assets/icons/write.svg";
 import ChevronDown from "@/assets/icons/chevrondown.svg";
 import AccountInfo from "@/components/auth/AccountInfo";
-import { createClient } from "@/lib/supabase-client";
+import { createClient } from "@/lib/supabase/supabase-client";
 
 const useClickOutside = (initialState: boolean = false) => {
   const [isOpen, setIsOpen] = React.useState(initialState);

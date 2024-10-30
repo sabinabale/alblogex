@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Article } from "@/types/supabase";
+import { Article } from "@/lib/types/supabase";
 import { Button } from "@/components/layout/Buttons";
 import CustomCheckbox from "@/components/layout/CustomCheckbox";
 import EditIcon from "@/assets/icons/edit.svg";

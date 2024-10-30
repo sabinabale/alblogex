@@ -1,7 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import { Button } from "@/components/layout/Buttons";
-import { User } from "@/types/supabase";
+import { User } from "@/lib/types/supabase";
 
 type VisitorViewProps = {
   user: User | null;

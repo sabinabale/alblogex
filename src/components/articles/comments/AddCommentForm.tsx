@@ -1,4 +1,4 @@
-import { User } from "@/types/supabase";
+import { User } from "@/lib/types/supabase";
 
 export default function AddCommentForm({
   user,

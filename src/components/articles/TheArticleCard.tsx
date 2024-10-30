@@ -1,7 +1,7 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
-import { Post } from "@/types/supabase";
+import { Post } from "@/lib/types/supabase";
 import { useRef, useEffect, useState } from "react";
 import FormattedDate from "../FormattedDate";
 

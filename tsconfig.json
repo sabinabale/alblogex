@@ -24,8 +24,8 @@
       "@/private/*": ["./src/app/(private)/app/*"],
       "@/public/*": ["./src/app/(public)/*"],
       "@/components/*": ["./src/components/*"],
-      "@/utils/*": ["./src/utils/*"],
-      "@/types/*": ["./src/types/*"]
+      "@/utils/*": ["src/lib/utils/*"],
+      "@/types/*": ["src/lib/types/*"]
     },
     "baseUrl": "."
   },

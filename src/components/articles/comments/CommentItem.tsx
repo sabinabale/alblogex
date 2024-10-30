@@ -1,5 +1,5 @@
 import React from "react";
-import { Comment } from "@/types/supabase";
+import { Comment } from "@/lib/types/supabase";
 
 type CommentItemProps = {
   comment: Comment;

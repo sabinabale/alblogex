@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { User } from "@supabase/auth-helpers-nextjs";
-import { createClient } from "@/lib/supabase-client";
-import { Article } from "@/types/supabase";
-import { queries } from "@/lib/supabase-shared-queries";
+import { createClient } from "@/lib/supabase/supabase-client";
+import { Article } from "@/lib/types/supabase";
+import { queries } from "@/lib/supabase/supabase-shared-queries";
 
 type DashboardState = {
   user: User | null;

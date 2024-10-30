@@ -143,10 +143,7 @@ export type Article = {
   id: number;
   title: string;
   perex: string;
-  author: {
-    name: string;
-    id: string;
-  };
+  author: string;
   comments: number;
 };
 
@@ -165,7 +162,6 @@ export type Post = {
   comments: { count: number }[];
 };
 
-// Consistent naming and structure
 export type PostPreview = Pick<
   Post,
   "id" | "title" | "content" | "imageUrl" | "createdAt"
@@ -193,7 +189,7 @@ export type CommentFromDB = {
   User: {
     id: string;
     name: string;
-  }; // Not an array, just a single object
+  };
 };
 export type Comment = {
   id: number;

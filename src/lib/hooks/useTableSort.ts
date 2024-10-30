@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { Article } from "@/types/supabase";
+import { Article } from "@/lib/types/supabase";
 
 type SortConfig = {
   key: keyof Article;

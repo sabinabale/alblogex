@@ -2,7 +2,7 @@ import {
   createClientComponentClient,
   createServerComponentClient,
 } from "@supabase/auth-helpers-nextjs";
-import type { Database } from "@/types/supabase";
+import type { Database } from "@/lib/types/supabase";
 
 export type SupabaseClient =
   | ReturnType<typeof createClientComponentClient<Database>>
