@@ -5,9 +5,9 @@ import Image from "next/image";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import type { User } from "@/types/supabase";
 
-interface AccountInfoProps {
+type AccountInfoProps = {
   user: User | null;
-}
+};
 
 export default function AccountInfo({ user }: AccountInfoProps) {
   const supabase = createClientComponentClient();

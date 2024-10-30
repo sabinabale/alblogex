@@ -3,11 +3,11 @@ import Link from "next/link";
 import { Button } from "@/components/layout/Buttons";
 import { User } from "@/types/supabase";
 
-interface VisitorViewProps {
+type VisitorViewProps = {
   user: User | null;
-}
+};
 
-export const VisitorView = React.memo(({ user }: VisitorViewProps) => {
+export default function VisitorView({ user }: VisitorViewProps) {
   if (user) return null;
 
   return (
@@ -20,6 +20,4 @@ export const VisitorView = React.memo(({ user }: VisitorViewProps) => {
       to add a comment 💬
     </div>
   );
-});
-
-VisitorView.displayName = "VisitorView";
+}

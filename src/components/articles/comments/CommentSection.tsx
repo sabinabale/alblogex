@@ -4,7 +4,7 @@ import { useComments } from "@/lib/hooks/useComments";
 import { useAuth } from "@/lib/hooks/useAuth";
 import { useFormattedTime } from "@/lib/hooks/useFormattedTime";
 import { CommentItem } from "./CommentItem";
-import { VisitorView } from "./VisitorView";
+import VisitorView from "./VisitorView";
 import AddCommentForm from "./AddCommentForm";
 
 export default function CommentSection({ postId }: CommentSectionProps) {

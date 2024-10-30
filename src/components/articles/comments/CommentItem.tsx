@@ -1,10 +1,10 @@
 import React from "react";
 import { Comment } from "@/types/supabase";
 
-interface CommentItemProps {
+type CommentItemProps = {
   comment: Comment;
   formatTime: (timestamp: string) => string;
-}
+};
 
 export const CommentItem = React.memo(
   ({ comment, formatTime }: CommentItemProps) => {
