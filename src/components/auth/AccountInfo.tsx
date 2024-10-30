@@ -3,7 +3,7 @@ import { Button } from "@/components/layout/Buttons";
 import logOut from "@/assets/icons/logout.svg";
 import Image from "next/image";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
-import type { User } from "@/types/types";
+import type { User } from "@/types/supabase";
 
 interface AccountInfoProps {
   user: User | null;

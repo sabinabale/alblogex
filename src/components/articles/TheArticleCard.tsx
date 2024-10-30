@@ -1,7 +1,7 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
-import { Post } from "@/types/types";
+import { Post } from "@/types/supabase";
 import { useRef, useEffect, useState } from "react";
 
 export default function ArticleCard({ post }: { post: Post }) {

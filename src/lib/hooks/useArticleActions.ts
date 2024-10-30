@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase-client";
 import { toast } from "react-hot-toast";
-import { Article } from "@/types/types";
+import { Article } from "@/types/supabase";
 
 export function useArticleActions(
   articles: Article[],

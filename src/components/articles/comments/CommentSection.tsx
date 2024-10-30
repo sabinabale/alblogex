@@ -1,7 +1,12 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
-import { User } from "@supabase/supabase-js";
-import { CommentSectionProps, Comment } from "@/types/types";
+import { createClient } from "@/lib/supabase-client";
+import {
+  User,
+  CommentSectionProps,
+  Comment,
+  CommentInsert,
+  CommentFromDB,
+} from "@/types/supabase";
 import Link from "next/link";
 import { Button } from "../../layout/Buttons";
 import AddCommentForm from "./AddCommentForm";
@@ -18,16 +23,40 @@ export default function CommentSection({ postId }: CommentSectionProps) {
   const [comments, setComments] = useState<Comment[]>([]);
   const [newComment, setNewComment] = useState("");
   const [user, setUser] = useState<User | null>(null);
-  const supabase = createClientComponentClient();
+  const supabase = createClient();
+
+  const handleSubmitComment = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!user) return;
+
+    const now = new Date().toISOString();
+
+    const newCommentData: CommentInsert = {
+      content: newComment,
+      postId,
+      authorId: user.id,
+      createdAt: now,
+      updatedAt: now,
+    };
+
+    const { error } = await supabase.from("Comment").insert(newCommentData);
+
+    if (error) {
+      console.error("Error submitting comment:", error);
+    } else {
+      setNewComment("");
+      fetchComments();
+    }
+  };
 
   const fetchComments = useCallback(async () => {
     const { data, error } = await supabase
       .from("Comment")
       .select(
         `
-        *,
-        User (name, id)
-      `
+      id, content, createdAt, postId, authorId,
+      User(id, name)
+    `
       )
       .eq("postId", postId)
       .order("createdAt", { ascending: false });
@@ -35,15 +64,30 @@ export default function CommentSection({ postId }: CommentSectionProps) {
     if (error) {
       console.error("Error fetching comments:", error);
     } else if (data) {
-      setComments(data);
+      const transformedComments: Comment[] = (
+        data as unknown as CommentFromDB[]
+      ).map((comment) => ({
+        ...comment,
+        updatedAt: comment.createdAt,
+        User: comment.User, // Just pass the User object directly
+      }));
+      setComments(transformedComments);
     }
   }, [supabase, postId]);
-
   const fetchUser = useCallback(async () => {
     const {
-      data: { user },
+      data: { user: supabaseUser },
     } = await supabase.auth.getUser();
-    setUser(user);
+
+    if (supabaseUser) {
+      const user: User = {
+        ...supabaseUser,
+        user_metadata: supabaseUser.user_metadata || { name: undefined },
+      };
+      setUser(user);
+    } else {
+      setUser(null);
+    }
   }, [supabase]);
 
   useEffect(() => {
@@ -53,29 +97,6 @@ export default function CommentSection({ postId }: CommentSectionProps) {
   useEffect(() => {
     fetchComments();
   }, [fetchComments]);
-
-  const handleSubmitComment = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!user) return;
-
-    const now = new Date();
-    const timestamp = now.toISOString();
-
-    const { error } = await supabase.from("Comment").insert({
-      content: newComment,
-      postId,
-      authorId: user.id,
-      createdAt: timestamp,
-      updatedAt: timestamp,
-    });
-
-    if (error) {
-      console.error("Error submitting comment:", error);
-    } else {
-      setNewComment("");
-      fetchComments();
-    }
-  };
 
   return (
     <div className="mt-8 border-t pt-8 border-gray-200">
@@ -95,7 +116,6 @@ export default function CommentSection({ postId }: CommentSectionProps) {
 function formatCommentTime(timestamp: string) {
   try {
     const localDate = dayjs.utc(timestamp).tz(dayjs.tz.guess());
-
     return localDate.fromNow();
   } catch (error) {
     console.error("Error formatting date:", error);
@@ -106,26 +126,30 @@ function formatCommentTime(timestamp: string) {
 function Comments({ comments }: { comments: Comment[] }) {
   return (
     <>
-      {comments.map((comment) => (
-        <div key={comment.id} className="mb-6 flex gap-4 ">
-          <div className="h-11 w-11 flex-shrink-0 rounded-full outline outline-1 outline-black/20 bg-gray-200 text-black/20 flex items-center justify-center text-lg font-semibold">
-            {comment.User.name
-              ? comment.User.name.charAt(0).toUpperCase()
-              : "AA"}
-          </div>
-          <div>
-            <div className="flex items-center mb-2 gap-2">
-              <span className="font-bold">
-                {comment.User.name.split(" ")[0]}
-              </span>
-              <span className="text-sm text-gray-500">
-                {formatCommentTime(comment.createdAt)}
-              </span>
+      {comments.map((comment) => {
+        if (!comment.User) return null;
+
+        return (
+          <div key={comment.id} className="mb-6 flex gap-4">
+            <div className="h-11 w-11 flex-shrink-0 rounded-full outline outline-1 outline-black/20 bg-gray-200 text-black/20 flex items-center justify-center text-lg font-semibold">
+              {comment.User.name
+                ? comment.User.name.charAt(0).toUpperCase()
+                : "AA"}
             </div>
-            <p>{comment.content}</p>
+            <div>
+              <div className="flex items-center mb-2 gap-2">
+                <span className="font-bold">
+                  {comment.User.name?.split(" ")[0] || "Anonymous"}
+                </span>
+                <span className="text-sm text-gray-500">
+                  {formatCommentTime(comment.createdAt)}
+                </span>
+              </div>
+              <p>{comment.content}</p>
+            </div>
           </div>
-        </div>
-      ))}
+        );
+      })}
     </>
   );
 }

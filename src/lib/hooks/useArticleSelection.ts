@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Article } from "@/types/types";
+import { Article } from "@/types/supabase";
 
 export function useArticleSelection(articles: Article[]) {
   const [selectedArticles, setSelectedArticles] = useState<number[]>([]);

@@ -1,3 +1,5 @@
+import { User as SupabaseUser } from "@supabase/supabase-js";
+
 export type Database = {
   public: {
     Tables: {
@@ -8,7 +10,7 @@ export type Database = {
           email: string;
           password: string;
           createdAt: string;
-          role: "USER" | "ADMIN";
+          role: Role;
         };
         Insert: {
           id: string;
@@ -16,7 +18,7 @@ export type Database = {
           email: string;
           password: string;
           createdAt?: string;
-          role?: "USER" | "ADMIN";
+          role?: Role;
         };
         Update: {
           id?: string;
@@ -24,7 +26,7 @@ export type Database = {
           email?: string;
           password?: string;
           createdAt?: string;
-          role?: "USER" | "ADMIN";
+          role?: Role;
         };
       };
       Post: {
@@ -117,37 +119,35 @@ export type Database = {
   };
 };
 
+export enum Role {
+  USER = "USER",
+  ADMIN = "ADMIN",
+}
+
 export type Tables<T extends keyof Database["public"]["Tables"]> =
   Database["public"]["Tables"][T]["Row"];
 
-export type User = Pick<Tables<"User">, "name"> & {
-  user_metadata?: {
-    name?: string;
-  };
-  email?: string;
-};
+export type User =
+  | SupabaseUser
+  | {
+      id: string;
+      email?: string;
+      user_metadata?: {
+        name?: string;
+      };
+    };
+
+export type PostImage = Tables<"PostImage">;
 
 export type Article = {
   id: number;
   title: string;
   perex: string;
-  author: string;
+  author: {
+    name: string;
+    id: string;
+  };
   comments: number;
-};
-
-export type SortableColumnProps = {
-  label: string;
-  sortKey: keyof Article;
-  sortConfig: {
-    key: keyof Article;
-    direction: "ascending" | "descending";
-  } | null;
-  onSort: (key: keyof Article) => void;
-};
-
-export type MyArticleTableProps = {
-  articles: Article[];
-  setArticles: React.Dispatch<React.SetStateAction<Article[]>>;
 };
 
 export type Post = {
@@ -157,47 +157,70 @@ export type Post = {
   perex?: string;
   imageUrl: string | null;
   createdAt: string;
+  updatedAt: string;
   author: {
+    id: string;
     name: string;
   };
-  comments: {
-    count: number;
-  }[];
+  comments: { count: number }[];
 };
 
-export type ArticlePreview = Pick<Post, "id" | "title" | "perex" | "author"> & {
-  comments: number;
-};
-
+// Consistent naming and structure
 export type PostPreview = Pick<
   Post,
   "id" | "title" | "content" | "imageUrl" | "createdAt"
 > & {
-  User: { name: string };
+  author: { name: string };
 };
 
-export type PostData = Pick<Post, "id" | "title" | "content" | "author"> & {
-  Comment: { count: number }[];
+export type PostData = Pick<Post, "id" | "title" | "content"> & {
+  author: { name: string };
+  comments: { count: number };
 };
 
-export type SigninFormProps = {
+export type SignInFormProps = {
   onSuccessfulLogin: () => void;
 };
 
-export type Comment = {
+export type CommentInsert = Database["public"]["Tables"]["Comment"]["Insert"];
+
+export type CommentFromDB = {
   id: number;
   content: string;
   createdAt: string;
   postId: number;
   authorId: string;
   User: {
-    name: string;
     id: string;
+    name: string;
+  }; // Not an array, just a single object
+};
+export type Comment = {
+  id: number;
+  content: string;
+  createdAt: string;
+  updatedAt: string;
+  postId: number;
+  authorId: string;
+  User: {
+    id: string;
+    name: string;
   };
 };
 
 export type CommentSectionProps = {
   postId: number;
+};
+
+export type AddCommentFormProps = {
+  user: SupabaseUser | null;
+  handleSubmitComment: (e: React.FormEvent) => Promise<void>;
+  newComment: string;
+  setNewComment: (comment: string) => void;
+};
+
+export type UserMetadata = {
+  name?: string;
 };
 
 export type NavLinkProps = {
@@ -221,9 +244,10 @@ export type FormErrors = {
 
 export type PostWithAuthor = Tables<"Post"> & {
   author: Tables<"User">;
-  comments: { count: number }[];
+  comments: Comment[];
+  images?: PostImage[];
 };
 
 export type CommentWithAuthor = Tables<"Comment"> & {
-  User: Pick<Tables<"User">, "name" | "id">;
+  author: Pick<Tables<"User">, "name" | "id">;
 };

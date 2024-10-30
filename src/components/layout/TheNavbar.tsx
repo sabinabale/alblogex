@@ -2,47 +2,38 @@
 import Link from "next/link";
 import React, { useEffect, useState, useRef } from "react";
 import { usePathname } from "next/navigation";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
-import { NavLinkProps } from "@/types/types";
+import { NavLinkProps, User } from "@/types/supabase";
 import { Button } from "@/components/layout/Buttons";
 import catIcon from "@/assets/icons/caticon.svg";
 import Image from "next/image";
 import WriteIcon from "@/assets/icons/write.svg";
-import type { User } from "@/types/types";
 import ChevronDown from "@/assets/icons/chevrondown.svg";
 import AccountInfo from "@/components/auth/AccountInfo";
+import { createClient } from "@/lib/supabase-client";
 
 export default function TheNavbar() {
   const pathname = usePathname();
-
-  const [isSignedIn, setIsSignedIn] = useState(false);
-  const supabase = createClientComponentClient();
   const [user, setUser] = useState<User | null>(null);
   const [showAccountInfo, setShowAccountInfo] = useState(false);
   const accountInfoRef = useRef<HTMLDivElement>(null);
+  const supabase = createClient();
 
   useEffect(() => {
-    const checkAuthStatus = async () => {
+    const getSession = async () => {
       const {
         data: { session },
       } = await supabase.auth.getSession();
-      setIsSignedIn(!!session);
       if (session) {
         setUser(session.user);
       }
     };
 
-    checkAuthStatus();
+    getSession();
 
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
-      setIsSignedIn(!!session);
-      if (session) {
-        setUser(session.user);
-      } else {
-        setUser(null);
-      }
+      setUser(session?.user || null);
     });
 
     return () => subscription.unsubscribe();
@@ -59,9 +50,7 @@ export default function TheNavbar() {
     };
 
     document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   useEffect(() => {
@@ -91,7 +80,7 @@ export default function TheNavbar() {
           </span>
         </div>
         <div className="flex items-center gap-2">
-          {isSignedIn ? (
+          {user ? (
             <div className="flex items-center gap-2">
               <NavLink href="/app/dashboard">My articles</NavLink>
               <Link
@@ -108,9 +97,7 @@ export default function TheNavbar() {
                   onClick={() => setShowAccountInfo(!showAccountInfo)}
                 >
                   <div className="h-8 w-8 flex-shrink-0 rounded-full bg-gray-200 text-black flex items-center justify-center font-bold group-hover:bg-black group-hover:text-white transition-all duration-500 ease-in-out">
-                    {user?.user_metadata?.name
-                      ? user.user_metadata.name.charAt(0).toUpperCase()
-                      : "AA"}
+                    {user.user_metadata?.name?.charAt(0).toUpperCase() || "A"}
                   </div>
                   <Image src={ChevronDown} alt="Open account menu" />
                 </button>

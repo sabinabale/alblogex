@@ -1,4 +1,4 @@
-import { Article } from "@/types/types";
+import { Article } from "@/types/supabase";
 import { SortableColumn } from "./SortableColumn";
 import CustomCheckbox from "@/components/layout/CustomCheckbox";
 
