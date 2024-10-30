@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Post } from "@/types/supabase";
 import { useRef, useEffect, useState } from "react";
+import FormattedDate from "../FormattedDate";
 
 export default function ArticleCard({ post }: { post: Post }) {
   const h2Ref = useRef<HTMLHeadingElement>(null);
@@ -61,13 +62,7 @@ export default function ArticleCard({ post }: { post: Post }) {
             </p>
           </div>
           <div className="flex gap-2 text-sm text-gray-500 mt-auto">
-            {new Date(post.createdAt)
-              .toLocaleDateString("en-US", {
-                year: "numeric",
-                month: "2-digit",
-                day: "2-digit",
-              })
-              .replace(/\//g, ".")}
+            <FormattedDate date={post.createdAt} />
             <span>·</span>
             <div className="flex gap-1">
               {!post.comments[0]?.count ? (

@@ -9,20 +9,7 @@ import CommentSection from "@/components/articles/comments/CommentSection";
 import { ArticleFullSkeleton } from "@/components/layout/Skeletons";
 import type { PostWithAuthorAndComments } from "@/lib/supabase-shared-queries";
 import { useFetchPost } from "@/lib/hooks/useFetchPost";
-
-function FormattedDate({ date }: { date: string }) {
-  return (
-    <time dateTime={date}>
-      {new Date(date)
-        .toLocaleDateString("en-US", {
-          year: "numeric",
-          month: "2-digit",
-          day: "2-digit",
-        })
-        .replace(/\//g, ".")}
-    </time>
-  );
-}
+import FormattedDate from "@/components/FormattedDate";
 
 function ReturnToArticles() {
   return (
