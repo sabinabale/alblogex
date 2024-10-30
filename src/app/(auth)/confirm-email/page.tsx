@@ -17,7 +17,7 @@ export default function Page() {
       <div className="text-2xl font-semibold mt-4">Check your inbox</div>
       <div className="mt-4 text-sm">
         <div className="text-center">
-          We&apos;ve sent you an confirmation link.
+          We&apos;ve sent you a confirmation link.
         </div>
         <div>Please click the link to confirm your address and sign in.</div>
       </div>
