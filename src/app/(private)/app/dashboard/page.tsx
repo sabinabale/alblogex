@@ -32,9 +32,9 @@ export default function Dashboard() {
           You don&apos;t have any articles just yet!{" "}
           <Link
             href="/app/create-article"
-            className="text-blue-600 hover:underline"
+            className="text-cyan-600 font-semibold underline underline-offset-1 hover:text-cyan-800 transition-colors duration-200 ease-in-out"
           >
-            Start writing by clicking here.
+            Write your first one here.
           </Link>
         </p>
       ) : (
