@@ -2,7 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
-import TheSignInForm from "../../../components/auth/TheSignInForm";
+import TheSignInForm from "@/components/auth/TheSignInForm";
 
 export default function SigninPage() {
   return (
