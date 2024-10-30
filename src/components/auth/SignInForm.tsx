@@ -7,12 +7,12 @@ import passwordShow from "@/assets/icons/passwordvisible.svg";
 import passwordHide from "@/assets/icons/passwordhidden.svg";
 import SpinnerIcon from "@/assets/icons/loginspinner.svg";
 import InputLabel from "@/components/layout/InputLabel";
-import { Input } from "../layout/Inputs";
-import { Button } from "../layout/Buttons";
-import TheForm from "../layout/TheForm";
+import { Input } from "@/components/layout/Inputs";
+import { Button } from "@/components/layout/Buttons";
+import TheForm from "@/components/layout/TheForm";
 import useSignIn from "@/lib/hooks/useSignIn";
 
-export default function TheSignInForm() {
+export default function SignInForm() {
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
 

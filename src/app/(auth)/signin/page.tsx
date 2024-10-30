@@ -2,13 +2,13 @@
 
 import React from "react";
 import Link from "next/link";
-import TheSignInForm from "@/components/auth/TheSignInForm";
+import SignInForm from "@/components/auth/SignInForm";
 
 export default function SigninPage() {
   return (
     <div className="flex flex-col items-center mt-16 mb-16 md:mb-0 lg:mt-40 h-full">
       <h1 className="mb-8 tracking-tight">Sign in</h1>
-      <TheSignInForm />
+      <SignInForm />
       <small className="mt-8">
         Don&apos;t have an account yet?{" "}
         <Link
