@@ -15,10 +15,27 @@ export function useArticleActions(
     try {
       const supabase = createClient();
       const deletePromise = async () => {
-        const response = await supabase.from("Post").delete().eq("id", id);
+        // First delete the PostImage
+        const imageResponse = await supabase
+          .from("PostImage")
+          .delete()
+          .eq("postId", id);
 
-        if (response.error) throw response.error;
-        return response;
+        if (imageResponse.error) throw imageResponse.error;
+
+        // Then delete the Comments
+        const commentsResponse = await supabase
+          .from("Comment")
+          .delete()
+          .eq("postId", id);
+
+        if (commentsResponse.error) throw commentsResponse.error;
+
+        // Finally delete the Post
+        const postResponse = await supabase.from("Post").delete().eq("id", id);
+
+        if (postResponse.error) throw postResponse.error;
+        return postResponse;
       };
 
       await toast.promise(deletePromise(), {
@@ -45,13 +62,30 @@ export function useArticleActions(
     try {
       const supabase = createClient();
       const deletePromise = async () => {
-        const response = await supabase
+        // First delete all related PostImages
+        const imageResponse = await supabase
+          .from("PostImage")
+          .delete()
+          .in("postId", selectedIds);
+
+        if (imageResponse.error) throw imageResponse.error;
+
+        // Then delete all related Comments
+        const commentsResponse = await supabase
+          .from("Comment")
+          .delete()
+          .in("postId", selectedIds);
+
+        if (commentsResponse.error) throw commentsResponse.error;
+
+        // Finally delete the Posts
+        const postResponse = await supabase
           .from("Post")
           .delete()
           .in("id", selectedIds);
 
-        if (response.error) throw response.error;
-        return response;
+        if (postResponse.error) throw postResponse.error;
+        return postResponse;
       };
 
       await toast.promise(deletePromise(), {

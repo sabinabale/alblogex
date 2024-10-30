@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { NavLinkProps, User } from "@/types/supabase";
 import { Button } from "@/components/layout/Buttons";
@@ -11,21 +11,72 @@ import ChevronDown from "@/assets/icons/chevrondown.svg";
 import AccountInfo from "@/components/auth/AccountInfo";
 import { createClient } from "@/lib/supabase-client";
 
-export default function TheNavbar() {
+const useClickOutside = (initialState: boolean = false) => {
+  const [isOpen, setIsOpen] = React.useState(initialState);
+  const ref = React.useRef<HTMLDivElement>(null);
+
+  React.useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (ref.current && !ref.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  return { ref, isOpen, setIsOpen };
+};
+
+const NavLink = ({ href, children }: NavLinkProps) => {
   const pathname = usePathname();
+
+  return (
+    <Link
+      href={href}
+      className={`py-1.5 px-2 font-semibold flex-shrink-0 ${
+        pathname === href ? "text-black" : "text-black/50 hover:text-black"
+      }`}
+    >
+      {children}
+    </Link>
+  );
+};
+
+const UserMenu = ({ user }: { user: User }) => {
+  const { ref, isOpen, setIsOpen } = useClickOutside();
+
+  return (
+    <div className="relative" ref={ref}>
+      <button
+        className="flex items-center justify-center group hover:scale-105 transition-all duration-300"
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        <div className="h-8 w-8 flex-shrink-0 rounded-full bg-gray-200 text-black flex items-center justify-center font-bold group-hover:bg-black group-hover:text-white transition-all duration-500 ease-in-out">
+          {user.user_metadata?.name?.charAt(0).toUpperCase() || "A"}
+        </div>
+        <Image src={ChevronDown} alt="Open account menu" />
+      </button>
+      {isOpen && (
+        <div className="absolute right-0 mt-1">
+          <AccountInfo user={user} />
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default function TheNavbar() {
   const [user, setUser] = useState<User | null>(null);
-  const [showAccountInfo, setShowAccountInfo] = useState(false);
-  const accountInfoRef = useRef<HTMLDivElement>(null);
   const supabase = createClient();
 
   useEffect(() => {
     const getSession = async () => {
       const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      if (session) {
-        setUser(session.user);
-      }
+        data: { user },
+      } = await supabase.auth.getUser();
+      setUser(user);
     };
 
     getSession();
@@ -38,35 +89,6 @@ export default function TheNavbar() {
 
     return () => subscription.unsubscribe();
   }, [supabase]);
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        accountInfoRef.current &&
-        !accountInfoRef.current.contains(event.target as Node)
-      ) {
-        setShowAccountInfo(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  useEffect(() => {
-    setShowAccountInfo(false);
-  }, [pathname]);
-
-  const NavLink = ({ href, children }: NavLinkProps) => (
-    <Link
-      href={href}
-      className={`py-1.5 px-2 font-semibold flex-shrink-0 ${
-        pathname === href ? "text-black" : "text-black/50 hover:text-black"
-      }`}
-    >
-      {children}
-    </Link>
-  );
 
   return (
     <div className="border-b border-gray-300 bg-white font-medium">
@@ -91,22 +113,7 @@ export default function TheNavbar() {
                 <span className="hidden md:block">Write article</span>
               </Link>
               <span className="mx-2 opacity-20">|</span>
-              <div className="relative" ref={accountInfoRef}>
-                <button
-                  className="flex items-center justify-center group hover:scale-105 transition-all duration-300"
-                  onClick={() => setShowAccountInfo(!showAccountInfo)}
-                >
-                  <div className="h-8 w-8 flex-shrink-0 rounded-full bg-gray-200 text-black flex items-center justify-center font-bold group-hover:bg-black group-hover:text-white transition-all duration-500 ease-in-out">
-                    {user.user_metadata?.name?.charAt(0).toUpperCase() || "A"}
-                  </div>
-                  <Image src={ChevronDown} alt="Open account menu" />
-                </button>
-                {showAccountInfo && (
-                  <div className="absolute right-0 mt-1">
-                    <AccountInfo user={user} />
-                  </div>
-                )}
-              </div>
+              <UserMenu user={user} />
             </div>
           ) : (
             <div className="flex items-center space-x-2">

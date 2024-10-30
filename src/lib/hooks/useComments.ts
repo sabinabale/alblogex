@@ -1,147 +1,64 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { createClient } from "@/lib/supabase-client";
-import { User } from "@supabase/supabase-js";
-import { Database } from "@/types/supabase";
-import dayjs from "dayjs";
-import utc from "dayjs/plugin/utc";
-import timezone from "dayjs/plugin/timezone";
-import relativeTime from "dayjs/plugin/relativeTime";
+import { Comment, CommentInsert, CommentFromDB, User } from "@/types/supabase";
 
-dayjs.extend(utc);
-dayjs.extend(timezone);
-dayjs.extend(relativeTime);
-
-type DbComment = Database["public"]["Tables"]["Comment"]["Row"] & {
-  author: Pick<Database["public"]["Tables"]["User"]["Row"], "id" | "name">[];
-};
-
-type CommentWithAuthor = Omit<DbComment, "author"> & {
-  author: Pick<Database["public"]["Tables"]["User"]["Row"], "id" | "name">;
-};
-
-export function useComments(postId: number) {
-  const [comments, setComments] = useState<CommentWithAuthor[]>([]);
-  const [user, setUser] = useState<User | null>(null);
-  const [newComment, setNewComment] = useState("");
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
+export const useComments = (postId: number) => {
+  const [comments, setComments] = useState<Comment[]>([]);
   const supabase = createClient();
 
   const fetchComments = useCallback(async () => {
-    try {
-      setIsLoading(true);
-
-      const { data, error } = await supabase
-        .from("Comment")
-        .select(
-          `
-          id,
-          content,
-          postId,
-          authorId,
-          createdAt,
-          updatedAt,
-          author:User (
-            id,
-            name
-          )
+    const { data, error } = await supabase
+      .from("Comment")
+      .select(
         `
-        )
-        .eq("postId", postId)
-        .order("createdAt", { ascending: false });
+        id, content, createdAt, postId, authorId,
+        User(id, name)
+      `
+      )
+      .eq("postId", postId)
+      .order("createdAt", { ascending: false });
 
-      if (error) throw error;
+    if (error) {
+      console.error("Error fetching comments:", error);
+      return;
+    }
 
-      const transformedComments: CommentWithAuthor[] = (data || []).map(
-        (comment: DbComment) => ({
-          ...comment,
-          author: comment.author[0],
-        })
-      );
-
+    if (data) {
+      const transformedComments: Comment[] = (
+        data as unknown as CommentFromDB[]
+      ).map((comment) => ({
+        ...comment,
+        updatedAt: comment.createdAt,
+        User: comment.User,
+      }));
       setComments(transformedComments);
-      setError(null);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Error fetching comments");
-    } finally {
-      setIsLoading(false);
     }
-  }, [supabase, postId]);
+  }, [postId, supabase]);
 
-  const fetchUser = useCallback(async () => {
-    try {
-      const {
-        data: { user },
-        error,
-      } = await supabase.auth.getUser();
-      if (error) throw error;
-      setUser(user);
-      setError(null);
-    } catch (err) {
-      setUser(null);
-      setError(err instanceof Error ? err.message : "Error fetching user");
+  const addComment = async (content: string, user: User) => {
+    const now = new Date().toISOString();
+    const newCommentData: CommentInsert = {
+      content,
+      postId,
+      authorId: user.id,
+      createdAt: now,
+      updatedAt: now,
+    };
+
+    const { error } = await supabase.from("Comment").insert(newCommentData);
+
+    if (error) {
+      console.error("Error submitting comment:", error);
+      return false;
     }
-  }, [supabase]);
 
-  useEffect(() => {
-    fetchUser();
-  }, [fetchUser]);
+    await fetchComments();
+    return true;
+  };
 
   useEffect(() => {
     fetchComments();
   }, [fetchComments]);
 
-  const handleSetNewComment = (comment: string) => {
-    setNewComment(comment);
-  };
-
-  const submitComment = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!user) return;
-
-    try {
-      setIsLoading(true);
-
-      const now = new Date().toISOString();
-      const { error } = await supabase.from("Comment").insert({
-        content: newComment,
-        postId,
-        authorId: user.id,
-        createdAt: now,
-        updatedAt: now,
-      } satisfies Partial<Database["public"]["Tables"]["Comment"]["Insert"]>);
-
-      if (error) throw error;
-
-      setNewComment("");
-      setError(null);
-      await fetchComments();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Error submitting comment");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const formatCommentTime = (timestamp: string) => {
-    try {
-      const localDate = dayjs.utc(timestamp).tz(dayjs.tz.guess());
-      return localDate.fromNow();
-    } catch (error) {
-      console.error("Error formatting date:", error);
-      return "a few seconds ago";
-    }
-  };
-
-  return {
-    comments,
-    user,
-    newComment,
-    isLoading,
-    error,
-    setNewComment: handleSetNewComment,
-    submitComment,
-    formatCommentTime,
-  } as const;
-}
+  return { comments, addComment, fetchComments };
+};
