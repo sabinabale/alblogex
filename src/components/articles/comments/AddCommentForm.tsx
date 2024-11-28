@@ -6,8 +6,7 @@ const sanitizeInput = (input: string): string => {
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#039;")
-    .replace(/`/g, "&#x60;")
-    .trim();
+    .replace(/`/g, "&#x60;");
 };
 
 export default function AddCommentForm({

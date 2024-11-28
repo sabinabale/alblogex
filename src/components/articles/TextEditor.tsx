@@ -7,8 +7,7 @@ const sanitizeInput = (input: string): string => {
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#039;")
-    .replace(/`/g, "&#x60;")
-    .trim();
+    .replace(/`/g, "&#x60;");
 };
 
 const MAX_CONTENT_LENGTH = 50000;
