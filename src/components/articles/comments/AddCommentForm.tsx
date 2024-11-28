@@ -1,5 +1,15 @@
 import { User } from "@/lib/types/supabase";
 
+const sanitizeInput = (input: string): string => {
+  return input
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;")
+    .replace(/`/g, "&#x60;")
+    .trim();
+};
+
 export default function AddCommentForm({
   user,
   handleSubmitComment,
@@ -11,6 +21,18 @@ export default function AddCommentForm({
   newComment: string;
   setNewComment: (value: string) => void;
 }) {
+  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const sanitizedValue = sanitizeInput(e.target.value);
+    setNewComment(sanitizedValue);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSubmitComment(e);
+    }
+  };
+
   return (
     <>
       {user && (
@@ -18,20 +40,15 @@ export default function AddCommentForm({
           <div className="bg-gray-200 rounded-full w-11 h-11 flex-shrink-0">
             <div className="h-11 w-11 flex-shrink-0 rounded-full outline outline-1 outline-black/20 bg-gray-200 text-black/20 flex items-center justify-center text-lg font-semibold">
               {user?.user_metadata?.name
-                ? user.user_metadata.name.charAt(0).toUpperCase()
+                ? sanitizeInput(user.user_metadata.name).charAt(0).toUpperCase()
                 : "AA"}
             </div>
           </div>
           <form onSubmit={handleSubmitComment} className="relative w-full">
             <textarea
               value={newComment}
-              onChange={(e) => setNewComment(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" && !e.shiftKey) {
-                  e.preventDefault();
-                  handleSubmitComment(e);
-                }
-              }}
+              onChange={handleChange}
+              onKeyDown={handleKeyDown}
               className="w-full p-2 border rounded-md resize-none text-base"
               placeholder="Join the discussion"
               required

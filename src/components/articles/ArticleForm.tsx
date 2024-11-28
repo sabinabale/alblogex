@@ -5,6 +5,20 @@ import TitleInput from "./TitleInput";
 import ContentEditor from "./ContentEditor";
 import MarkdownPreview from "./MarkdownPreview";
 
+const sanitizeInput = (input: string): string => {
+  if (!input) return "";
+  return input
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;")
+    .replace(/`/g, "&#x60;")
+    .trim();
+};
+
+const MAX_TITLE_LENGTH = 200;
+const MAX_CONTENT_LENGTH = 50000;
+
 type ArticleFormProps = {
   initialTitle: string;
   initialContent: string;
@@ -27,26 +41,60 @@ export default function ArticleForm({
   submitButtonText,
   isSubmitting,
 }: ArticleFormProps) {
-  const [articleTitle, setArticleTitle] = useState(initialTitle);
-  const [markdownContent, setMarkdownContent] = useState(initialContent);
+  const [articleTitle, setArticleTitle] = useState(sanitizeInput(initialTitle));
+  const [markdownContent, setMarkdownContent] = useState(
+    sanitizeInput(initialContent)
+  );
   const [uploadedImage, setUploadedImage] = useState<File | null>(null);
   const [currentImageUrl, setCurrentImageUrl] = useState<string | null>(
-    initialImageUrl || null
+    initialImageUrl ? sanitizeInput(initialImageUrl) : null
   );
   const [errors, setErrors] = useState<FormErrors>({});
 
   useEffect(() => {
-    localStorage.setItem("markdownContent", markdownContent);
-    localStorage.setItem("articleTitle", articleTitle);
+    const sanitizedContent = sanitizeInput(markdownContent);
+    const sanitizedTitle = sanitizeInput(articleTitle);
+
+    localStorage.setItem("markdownContent", sanitizedContent);
+    localStorage.setItem("articleTitle", sanitizedTitle);
   }, [markdownContent, articleTitle]);
 
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {};
-    if (!articleTitle.trim()) newErrors.title = "Article title is required";
-    if (!markdownContent.trim())
+
+    const sanitizedTitle = sanitizeInput(articleTitle);
+    const sanitizedContent = sanitizeInput(markdownContent);
+
+    if (!sanitizedTitle.trim()) {
+      newErrors.title = "Article title is required";
+    }
+    if (sanitizedTitle.length > MAX_TITLE_LENGTH) {
+      newErrors.title = `Title must be less than ${MAX_TITLE_LENGTH} characters`;
+    }
+
+    if (!sanitizedContent.trim()) {
       newErrors.content = "Article content is required";
+    }
+    if (sanitizedContent.length > MAX_CONTENT_LENGTH) {
+      newErrors.content = `Content must be less than ${MAX_CONTENT_LENGTH} characters`;
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
+  };
+
+  const handleTitleChange = (value: string) => {
+    const sanitizedTitle = sanitizeInput(value);
+    if (sanitizedTitle.length <= MAX_TITLE_LENGTH) {
+      setArticleTitle(sanitizedTitle);
+    }
+  };
+
+  const handleContentChange = (value: string) => {
+    const sanitizedContent = sanitizeInput(value);
+    if (sanitizedContent.length <= MAX_CONTENT_LENGTH) {
+      setMarkdownContent(sanitizedContent);
+    }
   };
 
   const handleSubmit = async (
@@ -58,12 +106,24 @@ export default function ArticleForm({
     if (!validateForm()) return;
 
     const formData = new FormData();
-    formData.append("title", articleTitle);
-    formData.append("content", markdownContent);
+    formData.append("title", sanitizeInput(articleTitle));
+    formData.append("content", sanitizeInput(markdownContent));
+
     if (uploadedImage) {
+      // Validate file type and size
+      const validTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
+      if (!validTypes.includes(uploadedImage.type)) {
+        setErrors((prev) => ({ ...prev, image: "Invalid file type" }));
+        return;
+      }
+      if (uploadedImage.size > 5 * 1024 * 1024) {
+        // 5MB limit
+        setErrors((prev) => ({ ...prev, image: "File size too large" }));
+        return;
+      }
       formData.append("image", uploadedImage);
     } else if (currentImageUrl) {
-      formData.append("imageUrl", currentImageUrl);
+      formData.append("imageUrl", sanitizeInput(currentImageUrl));
     }
 
     await onSubmit(formData);
@@ -84,21 +144,28 @@ export default function ArticleForm({
           {isSubmitting ? "Publishing..." : submitButtonText}
         </Button>
       </div>
-      <form id="articleForm" onSubmit={handleSubmit} className="space-y-8">
+      <form
+        id="articleForm"
+        onSubmit={handleSubmit}
+        className="space-y-8"
+        encType="multipart/form-data"
+      >
         <TitleInput
           value={articleTitle}
-          onChange={setArticleTitle}
+          onChange={handleTitleChange}
           error={errors.title}
         />
         <ImageUploader
           uploadedImage={uploadedImage}
           currentImageUrl={currentImageUrl}
           onImageUpload={setUploadedImage}
-          onImageUrlChange={setCurrentImageUrl}
+          onImageUrlChange={(url) =>
+            setCurrentImageUrl(url ? sanitizeInput(url) : null)
+          }
         />
         <ContentEditor
           content={markdownContent}
-          onContentChange={setMarkdownContent}
+          onContentChange={handleContentChange}
         />
       </form>
       <MarkdownPreview content={markdownContent} />
