@@ -11,15 +11,8 @@ import SpinnerIcon from "@/assets/icons/loginspinner.svg";
 import { Button } from "../layout/Buttons";
 import useSignUp from "@/lib/hooks/useSignUp";
 
-const sanitizeInput = (input: string): string => {
-  if (!input) return "";
-  return input
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;")
-    .replace(/`/g, "&#x60;")
-    .trim();
+const sanitizeInput = (value: string): string => {
+  return value.replace(/[<>]/g, "");
 };
 
 const MAX_INPUT_LENGTH = 256;
@@ -35,33 +28,17 @@ export default function TheSignUpForm() {
   const handleSafeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
 
-    if (value.length > MAX_INPUT_LENGTH) {
-      return;
-    }
+    if (value.length > MAX_INPUT_LENGTH) return;
 
-    if (name === "email") {
-      const sanitizedEmail = sanitizeInput(value.toLowerCase());
-      const safeEvent = {
-        ...e,
-        target: {
-          ...e.target,
-          value: sanitizedEmail,
-        },
-      };
-      handleChange(safeEvent);
-    } else if (name === "name") {
-      const sanitizedName = sanitizeInput(value);
-      const safeEvent = {
-        ...e,
-        target: {
-          ...e.target,
-          value: sanitizedName,
-        },
-      };
-      handleChange(safeEvent);
-    } else if (name === "password") {
-      handleChange(e);
-    }
+    // Sanitize input but preserve case
+    const sanitizedValue = sanitizeInput(value);
+
+    console.log(`Typing in ${name}:`, sanitizedValue); // Debugging log
+
+    // Create a synthetic event only when needed
+    handleChange({
+      target: { name, value: sanitizedValue },
+    } as React.ChangeEvent<HTMLInputElement>);
   };
 
   const handleSafeSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
