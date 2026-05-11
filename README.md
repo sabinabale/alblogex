@@ -1,10 +1,5 @@
 [See the project here](https://alblogex.vercel.app)
 
-Sign up or use these credentials:
-
-email: sabinabalejikova@gmail.com
-password: Fuminka123
-
 Stack: NextJS, Prisma, PostgreSQL, Supabase
 
 Todo:
