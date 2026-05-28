@@ -19,7 +19,7 @@ function isValidPost(data: unknown): data is PostWithAuthorAndComments {
     typeof post?.createdAt === "string" &&
     typeof post?.author?.name === "string" &&
     Array.isArray(post?.comments) &&
-    post?.comments.every((c) => typeof c?.count === "number")
+    Array.isArray(post?.comments)
   );
 }
 

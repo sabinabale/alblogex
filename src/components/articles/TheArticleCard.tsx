@@ -65,13 +65,13 @@ export default function ArticleCard({ post }: { post: Post }) {
             <FormattedDate date={post.createdAt} />
             <span>·</span>
             <div className="flex gap-1">
-              {!post.comments[0]?.count ? (
+              {post.comments.length === 0 ? (
                 "no comments yet"
               ) : (
                 <>
-                  {post.comments[0].count}
+                  {post.comments.length}
                   <span>
-                    {post.comments[0].count === 1 ? "comment" : "comments"}
+                    {post.comments.length === 1 ? "comment" : "comments"}
                   </span>
                 </>
               )}

@@ -1,4 +1,4 @@
-import { createServer } from "@/lib/supabase/supabase-server";
+import { createAdminClient } from "@/lib/supabase/supabase-admin";
 import { queries } from "@/lib/supabase/supabase-shared-queries";
 import { Suspense } from "react";
 import { RecentArticleSkeleton } from "@/components/layout/Skeletons";
@@ -15,18 +15,18 @@ function isValidPost(post: unknown): post is Post {
     typeof p.createdAt === "string" &&
     p.author !== null &&
     typeof p.author.name === "string" &&
-    Array.isArray(p.comments) &&
-    p.comments.every((c) => typeof c.count === "number")
+    Array.isArray(p.comments)
   );
 }
 
 export default async function Home() {
-  const supabase = await createServer();
+  console.log("SERVICE_ROLE_KEY set:", !!process.env.SUPABASE_SERVICE_ROLE_KEY);
+  const supabase = createAdminClient();
 
   const { data, error } = await queries.getRecentPosts(supabase);
 
   if (error) {
-    console.error("Error fetching posts:", error);
+    console.error("Error fetching posts:", JSON.stringify(error));
     return <div>Error loading recent articles</div>;
   }
 

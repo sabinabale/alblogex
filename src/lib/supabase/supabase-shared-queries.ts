@@ -13,7 +13,7 @@ export type PostWithAuthorAndComments = {
     name: string;
   };
   comments: {
-    count: number;
+    id: number;
   }[];
 };
 
@@ -29,7 +29,7 @@ export const queries = {
         imageUrl,
         createdAt,
         author:User (name),
-        comments:Comment (count)
+        comments:Comment(id)
       `
       )
       .eq("id", postId)
@@ -95,7 +95,7 @@ export const queries = {
         imageUrl,
         createdAt,
         author:User (name),
-        comments:Comment (count)
+        comments:Comment(id)
       `
       )
       .order("createdAt", { ascending: false })

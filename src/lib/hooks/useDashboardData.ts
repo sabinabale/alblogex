@@ -51,7 +51,7 @@ export default function useDashboardData() {
             title: article.title,
             perex: article.content.substring(0, 100),
             author: article.author?.name || "Unknown",
-            comments: article.comments[0]?.count || 0,
+            comments: article.comments.length,
           })) || [];
 
         setState({

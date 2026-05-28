@@ -159,7 +159,7 @@ export type Post = {
     id: string;
     name: string;
   };
-  comments: { count: number }[];
+  comments: { id: number }[];
 };
 
 export type PostPreview = Pick<
