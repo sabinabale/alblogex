@@ -32,7 +32,7 @@ export const queries = {
         comments:Comment(id)
       `
       )
-      .eq("id", postId)
+      .eq("id", Number(postId))
       .single();
 
     return {

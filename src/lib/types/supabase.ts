@@ -28,6 +28,7 @@ export type Database = {
           createdAt?: string;
           role?: Role;
         };
+        Relationships: [];
       };
       Post: {
         Row: {
@@ -57,6 +58,7 @@ export type Database = {
           updatedAt?: string;
           authorId?: string;
         };
+        Relationships: [];
       };
       Comment: {
         Row: {
@@ -83,6 +85,7 @@ export type Database = {
           createdAt?: string;
           updatedAt?: string;
         };
+        Relationships: [];
       };
       PostImage: {
         Row: {
@@ -112,6 +115,7 @@ export type Database = {
           updatedAt?: string;
           postId?: number;
         };
+        Relationships: [];
       };
     };
     Views: Record<string, never>;

@@ -20,7 +20,6 @@ function isValidPost(post: unknown): post is Post {
 }
 
 export default async function Home() {
-  console.log("SERVICE_ROLE_KEY set:", !!process.env.SUPABASE_SERVICE_ROLE_KEY);
   const supabase = createAdminClient();
 
   const { data, error } = await queries.getRecentPosts(supabase);
