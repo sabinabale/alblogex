@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { User } from "@supabase/auth-helpers-nextjs";
+import type { User } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/supabase-client";
 import { Article } from "@/lib/types/supabase";
 import { queries } from "@/lib/supabase/supabase-shared-queries";

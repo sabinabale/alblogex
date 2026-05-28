@@ -2,7 +2,7 @@ import React from "react";
 import { Button } from "@/components/layout/Buttons";
 import logOut from "@/assets/icons/logout.svg";
 import Image from "next/image";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { createBrowserClient } from "@supabase/ssr";
 import type { User } from "@/lib/types/supabase";
 
 type AccountInfoProps = {
@@ -10,7 +10,10 @@ type AccountInfoProps = {
 };
 
 export default function AccountInfo({ user }: AccountInfoProps) {
-  const supabase = createClientComponentClient();
+  const supabase = createBrowserClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  );
 
   const handleLogout = async () => {
     await supabase.auth.signOut();

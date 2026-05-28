@@ -21,7 +21,7 @@ function isValidPost(post: unknown): post is Post {
 }
 
 export default async function Home() {
-  const supabase = createServer();
+  const supabase = await createServer();
 
   const { data, error } = await queries.getRecentPosts(supabase);
 

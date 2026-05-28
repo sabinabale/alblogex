@@ -1,12 +1,11 @@
 import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
-import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
-import { cookies } from "next/headers";
+import { createServer } from "@/lib/supabase/supabase-server";
 
 const prisma = new PrismaClient();
 
 export async function GET() {
-  const supabase = createRouteHandlerClient({ cookies });
+  const supabase = await createServer();
 
   try {
     const {
@@ -51,7 +50,7 @@ export async function PUT(request: Request) {
 }
 
 export async function DELETE(request: Request) {
-  const supabase = createRouteHandlerClient({ cookies });
+  const supabase = await createServer();
 
   try {
     const {
@@ -135,7 +134,7 @@ export async function DELETE(request: Request) {
 }
 
 async function handleArticle(request: Request, action: "create" | "update") {
-  const supabase = createRouteHandlerClient({ cookies });
+  const supabase = await createServer();
 
   try {
     const {
